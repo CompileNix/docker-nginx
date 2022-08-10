@@ -60,10 +60,8 @@ docker-compose up
 Firefox 103 and up should also work.
 
 ```sh
-docker run -it --rm --network=host ymuski/curl-http3 curl -vk --http3 'https://127.0.0.1:8889/'
-docker run -it --rm --network=host ymuski/curl-http3 curl -vk --http3 'https://127.0.0.1:8889/test.html'
-docker run -it --rm --network=host ymuski/curl-http3 curl -vk --http3 'https://127.0.0.1:8889/test_gzip.html'
-docker run -it --rm --network=host ymuski/curl-http3 curl -vk --http3 'https://127.0.0.1:8889/test_brotli.html'
+docker run -it --rm --network=host ghcr.io/macbre/curl-http3 curl -vk --http3 'https://127.0.0.1:8889/'
+docker run -it --rm --network=host ghcr.io/macbre/curl-http3 curl -vk --http3 'https://127.0.0.1:8889/test.html'
 ```
 
 ## Making Updates & Changes
