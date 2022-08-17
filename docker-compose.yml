@@ -8,7 +8,6 @@ services:
       context: .
       args:
         ALPINE_VERSION: $ALPINE_VERSION
-        BORINGSSL_COMMIT: $BORINGSSL_COMMIT
         BUSYBOX_VERSION: $BUSYBOX_VERSION
         CFLAGS_ADD: $CFLAGS_ADD
         HEADERS_MORE_VERSION: $HEADERS_MORE_VERSION
@@ -16,8 +15,9 @@ services:
         NGINX_VERSION: $NGINX_VERSION
         NGX_BROTLI_COMMIT: $NGX_BROTLI_COMMIT
         NJS_COMMIT: $NJS_COMMIT
+        OPENSSL_VERSION: $OPENSSL_VERSION
         ZLIB_VERSION: $ZLIB_VERSION
-    image: compilenix/nginx-http3:${NGINX_VERSION}
+    image: compilenix/nginx:${NGINX_VERSION}
     container_name: test_nginx
     environment:
       DNS_RESOLVER: $DNS_RESOLVER
@@ -25,6 +25,5 @@ services:
       - "./webroot:/var/www/html:ro,z"
     ports:
       - "0.0.0.0:8888:2080"
-      - "0.0.0.0:8889:2443/tcp"
-      - "0.0.0.0:8889:2443/udp"
+      - "0.0.0.0:8889:2443"
 

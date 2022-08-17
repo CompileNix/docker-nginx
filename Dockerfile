@@ -3,15 +3,30 @@
 ARG ALPINE_VERSION
 ARG BUSYBOX_VERSION
 
+FROM busybox:${BUSYBOX_VERSION}-musl AS busybox
+
+FROM alpine:${ALPINE_VERSION} AS build-renvsubst
+RUN \
+  apk add --no-cache curl upx git musl-dev gcc \
+  && cd ~ \
+  && curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly \
+  && source .cargo/env \
+  && rustup component add rust-src --toolchain nightly \
+  && git clone https://github.com/CompileNix/renvsubst \
+  && cd renvsubst \
+  && cargo +nightly build -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort --target x86_64-unknown-linux-musl --release \
+  && upx --best --lzma target/x86_64-unknown-linux-musl/release/renvsubst \
+  && cp -v target/x86_64-unknown-linux-musl/release/renvsubst /envsubst
+
 FROM alpine:${ALPINE_VERSION} AS build
 
-ARG BORINGSSL_COMMIT
 ARG CFLAGS_ADD
 ARG HEADERS_MORE_VERSION
 ARG NGINX_COMMIT
 ARG NGINX_VERSION
 ARG NGX_BROTLI_COMMIT
 ARG NJS_COMMIT
+ARG OPENSSL_VERSION
 ARG ZLIB_VERSION
 
 RUN \
@@ -39,7 +54,6 @@ RUN \
     mercurial \
     musl-dev \
     ninja \
-    openssl-dev \
     pcre2-dev \
     perl-dev \
     upx \
@@ -48,8 +62,8 @@ RUN \
 WORKDIR /usr/src/
 
 RUN \
-  echo "Cloning nginx $NGINX_VERSION (rev $NGINX_COMMIT from 'quic' branch) ..." \
-  && hg clone -b quic --rev $NGINX_COMMIT https://hg.nginx.org/nginx-quic /usr/src/nginx-$NGINX_VERSION
+  echo "Cloning nginx $NGINX_VERSION (rev $NGINX_COMMIT from 'default' branch) ..." \
+  && hg clone -b default --rev $NGINX_COMMIT https://hg.nginx.org/nginx /usr/src/nginx-$NGINX_VERSION
 
 RUN \
   echo "Cloning brotli (rev $NGX_BROTLI_COMMIT) ..." \
@@ -60,24 +74,6 @@ RUN \
   && git fetch --depth 1 origin $NGX_BROTLI_COMMIT \
   && git checkout --recurse-submodules -q FETCH_HEAD \
   && git submodule update --init --depth 1
-
-RUN \
-  echo "Cloning boringssl (rev $BORINGSSL_COMMIT) ..." \
-  && cd /usr/src \
-  && git clone https://github.com/google/boringssl \
-  && cd boringssl \
-  && git checkout $BORINGSSL_COMMIT
-
-RUN \
-  echo "Building boringssl ..." \
-  && cd /usr/src/boringssl \
-  && mkdir build \
-  && cd build \
-  && CMAKE_BUILD_PARALLEL_LEVEL=$(nproc) \
-  # Reduce jobs by 4 if there are more then 7 cores else set jobs to half of core count
-  && if [ "$CMAKE_BUILD_PARALLEL_LEVEL" -ge 8 ]; then export CMAKE_BUILD_PARALLEL_LEVEL=$(( $CMAKE_BUILD_PARALLEL_LEVEL - 4 )); else export CMAKE_BUILD_PARALLEL_LEVEL=$(( $CMAKE_BUILD_PARALLEL_LEVEL / 2 )); fi \
-  && cmake -GNinja .. \
-  && ninja -j$CMAKE_BUILD_PARALLEL_LEVEL
 
 RUN \
   echo "Downloading headers-more-nginx-module (rev $HEADERS_MORE_VERSION) ..." \
@@ -93,17 +89,20 @@ RUN \
 RUN \
   echo "Downloading zlib (version $ZLIB_VERSION) ..." \
   && cd /usr/src \
-  && wget https://zlib.net/zlib-${ZLIB_VERSION}.tar.gz -O zlib-${ZLIB_VERSION}.tar.gz \
+  && wget https://zlib.net/fossils/zlib-${ZLIB_VERSION}.tar.gz -O zlib-${ZLIB_VERSION}.tar.gz \
   && tar -xf zlib-${ZLIB_VERSION}.tar.gz
 
-# https://hg.nginx.org/nginx-quic/file/quic/README#l72
+RUN \
+  echo "Cloning OpenSSL (version $OPENSSL_VERSION) ..." \
+  && git clone -b $OPENSSL_VERSION https://github.com/openssl/openssl /usr/src/$OPENSSL_VERSION
+
 ARG CONFIG="\
   # --with-http_image_filter_module \
   # --with-http_xslt_module \
   --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
   --add-module=/usr/src/ngx_brotli \
   --add-module=/usr/src/njs-nginx-module-$NJS_COMMIT/nginx \
-  --build=quic-$NGINX_COMMIT-boringssl-$BORINGSSL_COMMIT \
+  --build=$NGINX_COMMIT \
   --conf-path=/etc/nginx/nginx.conf \
   --error-log-path=/var/log/nginx/error.log \
   --group=nginx \
@@ -137,7 +136,7 @@ ARG CONFIG="\
   --with-http_stub_status_module \
   --with-http_sub_module \
   --with-http_v2_module \
-  --with-http_v3_module \
+  --with-openssl=/usr/src/$OPENSSL_VERSION \
   --with-pcre \
   --with-pcre-jit \
   --with-stream \
@@ -156,9 +155,8 @@ RUN \
   echo "Building nginx (v$NGINX_VERSION)..." \
   && cd /usr/src/nginx-$NGINX_VERSION \
   && ./auto/configure $CONFIG \
-    --with-cc-opt="$CFLAGS_ADD -I../boringssl/include" \
-    --with-ld-opt="-s -static -L../boringssl/build/ssl \
-           -L../boringssl/build/crypto" \
+    --with-cc-opt="$CFLAGS_ADD" \
+    --with-ld-opt="-s -static" \
   && MAKE_JOBS=$(nproc) \
   # Reduce jobs by 4 if there are more then 7 cores else set jobs to half of core count
   && if [ "$MAKE_JOBS" -ge 8 ]; then export MAKE_JOBS=$(( $MAKE_JOBS - 4 )); else export MAKE_JOBS=$(( $MAKE_JOBS / 2 )); fi \
@@ -173,21 +171,6 @@ RUN \
   # && strip /usr/lib/nginx/modules/*.so
   && strip /usr/bin/nginx* \
   && upx --best --lzma /usr/bin/nginx*
-
-FROM alpine:${ALPINE_VERSION} AS build-renvsubst
-RUN \
-  apk add --no-cache curl upx git musl-dev gcc \
-  && cd ~ \
-  && curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly \
-  && source .cargo/env \
-  && rustup component add rust-src --toolchain nightly \
-  && git clone https://github.com/CompileNix/renvsubst \
-  && cd renvsubst \
-  && cargo +nightly build -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort --target x86_64-unknown-linux-musl --release \
-  && upx --best --lzma target/x86_64-unknown-linux-musl/release/renvsubst \
-  && cp -v target/x86_64-unknown-linux-musl/release/renvsubst /envsubst
-
-FROM busybox:${BUSYBOX_VERSION}-musl AS busybox
 
 FROM alpine:${ALPINE_VERSION} AS alpine-base
 

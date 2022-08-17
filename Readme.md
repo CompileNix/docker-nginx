@@ -1,10 +1,10 @@
 ## What is this?
-A very smol (~ 3MB) [Nginx](https://nginx.org/en/CHANGES) container image with:
+A very smol (~ 4MB) [Nginx](https://nginx.org/en/CHANGES) container image with:
 - all optional first-party modules built-in except the following:
   - http_perl: It's large and I don't need it
   - http_xslt: Can't be build into statically linked binary
   - http_image_filter: Can't be build into statically linked binary
-- [QUIC + **HTTP/3 experimental support**](https://hg.nginx.org/nginx-quic/)
+- [OpenSSL 3](https://github.com/openssl/openssl)
 - [Google's `brotli` compression](https://github.com/google/ngx_brotli)
 - [Nginx njs module](https://hg.nginx.org/njs/)
 - [OpenResty's headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module)
@@ -21,15 +21,14 @@ Nginx binary is built from source (using alpine) into a `FROM scratch` container
 ## Requirements
 - internet connection (HTTP/S)
 - docker
-- any HTTP/3 client like; Firefox, Google Chrome or Curl
 - openssl
 - (optional) docker-compose
 - (optional) git
 
 ## Clone
 ```sh
-git clone https://git.compilenix.org/compilenix/docker-nginx-http3
-cd docker-nginx-http3
+git clone https://git.compilenix.org/compilenix/docker-nginx
+cd docker-nginx
 ```
 
 ## Generate SSL Keys
@@ -51,17 +50,23 @@ cd ../..
 docker-compose build
 ```
 
-## Run Nginx
+## Run Nginx Using Docker-Compose
 ```sh
 docker-compose up
 ```
 
+## Run Nginx Using Docker
+```sh
+source .env
+docker run --rm -it -v $(pwd)/webroot:/var/www/html:ro,z -p 0.0.0.0:8888:2080 -p 0.0.0.0:8889:2443 -e DNS_RESOLVER=$DNS_RESOLVER compilenix/nginx:${NGINX_VERSION}
+```
+
 ## Test
-Firefox 103 and up should also work.
+Firefox 103 and up should work.
 
 ```sh
-docker run -it --rm --network=host ghcr.io/macbre/curl-http3 curl -vk --http3 'https://127.0.0.1:8889/'
-docker run -it --rm --network=host ghcr.io/macbre/curl-http3 curl -vk --http3 'https://127.0.0.1:8889/test.html'
+curl -vk 'https://127.0.0.1:8889/'
+curl -vk 'https://127.0.0.1:8889/test.html'
 ```
 
 ## Making Updates & Changes
@@ -138,8 +143,8 @@ If you want to change any versions used to build the container image take a look
 │   │       └── uwsgi_temp/
 │   ├── log/
 │   │   └── nginx/
-│   │       ├── access.log -> /dev/stdout
-│   │       └── error.log -> /dev/stdout
+│   │       ├── access.log -> /dev/stdout|
+│   │       └── error.log -> /dev/stdout|
 │   ├── run/
 │   │   └── nginx/
 │   └── www/
