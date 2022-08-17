@@ -10,7 +10,7 @@ A very smol (~ 4MB) [Nginx](https://nginx.org/en/CHANGES) container image with:
 - [OpenResty's headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module)
 - [envsubst](https://git.compilenix.org/CompileNix/renvsubst) nginx config processing on container startup
 
-Nginx binary is built from source (using alpine) into a `FROM scratch` container image. It's **not production-ready**!
+Nginx binary is built from source (using alpine) into a `FROM scratch` container image. It's **production-ready**!
 
 ## How is this container image that small?
 - based on `FROM scratch`
