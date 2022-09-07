@@ -220,7 +220,7 @@ RUN \
   && chown -Rv nginx:nginx /tmp/scratch/var/run/nginx \
   && chmod -v 1777 /tmp/scratch/tmp
 COPY src/docker-entrypoint.sh /tmp/scratch/
-COPY src/docker-entrypoint.d/envsubst-on-templates.sh /tmp/scratch/docker-entrypoint.d/
+COPY src/docker-entrypoint.d/* /tmp/scratch/docker-entrypoint.d/
 COPY --from=busybox /bin/busybox /tmp/scratch/bin/
 COPY --from=build /usr/bin/nginx /tmp/scratch/usr/bin/
 # link only required cli tools
