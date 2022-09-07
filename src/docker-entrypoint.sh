@@ -38,3 +38,4 @@ if [[ "$1" = "/usr/bin/nginx" ]]; then
 fi
 
 exec "$@"
+
