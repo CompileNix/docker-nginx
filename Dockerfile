@@ -178,7 +178,7 @@ COPY src/etc/group src/etc/passwd src/etc/shadow /etc/
 # COPY --from=build /usr/lib/nginx/modules/ /usr/lib/nginx/modules/
 COPY --from=build /etc/nginx /etc/nginx
 COPY --from=build-renvsubst /envsubst /usr/bin/
-COPY src/etc/nginx/nginx.conf /etc/nginx
+COPY src/etc/nginx/ /etc/nginx
 COPY config/ /etc/nginx
 
 RUN \
