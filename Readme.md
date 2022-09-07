@@ -102,6 +102,8 @@ If you want to change any versions used to build the container image take a look
 │   │   ├── conf.d/
 │   │   ├── nginx/
 │   │   │   └── Readme.txt
+│   │   ├── njs/
+│   │   │   └── http.js
 │   │   ├── sites/
 │   │   │   ├── 000_default.conf
 │   │   │   └── localhost.conf
@@ -152,6 +154,6 @@ If you want to change any versions used to build the container image take a look
 │       └── html/
 └── docker-entrypoint.sh*
 
-31 directories, 44 files
+32 directories, 45 files
 ```
 
