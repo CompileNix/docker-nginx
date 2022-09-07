@@ -29,6 +29,7 @@ Nginx binary is built from source (using alpine) into a `FROM scratch` container
 ```sh
 git clone https://git.compilenix.org/compilenix/docker-nginx
 cd docker-nginx
+cp example.env .env
 ```
 
 ## Generate SSL Keys
