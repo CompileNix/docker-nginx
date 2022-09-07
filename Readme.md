@@ -59,15 +59,15 @@ docker-compose up
 ## Run Nginx Using Docker
 ```sh
 source .env
-docker run --rm -it -v $(pwd)/webroot:/var/www/html:ro,z -p 0.0.0.0:8888:2080 -p 0.0.0.0:8889:2443 -e DNS_RESOLVER=$DNS_RESOLVER compilenix/nginx:${NGINX_VERSION}
+docker run --rm -it -v $(pwd)/webroot:/var/www/html:ro,z -p 0.0.0.0:42661:2080 -p 0.0.0.0:42662:2443 -e DNS_RESOLVER=$DNS_RESOLVER compilenix/nginx:${NGINX_VERSION}
 ```
 
 ## Test
 Firefox 103 and up should work.
 
 ```sh
-curl -vk 'https://127.0.0.1:8889/'
-curl -vk 'https://127.0.0.1:8889/test.html'
+curl -vk 'https://127.0.0.1:42661/'
+curl -vk 'https://127.0.0.1:42662/test.html'
 ```
 
 ## Making Updates & Changes
