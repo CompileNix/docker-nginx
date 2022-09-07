@@ -18,12 +18,12 @@ services:
         OPENSSL_VERSION: $OPENSSL_VERSION
         ZLIB_VERSION: $ZLIB_VERSION
     image: compilenix/nginx:${NGINX_VERSION}
-    container_name: test_nginx
+    container_name: nginx
     environment:
       DNS_RESOLVER: $DNS_RESOLVER
     volumes:
       - "./webroot:/var/www/html:ro,z"
     ports:
-      - "0.0.0.0:8888:2080"
-      - "0.0.0.0:8889:2443"
+      - "0.0.0.0:42661:2080"
+      - "0.0.0.0:42662:2443"
 
