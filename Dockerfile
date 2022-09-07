@@ -15,8 +15,8 @@ RUN \
   && git clone https://github.com/CompileNix/renvsubst \
   && cd renvsubst \
   && cargo +nightly build -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort --target x86_64-unknown-linux-musl --release \
-  && upx --best --lzma target/x86_64-unknown-linux-musl/release/renvsubst \
-  && cp -v target/x86_64-unknown-linux-musl/release/renvsubst /envsubst
+  && upx --best --lzma target/x86_64-unknown-linux-musl/release/cnx-renvsubst \
+  && cp -v target/x86_64-unknown-linux-musl/release/cnx-renvsubst /envsubst
 
 FROM alpine:${ALPINE_VERSION} AS build
 
