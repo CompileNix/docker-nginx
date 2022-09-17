@@ -226,7 +226,7 @@ COPY --from=build /usr/bin/nginx /tmp/scratch/usr/bin/
 # link only required cli tools
 RUN \
   cd /tmp/scratch/bin \
-  && upx --best --lzma busybox \
+  # && upx --best --lzma busybox \
   && ln -sv busybox basename \
   && ln -sv busybox cat \
   && ln -sv busybox cp \
