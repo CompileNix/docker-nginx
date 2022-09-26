@@ -1,7 +1,7 @@
 #!/bin/sh
 # vim: sw=2 et
 
-set -e
+set -eu
 
 ME=$(basename $0)
 

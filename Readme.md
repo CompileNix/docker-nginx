@@ -4,10 +4,10 @@ A very smol (~ 4MB) [Nginx](https://nginx.org/en/CHANGES) container image with:
   - http_perl: It's large and I don't need it
   - http_xslt: Can't be build into statically linked binary
   - http_image_filter: Can't be build into statically linked binary
-- [OpenSSL 3](https://github.com/openssl/openssl)
 - [Google's `brotli` compression](https://github.com/google/ngx_brotli)
 - [Nginx njs module](https://hg.nginx.org/njs/)
 - [OpenResty's headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module)
+- [OpenSSL 3](https://github.com/openssl/openssl)
 - [envsubst](https://git.compilenix.org/CompileNix/renvsubst) nginx config processing on container startup
 
 Nginx binary is built from source (using alpine) into a `FROM scratch` container image. It's **production-ready**!
