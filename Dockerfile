@@ -175,6 +175,7 @@ RUN \
 
 FROM alpine:${ALPINE_VERSION} AS alpine-base
 
+RUN apk add --no-cache tree tzdata
 COPY src/etc/group src/etc/passwd src/etc/shadow /etc/
 # COPY --from=build /usr/lib/nginx/modules/ /usr/lib/nginx/modules/
 COPY --from=build /etc/nginx /etc/nginx
@@ -183,9 +184,8 @@ COPY src/etc/nginx/ /etc/nginx
 COPY config/ /etc/nginx
 
 RUN \
-  apk add --no-cache upx tree \
   # remove unused default nginx config files
-  && rm -v /etc/nginx/*.default \
+  rm -v /etc/nginx/*.default \
   # link to nginx modules
   && ln -sv /usr/lib/nginx/modules /etc/nginx/modules \
   # forward error logs to docker log collector
@@ -200,6 +200,8 @@ RUN \
   && mkdir -pv /tmp/scratch/tmp \
   && mkdir -pv /tmp/scratch/usr/bin \
   && mkdir -pv /tmp/scratch/usr/lib/nginx/modules \
+  && mkdir -pv /tmp/scratch/usr/sbin \
+  && mkdir -pv /tmp/scratch/usr/share \
   && mkdir -pv /tmp/scratch/var/cache/nginx/client_temp \
   && mkdir -pv /tmp/scratch/var/cache/nginx/fastcgi_temp \
   && mkdir -pv /tmp/scratch/var/cache/nginx/proxy_temp \
@@ -208,18 +210,24 @@ RUN \
   && mkdir -pv /tmp/scratch/var/log/nginx \
   && mkdir -pv /tmp/scratch/var/run/nginx \
   && mkdir -pv /tmp/scratch/var/www/html \
-  && cp -rv /etc/group /tmp/scratch/etc/ \
   && cp -rv /etc/nginx /tmp/scratch/etc/ \
-  && cp -rv /etc/passwd /tmp/scratch/etc/ \
-  && cp -rv /etc/shadow /tmp/scratch/etc/ \
-  && cp -rv /etc/ssl/certs/ca-certificates.crt /tmp/scratch/etc/ssl/certs/ \
+  && cp -rv /usr/share/zoneinfo /tmp/scratch/usr/share/ \
+  && cp -v /etc/group /tmp/scratch/etc/ \
+  && cp -v /etc/passwd /tmp/scratch/etc/ \
+  && cp -v /etc/shadow /tmp/scratch/etc/ \
+  && cp -v /etc/ssl/certs/ca-certificates.crt /tmp/scratch/etc/ssl/certs/ \
   && cp -v /usr/bin/envsubst /tmp/scratch/usr/bin/ \
+  && cp -v /usr/bin/posixtz /tmp/scratch/usr/bin/ \
+  && cp -v /usr/sbin/zdump /tmp/scratch/usr/sbin/ \
+  && cp -v /usr/sbin/zic /tmp/scratch/usr/sbin/ \
   && mv -v /var/log/nginx /tmp/scratch/var/log/ \
+  && rm -rv /tmp/scratch/etc/nginx/html \
   && chown -Rv nginx:nginx /tmp/scratch/etc/nginx \
   && chown -Rv nginx:nginx /tmp/scratch/var/cache/nginx \
   && chown -Rv nginx:nginx /tmp/scratch/var/log/nginx \
   && chown -Rv nginx:nginx /tmp/scratch/var/run/nginx \
   && chmod -v 1777 /tmp/scratch/tmp
+RUN apk add --no-cache tzdata
 COPY src/docker-entrypoint.sh /tmp/scratch/
 COPY src/docker-entrypoint.d/* /tmp/scratch/docker-entrypoint.d/
 COPY --from=busybox /bin/busybox /tmp/scratch/bin/
@@ -227,6 +235,7 @@ COPY --from=build /usr/bin/nginx /tmp/scratch/usr/bin/
 # link only required cli tools
 RUN \
   cd /tmp/scratch/bin \
+  # upx on busybox apparently causes: nginx: [emerg] failed to create js VM
   # && upx --best --lzma busybox \
   && ln -sv busybox basename \
   && ln -sv busybox cat \
@@ -250,6 +259,7 @@ RUN \
 FROM scratch
 ENV DNS_RESOLVER="1.1.1.1"
 ENV NGINX_WORKER_PROCESSES="2"
+ENV TZ="UTC"
 
 COPY --from=alpine-base /tmp/scratch/ /
 USER nginx

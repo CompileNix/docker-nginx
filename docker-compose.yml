@@ -22,6 +22,7 @@ services:
     environment:
       DNS_RESOLVER: $DNS_RESOLVER
       NGINX_WORKER_PROCESSES: ${NGINX_WORKER_PROCESSES:-2}
+      TZ: ${TZ:-UTC}
     volumes:
       - "./webroot:/var/www/html:ro,z"
     ports:

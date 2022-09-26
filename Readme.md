@@ -94,12 +94,14 @@ If you want to change any versions used to build the container image take a look
 │   ├── sort -> busybox*
 │   └── tail -> busybox*
 ├── docker-entrypoint.d/
-│   └── envsubst-on-templates.sh*
+│   └── 90-envsubst-on-templates.sh*
 ├── etc/
 │   ├── nginx/
 │   │   ├── cfg/
 │   │   │   └── header_referrer_policy.conf
-│   │   ├── conf.d/
+│   │   ├── html/
+│   │   │   ├── 50x.html
+│   │   │   └── index.html
 │   │   ├── nginx/
 │   │   │   └── Readme.txt
 │   │   ├── njs/
@@ -132,10 +134,17 @@ If you want to change any versions used to build the container image take a look
 ├── usr/
 │   ├── bin/
 │   │   ├── envsubst*
-│   │   └── nginx*
-│   └── lib/
-│       └── nginx/
-│           └── modules/
+│   │   ├── nginx*
+│   │   └── posixtz*
+│   ├── lib/
+│   │   └── nginx/
+│   │       └── modules/
+│   ├── sbin/
+│   │   ├── zdump*
+│   │   └── zic*
+│   └── share/
+│       └── zoneinfo/
+│           └── many files and stuff, Yep.
 ├── var/
 │   ├── cache/
 │   │   └── nginx/
