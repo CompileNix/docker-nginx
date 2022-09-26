@@ -142,7 +142,8 @@ ARG CONFIG="\
   --with-http_stub_status_module \
   --with-http_sub_module \
   --with-http_v2_module \
-  --with-pcre \
+  --with-mail \
+  --with-mail_ssl_module \
   --with-openssl=/usr/src/openssl-$OPENSSL_VERSION \
   --with-pcre-jit \
   --with-pcre=/usr/src/pcre2-$PCRE_VERSION \
@@ -153,9 +154,6 @@ ARG CONFIG="\
   --with-stream_ssl_preread_module \
   --with-threads \
   --with-zlib=/usr/src/zlib-$ZLIB_VERSION \
-  --without-mail_imap_module \
-  --without-mail_pop3_module \
-  --without-mail_smtp_module \
   "
 
 RUN \
