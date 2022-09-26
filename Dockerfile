@@ -153,25 +153,25 @@ ARG CONFIG="\
 
 RUN \
   echo "Building nginx (v$NGINX_VERSION)..." \
-  && cd /usr/src/nginx-$NGINX_VERSION \
-  && ./auto/configure $CONFIG \
-    --with-cc-opt="$CFLAGS_ADD" \
-    --with-ld-opt="-s -static" \
   && MAKE_JOBS=$(nproc) \
   # Reduce jobs by 4 if there are more then 7 cores else set jobs to half of core count
   && if [ "$MAKE_JOBS" -ge 8 ]; then export MAKE_JOBS=$(( $MAKE_JOBS - 4 )); else export MAKE_JOBS=$(( $MAKE_JOBS / 2 )); fi \
   && if [ "$MAKE_JOBS" -le 1 ]; then export MAKE_JOBS=1; fi \
   && echo "Make job count: $MAKE_JOBS" \
-  && make -j$MAKE_JOBS
+  && cd /usr/src/nginx-$NGINX_VERSION \
+  && ./auto/configure $CONFIG \
+    --with-cc-opt="$CFLAGS_ADD" \
+    --with-ld-opt="-static" \
+    --with-openssl-opt="$CFLAGS_ADD" \
+    --with-zlib-opt="$CFLAGS_ADD" \
+  && make -j$MAKE_JOBS \
+  && make install
 
 RUN \
   cd /usr/src/nginx-$NGINX_VERSION \
-  && make install \
-  && rm -rf /etc/nginx/html/ \
-  && mkdir /etc/nginx/conf.d/ \
   # && strip /usr/lib/nginx/modules/*.so
-  && strip /usr/bin/nginx* \
-  && upx --best --lzma /usr/bin/nginx*
+  && strip /usr/bin/nginx \
+  && upx --best --lzma /usr/bin/nginx
 
 FROM alpine:${ALPINE_VERSION} AS alpine-base
 
