@@ -142,7 +142,6 @@ ARG CONFIG="\
   --with-http_stub_status_module \
   --with-http_sub_module \
   --with-http_v2_module \
-  --with-openssl=/usr/src/$OPENSSL_VERSION \
   --with-pcre \
   --with-openssl=/usr/src/openssl-$OPENSSL_VERSION \
   --with-pcre-jit \
