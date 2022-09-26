@@ -91,7 +91,9 @@ RUN \
 
 RUN \
   echo "Cloning OpenSSL (version $OPENSSL_VERSION) ..." \
-  && git clone -b $OPENSSL_VERSION https://github.com/openssl/openssl /usr/src/$OPENSSL_VERSION
+  && cd /usr/src \
+  && wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz -O openssl-${OPENSSL_VERSION}.tar.gz \
+  && tar -xf openssl-${OPENSSL_VERSION}.tar.gz
 
 ARG CONFIG="\
   # --with-http_image_filter_module \
@@ -135,6 +137,7 @@ ARG CONFIG="\
   --with-http_v2_module \
   --with-openssl=/usr/src/$OPENSSL_VERSION \
   --with-pcre \
+  --with-openssl=/usr/src/openssl-$OPENSSL_VERSION \
   --with-pcre-jit \
   --with-stream \
   --with-stream_geoip_module \
