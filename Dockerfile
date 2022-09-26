@@ -34,26 +34,23 @@ RUN \
 
 RUN \
   apk add --no-cache \
+    # libxml2-dev \
+    # libxslt-dev \
     autoconf \
     automake \
     cmake \
     curl \
-    g++ \
     gcc \
     gd-dev \
     geoip-dev \
     git \
     gnupg \
-    go \
     libc-dev \
     libtool \
-    # libxml2-dev \
-    # libxslt-dev \
     linux-headers \
     make \
     mercurial \
     musl-dev \
-    ninja \
     pcre2-dev \
     perl-dev \
     upx \
@@ -237,8 +234,10 @@ RUN \
   cd /tmp/scratch/bin \
   # upx on busybox apparently causes: nginx: [emerg] failed to create js VM
   # && upx --best --lzma busybox \
+  # some cli tools that are useful for debugging but not in production
+  # && ln -sv busybox cat \
+  # && ln -sv busybox tail \
   && ln -sv busybox basename \
-  && ln -sv busybox cat \
   && ln -sv busybox cp \
   && ln -sv busybox cut \
   && ln -sv busybox dirname \
@@ -250,8 +249,7 @@ RUN \
   && ln -sv busybox printf \
   && ln -sv busybox rm \
   && ln -sv busybox sh \
-  && ln -sv busybox sort \
-  && ln -sv busybox tail
+  && ln -sv busybox sort
 RUN \
   cd /tmp/scratch \
   && tree -a -F --dirsfirst -A -n .
