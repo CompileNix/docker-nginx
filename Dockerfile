@@ -248,11 +248,12 @@ RUN \
 
 FROM scratch
 ENV DNS_RESOLVER="1.1.1.1"
+ENV NGINX_WORKER_PROCESSES="2"
 
 COPY --from=alpine-base /tmp/scratch/ /
 USER nginx
 EXPOSE 2080 2443
-STOPSIGNAL SIGTERM
+STOPSIGNAL SIGQUIT
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["/usr/bin/nginx", "-g", "daemon off;"]

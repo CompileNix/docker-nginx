@@ -21,6 +21,7 @@ services:
     container_name: nginx
     environment:
       DNS_RESOLVER: $DNS_RESOLVER
+      NGINX_WORKER_PROCESSES: ${NGINX_WORKER_PROCESSES:-2}
     volumes:
       - "./webroot:/var/www/html:ro,z"
     ports:
