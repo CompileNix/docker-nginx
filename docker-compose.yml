@@ -16,6 +16,7 @@ services:
         NGX_BROTLI_COMMIT: $NGX_BROTLI_COMMIT
         NJS_COMMIT: $NJS_COMMIT
         OPENSSL_VERSION: $OPENSSL_VERSION
+        PCRE_VERSION: $PCRE_VERSION
         ZLIB_VERSION: $ZLIB_VERSION
     image: compilenix/nginx:${NGINX_VERSION}
     container_name: nginx

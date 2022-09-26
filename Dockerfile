@@ -27,6 +27,7 @@ ARG NGINX_VERSION
 ARG NGX_BROTLI_COMMIT
 ARG NJS_COMMIT
 ARG OPENSSL_VERSION
+ARG PCRE_VERSION
 ARG ZLIB_VERSION
 
 RUN \
@@ -95,6 +96,12 @@ RUN \
   && wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz -O openssl-${OPENSSL_VERSION}.tar.gz \
   && tar -xf openssl-${OPENSSL_VERSION}.tar.gz
 
+RUN \
+  echo "Cloning PCRE (version $PCRE_VERSION) ..." \
+  && cd /usr/src \
+  && wget https://github.com/PCRE2Project/pcre2/releases/download/pcre2-${PCRE_VERSION}/pcre2-${PCRE_VERSION}.tar.gz -O pcre2-${PCRE_VERSION}.tar.gz \
+  && tar -xf pcre2-${PCRE_VERSION}.tar.gz
+
 ARG CONFIG="\
   # --with-http_image_filter_module \
   # --with-http_xslt_module \
@@ -139,6 +146,7 @@ ARG CONFIG="\
   --with-pcre \
   --with-openssl=/usr/src/openssl-$OPENSSL_VERSION \
   --with-pcre-jit \
+  --with-pcre=/usr/src/pcre2-$PCRE_VERSION \
   --with-stream \
   --with-stream_geoip_module \
   --with-stream_realip_module \
