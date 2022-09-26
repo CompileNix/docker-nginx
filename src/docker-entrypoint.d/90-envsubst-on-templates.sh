@@ -1,12 +1,12 @@
 #!/bin/sh
 # vim: sw=2 et
 
-set -e
+set -eu
 
 ME=$(basename $0)
 
 auto_envsubst() {
-  local templates="/etc/nginx/nginx.conf /etc/nginx/sites/ /etc/nginx/cfg/ /etc/nginx/include-nginx.conf/ /etc/nginx/include-http/ /etc/nginx/include-stream/ ${NGINX_ENVSUBST_TEMPLATES:-}"
+  local templates="/etc/nginx/ ${NGINX_ENVSUBST_TEMPLATES:-}"
   local suffix=".conf"
 
   local template template_location defined_envs relative_path output_path subdir dir_name
