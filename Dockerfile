@@ -160,6 +160,7 @@ RUN \
   && MAKE_JOBS=$(nproc) \
   # Reduce jobs by 4 if there are more then 7 cores else set jobs to half of core count
   && if [ "$MAKE_JOBS" -ge 8 ]; then export MAKE_JOBS=$(( $MAKE_JOBS - 4 )); else export MAKE_JOBS=$(( $MAKE_JOBS / 2 )); fi \
+  && if [ "$MAKE_JOBS" -le 1 ]; then export MAKE_JOBS=1; fi \
   && echo "Make job count: $MAKE_JOBS" \
   && make -j$MAKE_JOBS
 
