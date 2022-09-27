@@ -22,6 +22,7 @@ services:
     container_name: nginx
     environment:
       DNS_RESOLVER: $DNS_RESOLVER
+      NGINX_LOG_FORMAT_NAME: ${NGINX_LOG_FORMAT_NAME:-main}
       NGINX_WORKER_PROCESSES: ${NGINX_WORKER_PROCESSES:-2}
       TZ: ${TZ:-UTC}
     volumes:
