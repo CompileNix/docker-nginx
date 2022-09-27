@@ -25,30 +25,13 @@ Nginx binary is built from source (using alpine) into a `FROM scratch` container
 - (optional) docker-compose
 - (optional) git
 
-## Clone
+## Build
 ```sh
 git clone https://git.compilenix.org/compilenix/docker-nginx
 cd docker-nginx
 cp example.env .env
-```
-
-## Generate SSL Keys
-This may take a while.
-
-```sh
-mkdir config/ssl
-cd config/ssl
-openssl dhparam -out dhparam.pem 2048
-openssl genrsa -out privkey.pem 2048
-openssl req -key privkey.pem -config <(cat /etc/ssl/openssl.cnf <(printf "[SAN]\nbasicConstraints=CA:FALSE\nkeyUsage=nonRepudiation,digitalSignature,keyEncipherment\nsubjectAltName=DNS:localhost, DNS:localhost.localdomain, IP:127.0.0.1, IP:::1")) -sha256 -subj "/C=/ST=/L=/O=/OU=/CN=localhost" -extensions SAN -nodes -x509 -days 3650 -out cert_temp.pem
-openssl x509 -in cert_temp.pem -text >cert.pem
-rm cert_temp.pem
-cd ../..
-```
-
-## Build
-```sh
-docker-compose build
+$EDITOR .env
+./build.sh
 ```
 
 ## Run Nginx Using Docker-Compose
