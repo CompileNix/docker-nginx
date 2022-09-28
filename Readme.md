@@ -18,14 +18,54 @@ Nginx binary is built from source (using alpine) into a `FROM scratch` container
 - nginx (and all it's modules) are build into a single static binary
 - all executable binaries are compressed using [upx](https://upx.github.io/)
 
-## Requirements
+## How to use this image
+__*Note: (unencrypted) HTTP is discurraged by default!*__
+
+### Using environment variables in nginx configuration
+Environment variables can be used in any nginx config file, regardless if they are mapped as a volume, are part of the original container image or copied into a custom container image which is based on this one.
+
+Environment variable substitution / templating is performed by [./src/docker-entrypoint.d/90-envsubst-on-templates.sh](90-envsubst-on-templates.sh) on each container start.
+
+Mapped nginx config files directly to `/etc/nginx` (instead of `/config`) will be overritten / process by this process.
+
+Only config files whose name ends with a certian suffix will be processed.
+
+This behavior can be changed via the `NGINX_ENVSUBST_TEMPLATE_SUFFIX` environment variable. The default value is defined as `.conf`.
+
+Here is an example using `docker-compose.yml`:
+```yml
+# vim: sw=2 et
+
+version: '2.4'
+
+services:
+  nginx:
+    image: compilenix/nginx
+    volumes:
+      - "./domain.tld.conf:/config/sites/domain.tld.conf:ro,z"
+      - "./ssl:/config/ssl/domain.tld:ro,z"
+      - "./webroot:/var/www/html:ro,z"
+    ports:
+      - "80:2080"
+      - "443:2443"
+    environment:
+      NGINX_HOST: "domain.tld"
+      NGINX_HOST_CERT_PATH: "/etc/nginx/ssl/domain.tld"
+      NGINX_HTTP_REDIRECT_LOCATION: "https://domain.tld$$request_uri"
+```
+
+Also have a look at the coresponding default nginx http server config: [default.conf](./config/sites/default.conf).
+
+Note: Any present environment variable can be used at any part of any nginx config file.
+
+## Build Requirements
 - internet connection (HTTP/S)
 - docker
 - openssl
 - (optional) docker-compose
 - (optional) git
 
-## Build
+## Building
 ```sh
 git clone https://git.compilenix.org/compilenix/docker-nginx
 cd docker-nginx

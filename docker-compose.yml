@@ -20,6 +20,7 @@ services:
         ZLIB_VERSION: $ZLIB_VERSION
     image: compilenix/nginx:${NGINX_VERSION}
     container_name: nginx
+    # command: ["/usr/bin/nginx", "-t"]
     environment:
       DNS_RESOLVER: $DNS_RESOLVER
       NGINX_LOG_FORMAT_NAME: ${NGINX_LOG_FORMAT_NAME:-main}
