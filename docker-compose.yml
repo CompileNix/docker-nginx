@@ -22,12 +22,18 @@ services:
     container_name: nginx
     # command: ["/usr/bin/nginx", "-t"]
     environment:
-      DNS_RESOLVER: $DNS_RESOLVER
+      DNS_RESOLVER: ${DNS_RESOLVER:-1.1.1.1}
+      NGINX_ENVSUBST_TEMPLATE_SUFFIX: ${NGINX_ENVSUBST_TEMPLATE_SUFFIX:-.conf}
       NGINX_LOG_FORMAT_NAME: ${NGINX_LOG_FORMAT_NAME:-main}
+      NGINX_SERVER_HEADER: ${NGINX_SERVER_HEADER:-}
       NGINX_WORKER_PROCESSES: ${NGINX_WORKER_PROCESSES:-2}
       TZ: ${TZ:-UTC}
+      # NGINX_HOST: "localhost"
+      # NGINX_HOST_CERT_PATH: "/etc/nginx/ssl"
+      # NGINX_HTTP_REDIRECT_LOCATION: "https://localhost:42662$$request_uri"
     volumes:
       - "./webroot:/var/www/html:ro,z"
+      # - "./src/etc/nginx/nginx.conf:/config/nginx.conf:ro,z"
     ports:
       - "0.0.0.0:42661:2080"
       - "0.0.0.0:42662:2443"
