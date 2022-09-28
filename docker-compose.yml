@@ -33,6 +33,9 @@ services:
       # NGINX_HTTP_REDIRECT_LOCATION: "https://localhost:42662$$request_uri"
     volumes:
       - "./webroot:/var/www/html:ro,z"
+      - "./njs/njs.conf:/config/njs.conf:ro,z"
+      - "./njs/http.js:/config/njs/http.js:ro,z"
+      - "./njs/localhost.conf:/config/sites/localhost.conf:ro,z"
       # - "./src/etc/nginx/nginx.conf:/config/nginx.conf:ro,z"
     ports:
       - "0.0.0.0:42661:2080"

@@ -207,6 +207,7 @@ RUN \
   && ln -sfv /dev/stdout /var/log/nginx/access.log \
   # prepare new filesystem structure for next build stage
   && mkdir -pv /tmp/scratch/docker-entrypoint.d \
+  && mkdir -pv /tmp/scratch/etc/nginx/njs \
   && mkdir -pv /tmp/scratch/etc/nginx/ssl \
   && mkdir -pv /tmp/scratch/etc/ssl/certs \
   && mkdir -pv /tmp/scratch/tmp \
@@ -222,6 +223,7 @@ RUN \
   && mkdir -pv /tmp/scratch/var/log/nginx \
   && mkdir -pv /tmp/scratch/var/run/nginx \
   && mkdir -pv /tmp/scratch/var/www/html \
+  && touch /tmp/scratch/etc/nginx/njs.conf \
   && cp -rv /etc/nginx /tmp/scratch/etc/ \
   && cp -rv /usr/share/zoneinfo /tmp/scratch/usr/share/ \
   && cp -v /etc/group /tmp/scratch/etc/ \
@@ -250,9 +252,8 @@ RUN \
   # upx on busybox apparently causes: nginx: [emerg] failed to create js VM
   # && upx --best --lzma busybox \
   # some cli tools that are useful for debugging but not in production
-  # && ln -sv busybox cat \
-  # && ln -sv busybox tail \
   && ln -sv busybox basename \
+  && ln -sv busybox cat \
   && ln -sv busybox cp \
   && ln -sv busybox cut \
   && ln -sv busybox dirname \
@@ -264,13 +265,15 @@ RUN \
   && ln -sv busybox printf \
   && ln -sv busybox rm \
   && ln -sv busybox sh \
-  && ln -sv busybox sort
+  && ln -sv busybox sort \
+  && ln -sv busybox stat
 RUN \
   cd /tmp/scratch \
   && tree -a -F --dirsfirst -A -n .
 
 FROM scratch
 ENV DNS_RESOLVER="1.1.1.1"
+ENV NGINX_ENVSUBST_TEMPLATE_SUFFIX=".conf"
 ENV NGINX_LOG_FORMAT_NAME="main"
 ENV NGINX_SERVER_HEADER=""
 ENV NGINX_WORKER_PROCESSES="2"

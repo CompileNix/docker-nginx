@@ -58,6 +58,44 @@ Also have a look at the coresponding default nginx http server config: [default.
 
 Note: Any present environment variable can be used at any part of any nginx config file.
 
+### NJS
+1. Override `njs.conf` via `/config/njs.conf`.
+2. Map / copy njs code into container / image.
+
+Example `njs.conf`:
+```nginx
+# vim: sw=2 et
+
+js_path '/etc/nginx/njs/';
+js_import http.js;
+```
+
+See also: https://nginx.org/en/docs/njs/reference.html
+
+Docker Compose Example:
+```yml
+# vim: sw=2 et
+
+version: '2.4'
+
+services:
+  nginx:
+    image: compilenix/nginx:${NGINX_VERSION}
+    volumes:
+      - "./njs/njs.conf:/config/njs.conf:ro,z"
+      - "./njs/http.js:/config/njs/http.js:ro,z"
+      - "./njs/localhost.conf:/config/sites/localhost.conf:ro,z"
+    ports:
+      - "0.0.0.0:42661:2080"
+      - "0.0.0.0:42662:2443"
+```
+
+Testing:
+```sh
+curl -vk 'https://127.0.0.1:42662/njs'
+# Hello world!
+```
+
 ## Build Requirements
 - internet connection (HTTP/S)
 - docker
