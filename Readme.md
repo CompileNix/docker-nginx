@@ -22,8 +22,8 @@ Project Links:
 
 ## How is this container image that small?
 - based on `FROM scratch`
-- reducing container image layers to an absolute minimum by making useage of a multistaged `Dockerfile`
-- executable binaries are compressed using [upx](https://upx.github.io/)
+- reducing container image layers to an absolute minimum by making usage of a multistaged `Dockerfile`
+- large executable binaries are compressed using [upx](https://upx.github.io/)
 
 ## How to use this image
 __*Note: (unencrypted) HTTP is discurraged by default!*__
@@ -81,15 +81,15 @@ server {
 Remember to place the required ssl certificates into `./ssl` and add the website content to `./webroot`.
 
 ```sh
-docker run --name nginx -v "$(pwd)/sites/domain.tld.conf:/config/sites/domain.tld.conf:ro,z" -v "$(pwd)/ssl:/config/ssl/domain.tld:ro,z" -v "$(pwd)/webroot:/var/www/domain.tld:ro,z" -p 443:2443 compilenix/nginx
+docker run -v "$(pwd)/sites/domain.tld.conf:/config/sites/domain.tld.conf:ro,z" -v "$(pwd)/ssl:/config/ssl/domain.tld:ro,z" -v "$(pwd)/webroot:/var/www/domain.tld:ro,z" -p 80:2080 -p 443:2443 compilenix/nginx
 ```
 
 ### Using environment variables in nginx configuration
-Environment variables can be used in any nginx config file, regardless if they are mapped as a volume, are part of the original container image or copied into a custom container image which is based on this one.
+Environment variables can be used in any nginx config file, regardless if they are mapped as a volume, are part of the original container image or copied into custom container images which are based on this one.
 
-Environment variable substitution / templating is performed by [./src/docker-entrypoint.d/90-envsubst-on-templates.sh](90-envsubst-on-templates.sh) on each container start.
+Environment variable substitution / templating is performed by [900-envsubst-on-templates.sh](./src/docker-entrypoint.d/900-envsubst-on-templates.sh) on each container start.
 
-Mapped nginx config files directly to `/etc/nginx` (instead of `/config`) will be overritten / process by this process.
+__Mapped nginx config files directly to `/etc/nginx` (instead of `/config`) will be overritten / process by this process.__
 
 Only config files whose name ends with a certian suffix will be processed.
 
@@ -119,8 +119,6 @@ services:
 
 Also have a look at the coresponding default nginx http server config: [default.conf](./config/sites/default.conf).
 
-Note: Any present environment variable can be used at any part of any nginx config file.
-
 ### Running nginx as root user
 Create a custom container image based on this one.
 
@@ -141,7 +139,9 @@ js_path '/etc/nginx/njs/';
 js_import http.js;
 ```
 
-See also: https://nginx.org/en/docs/njs/reference.html
+See also:
+- [./njs/](./njs/)
+- https://nginx.org/en/docs/njs/reference.html
 
 Docker Compose Example:
 ```yml
@@ -173,7 +173,7 @@ This can be acomplished by creating and starting a new container instance with a
 Example using `docker run`:
 ```sh
 source .env
-docker run --rm -it -e TZ=$TZ -v "$(pwd)/webroot:/var/www/html:ro,z" -v "/some/nginx/config:/config:ro,z" compilenix/nginx:${NGINX_VERSION} /usr/bin/nginx -t
+docker run --rm -it -e TZ=$TZ -v "$(pwd)/webroot:/var/www/html:ro,z" -v "/some/nginx/config:/config:ro,z" compilenix/nginx /usr/bin/nginx -t
 ```
 
 ### Set a custom timezone
@@ -235,13 +235,13 @@ NGINX_LOG_FORMAT_NAME="json"
 log_format main '[$time_iso8601] status:$status domain:$host port:$server_port request_time:$request_time upstream_response_time:$upstream_response_time request_length:$request_length bytes_sent:$body_bytes_sent client_ip:$remote_addr request:"$request" referer:"$http_referer" user_agent:"$http_user_agent"';
 ```
 
-#### Example Log Message
+#### Example "main" Log Message
 ```
 [2022-09-27T20:50:58+02:00] status:200 domain:127.0.0.1 port:2443 request_time:0.000 upstream_response_time:- request_length:26 bytes_sent:25 client_ip:172.18.0.1 request:"GET /test.html HTTP/2.0" referer:"-" user_agent:"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
 ```
 
 #### GROK Pattern
-`upstream_response_time` is omitted when value is equal to `-`.
+`upstream_response_time` is omitted if the value is equal to `-`.
 
 ```
 \[%{TIMESTAMP_ISO8601:time_local:date}\] status:%{INT:status:short} domain:%{HOSTNAME:domain:text} port:%{INT:port:integer} request_time:%{NUMBER:request_time:float} upstream_response_time:(-|%{NUMBER:upstream_response_time:float}) request_length:%{INT:request_length:integer} bytes_sent:%{INT:bytes_sent:integer} client_ip:%{IP:client_ip:ip} request:\"%{WORD:method:text} %{DATA:request:text} %{DATA:http_protocol_version:text}\" referer:\"%{DATA:referer:text}\" user_agent:\"%{DATA:user_agent:text}\"
@@ -268,7 +268,7 @@ log_format main '[$time_iso8601] status:$status domain:$host port:$server_port r
 
 ### json
 
-This contains the following properties:
+This log format contains the following properties:
 - body_bytes_sent
 - brotli_ratio
 - bytes_sent
@@ -366,7 +366,7 @@ This contains the following properties:
 
 `binary_remote_addr` is intentionally not incuded beause the nginx built-in json escape system does weired stuff.
 
-There a couple more values you could add, see following section and `./src/etc/nginx/nginx.conf` line 23.
+There are a couple more values you could add, see here [./src/etc/nginx/nginx.conf#L23](./src/etc/nginx/nginx.conf).
 
 #### sent_http_name
 Include a arbitrary response header field; the last part of a variable name is the field name converted to lower case with dashes replaced by underscores.
@@ -413,7 +413,7 @@ Keeps time the request spent in the upstream queue (1.13.9); the time is kept in
 
 Example: `upstream_queue_time`
 
-#### Example Log Message
+#### Example "json" Log Message
 ```json
 {
   "body_bytes_sent": "25",
@@ -522,7 +522,7 @@ Example: `upstream_queue_time`
 
 ## Building
 ```sh
-git clone https://git.compilenix.org/compilenix/docker-nginx
+git clone https://git.compilenix.org/CompileNix/docker-nginx
 cd docker-nginx
 cp example.env .env
 $EDITOR .env
@@ -545,6 +545,8 @@ curl -vk 'https://127.0.0.1:42662/'
 # Using: HTTP/2.0 | TLSv1.3 | TLS_AES_256_GCM_SHA384
 curl -vk 'https://127.0.0.1:42662/test.html'
 # <h1>It works!</h1>
+curl -vk 'https://127.0.0.1:42662/njs'
+# Hello world!
 ```
 
 ## Making Updates & Changes
