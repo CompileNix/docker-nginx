@@ -1,5 +1,5 @@
 ## What is this?
-A very smol (~ 5MB) [Nginx](https://nginx.org/en/CHANGES) container image with:
+A smol (~ 6MB) [Nginx](https://nginx.org/en/CHANGES) container image with:
 - all optional first-party modules built-in except the following:
   - http_perl: It's large and I don't need it
   - http_xslt: Can't be build into statically linked binary
@@ -10,16 +10,79 @@ A very smol (~ 5MB) [Nginx](https://nginx.org/en/CHANGES) container image with:
 - [OpenSSL 3](https://github.com/openssl/openssl)
 - [envsubst](https://git.compilenix.org/CompileNix/renvsubst) nginx config processing on container startup
 
-Nginx binary is built from source (using alpine) into a `FROM scratch` container image. It's **production-ready**!
+Nginx binary is built from source (using alpine) into a `FROM scratch` container image.
+
+Project Links:
+- Git Repository: https://git.compilenix.org/CompileNix/docker-nginx
+- Issues: https://git.compilenix.org/CompileNix/docker-nginx/-/issues
+- Git Mirror 1: https://github.com/CompileNix/docker-nginx
+- Git Mirror 2: https://gitlab.com/CompileNix/docker-nginx
+- Container Image Registry: tbd.
+
 
 ## How is this container image that small?
 - based on `FROM scratch`
-- reducing container image layers to an absolute minimum by efficent use of a multistaged `Dockerfile`
-- nginx (and all it's modules) are build into a single static binary
-- all executable binaries are compressed using [upx](https://upx.github.io/)
+- reducing container image layers to an absolute minimum by making useage of a multistaged `Dockerfile`
+- executable binaries are compressed using [upx](https://upx.github.io/)
 
 ## How to use this image
 __*Note: (unencrypted) HTTP is discurraged by default!*__
+
+Nginx is running as a non-root user by default:
+- username: `nginx`
+- user id: 1000
+- groupname: `nginx`
+- group id: 1000
+
+HTTP: There is a default http server config section that responses to all plain HTTP requests with an 400 status code, listening on the container port `2080`.
+
+HTTPS: This image already contains a self-signed ssl certificate and is used by a default http server config section listening on the container port `2443`.
+
+Also have a look at the following sites to view some additonal examples and guidance on how to use nginx:
+- https://nginx.org/en/docs/
+- https://hub.docker.com/_/nginx
+
+### Hosting some simple static content on port 443
+```sh
+docker run --name nginx -v "/some/content:/var/www/html:ro,z" -p 443:2443 compilenix/nginx
+```
+
+### Provide Your Own Nginx Configuration Files
+You can either add or replace indivitual nginx config files to the [existing default configs](./config) by mapping them as a volume to `/config` into the container. For example would a mapped config file to `/config/nginx.conf` replace the default `nginx.conf` that is present in the container image.
+
+For information on the syntax of nginx configuration files, see the [official documentation](http://nginx.org/en/docs/) and the [Beginner's Guide](http://nginx.org/en/docs/beginners_guide.html#conf_structure).
+
+#### Add A New HTTP Server Config Example
+`sites/domain.tld.conf`:
+```nginx
+# vim: sw=2 et
+
+server {
+  listen 2080;
+  server_name domain.tld www.domain.tld;
+  location / {
+    return 307 https://www.domain.tld$request_uri;
+  }
+}
+
+server {
+  listen 2443 ssl http2;
+  server_name domain.tld www.domain.tld;
+  root '/var/www/domain.tld';
+  include 'cfg/header_referrer_policy.conf';
+  ssl_certificate 'ssl/domain.tld/fullchain.pem';
+  ssl_certificate_key 'ssl/domain.tld/privkey.pem';
+  location / {
+    allow all;
+  }
+}
+```
+
+Remember to place the required ssl certificates into `./ssl` and add the website content to `./webroot`.
+
+```sh
+docker run --name nginx -v "$(pwd)/sites/domain.tld.conf:/config/sites/domain.tld.conf:ro,z" -v "$(pwd)/ssl:/config/ssl/domain.tld:ro,z" -v "$(pwd)/webroot:/var/www/domain.tld:ro,z" -p 443:2443 compilenix/nginx
+```
 
 ### Using environment variables in nginx configuration
 Environment variables can be used in any nginx config file, regardless if they are mapped as a volume, are part of the original container image or copied into a custom container image which is based on this one.
@@ -57,6 +120,14 @@ services:
 Also have a look at the coresponding default nginx http server config: [default.conf](./config/sites/default.conf).
 
 Note: Any present environment variable can be used at any part of any nginx config file.
+
+### Running nginx as root user
+Create a custom container image based on this one.
+
+```Dockerfile
+FROM compilenix/nginx
+USER root
+```
 
 ### NJS
 1. Override `njs.conf` via `/config/njs.conf`.
@@ -96,6 +167,57 @@ curl -vk 'https://127.0.0.1:42662/njs'
 # Hello world!
 ```
 
+### Nginx config test
+This can be acomplished by creating and starting a new container instance with all parameters, enviroment variables and mapped volumes as usual and then finally by overriding the start command.
+
+Example using `docker run`:
+```sh
+source .env
+docker run --rm -it -e TZ=$TZ -v "$(pwd)/webroot:/var/www/html:ro,z" -v "/some/nginx/config:/config:ro,z" compilenix/nginx:${NGINX_VERSION} /usr/bin/nginx -t
+```
+
+### Set a custom timezone
+Simply set the enviroment variable `TZ` to the desired timezone.
+
+Example:
+```sh
+TZ="Europe/Berlin"
+```
+
+Default value: `UTC`
+
+### Set a custom amount of nginx worker processes
+Set the enviroment variable `NGINX_WORKER_PROCESSES` to the desired amount.
+
+Example:
+```sh
+NGINX_WORKER_PROCESSES=4
+```
+
+Default value: `2`
+
+### Set a custom nginx http server response header value
+Set the enviroment variable `NGINX_SERVER_HEADER` to the desired value.
+
+Example:
+```sh
+NGINX_SERVER_HEADER="nginx"
+```
+
+Default value: (empty string)
+
+### Change the DNS resolver nginx will use
+Set the enviroment variable `DNS_RESOLVER` to the desired ip address.
+
+This dns server wll be used by nginx to perform dns lookups for dns based upstream targets and OCSP stapling queries.
+
+Example:
+```sh
+DNS_RESOLVER="8.8.8.8"
+```
+
+Default value: `1.1.1.1`
+
 ## Build Requirements
 - internet connection (HTTP/S)
 - docker
@@ -117,12 +239,6 @@ $EDITOR .env
 docker-compose up
 ```
 
-## Run Nginx Using Docker
-```sh
-source .env
-docker run --rm -it -v $(pwd)/webroot:/var/www/html:ro,z -p 0.0.0.0:42661:2080 -p 0.0.0.0:42662:2443 -e DNS_RESOLVER=$DNS_RESOLVER -e NGINX_WORKER_PROCESSES=$NGINX_WORKER_PROCESSES -e TZ=$TZ compilenix/nginx:${NGINX_VERSION}
-```
-
 ## Test
 Firefox 103 and up should work.
 
@@ -134,8 +250,6 @@ curl -vk 'https://127.0.0.1:42662/'
 # Using: HTTP/2.0 | TLSv1.3 | TLS_AES_256_GCM_SHA384
 curl -vk 'https://127.0.0.1:42662/test.html'
 # <h1>It works!</h1>
-curl -vk 'https://127.0.0.1:42662/njs'
-# Hello world!
 ```
 
 ## Making Updates & Changes
@@ -147,6 +261,7 @@ If you want to change any versions used to build the container image take a look
 ├── bin/
 │   ├── basename -> busybox*
 │   ├── busybox*
+│   ├── cat -> busybox*
 │   ├── cp -> busybox*
 │   ├── cut -> busybox*
 │   ├── dirname -> busybox*
@@ -158,26 +273,27 @@ If you want to change any versions used to build the container image take a look
 │   ├── printf -> busybox*
 │   ├── rm -> busybox*
 │   ├── sh -> busybox*
-│   └── sort -> busybox*
+│   ├── sort -> busybox*
+│   └── stat -> busybox*
 ├── docker-entrypoint.d/
-│   └── 90-envsubst-on-templates.sh*
+│   ├── 100-update-default-conf.sh*
+│   ├── 800-replace-config-from-volume.sh*
+│   └── 900-envsubst-on-templates.sh*
 ├── etc/
 │   ├── nginx/
 │   │   ├── cfg/
 │   │   │   └── header_referrer_policy.conf
-│   │   ├── html/
-│   │   │   ├── 50x.html
-│   │   │   └── index.html
 │   │   ├── nginx/
 │   │   │   └── Readme.txt
 │   │   ├── njs/
-│   │   │   └── http.js
 │   │   ├── sites/
-│   │   │   ├── 000_default.conf
-│   │   │   └── localhost.conf
+│   │   │   ├── default.conf
+│   │   │   ├── localhost.conf
+│   │   │   └── zzz999_default_server_name.conf
 │   │   ├── ssl/
 │   │   │   ├── cert.pem
 │   │   │   ├── dhparam.pem
+│   │   │   ├── fullchain.pem
 │   │   │   └── privkey.pem
 │   │   ├── debug_connection.conf
 │   │   ├── fastcgi.conf
@@ -187,6 +303,7 @@ If you want to change any versions used to build the container image take a look
 │   │   ├── mime.types
 │   │   ├── modules -> /usr/lib/nginx/modules
 │   │   ├── nginx.conf
+│   │   ├── njs.conf
 │   │   ├── scgi_params
 │   │   ├── uwsgi_params
 │   │   └── win-utf
@@ -229,13 +346,20 @@ If you want to change any versions used to build the container image take a look
 │       └── html/
 └── docker-entrypoint.sh*
 
-75 directories, 1243 files
+75 directories, 1248 files
 ```
 
 ## Nginx Access Log Format
 There are two built-in default log formats configured:
 - `main` (default)
 - `json`
+
+Switch the default nginx log format to the json log format by setting the enviroment variable `NGINX_LOG_FORMAT_NAME` to `json`.
+
+Example:
+```sh
+NGINX_LOG_FORMAT_NAME="json"
+```
 
 ### main
 ```
