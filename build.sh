@@ -32,6 +32,9 @@ if [ ! -f "config/ssl/cert.pem" ]; then
   openssl x509 -in "config/ssl/cert_temp.pem" -text >"config/ssl/cert.pem"
   rm -v "config/ssl/cert_temp.pem"
 fi
+if [ ! -f "config/ssl/fullchain.pem" ]; then
+  cp -v "config/ssl/cert.pem" "config/ssl/fullchain.pem"
+fi
 
 docker-compose build
 
