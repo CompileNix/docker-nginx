@@ -1,0 +1,13 @@
+diff --git a/src/http/ngx_http_special_response.c b/src/http/ngx_http_special_response.c
+index eaf42e39..0464cacf 100644
+--- a/src/http/ngx_http_special_response.c
++++ b/src/http/ngx_http_special_response.c
+@@ -33,7 +33,7 @@ static u_char ngx_http_error_build_tail[] =
+ 
+ 
+ static u_char ngx_http_error_tail[] =
+-"<hr><center>nginx</center>" CRLF
++"<hr>" CRLF
+ "</body>" CRLF
+ "</html>" CRLF
+ ;

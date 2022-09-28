@@ -59,6 +59,8 @@ RUN \
 
 WORKDIR /usr/src/
 
+COPY ./patches /patches
+
 RUN \
   echo "Cloning nginx $NGINX_VERSION (rev $NGINX_COMMIT from 'default' branch) ..." \
   && hg clone -b default --rev $NGINX_COMMIT https://hg.nginx.org/nginx /usr/src/nginx-$NGINX_VERSION
@@ -155,6 +157,11 @@ ARG CONFIG="\
   --with-threads \
   --with-zlib=/usr/src/zlib-$ZLIB_VERSION \
   "
+
+RUN \
+  echo "Apply nginx source patches ..." \
+  && cd /usr/src/nginx-$NGINX_VERSION \
+  && echo "apply ngx_http_error_tail.patch" && cat /patches/ngx_http_error_tail.patch && git apply /patches/ngx_http_error_tail.patch
 
 RUN \
   echo "Building nginx (v$NGINX_VERSION)..." \
