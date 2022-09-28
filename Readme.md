@@ -19,6 +19,9 @@ Project Links:
 - Git Mirror 2: https://gitlab.com/CompileNix/docker-nginx
 - Container Image Registry: tbd.
 
+## Supported Container Image Tags
+- 1.23.1, 1.23, 1, latest, mainline
+- 1.22.0, 1.22, stable
 
 ## How is this container image that small?
 - based on `FROM scratch`
