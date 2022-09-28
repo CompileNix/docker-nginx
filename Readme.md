@@ -218,137 +218,6 @@ DNS_RESOLVER="8.8.8.8"
 
 Default value: `1.1.1.1`
 
-## Build Requirements
-- internet connection (HTTP/S)
-- docker
-- openssl
-- (optional) docker-compose
-- (optional) git
-
-## Building
-```sh
-git clone https://git.compilenix.org/compilenix/docker-nginx
-cd docker-nginx
-cp example.env .env
-$EDITOR .env
-./build.sh
-```
-
-## Run Nginx Using Docker-Compose
-```sh
-docker-compose up
-```
-
-## Test
-Firefox 103 and up should work.
-
-```sh
-curl -vk 'http://127.0.0.1:42661/'
-# Retry on https port
-curl -vk 'https://127.0.0.1:42662/'
-# It works!
-# Using: HTTP/2.0 | TLSv1.3 | TLS_AES_256_GCM_SHA384
-curl -vk 'https://127.0.0.1:42662/test.html'
-# <h1>It works!</h1>
-```
-
-## Making Updates & Changes
-If you want to change any versions used to build the container image take a look into `.env`.
-
-### Container Image Structure
-```
-./
-├── bin/
-│   ├── basename -> busybox*
-│   ├── busybox*
-│   ├── cat -> busybox*
-│   ├── cp -> busybox*
-│   ├── cut -> busybox*
-│   ├── dirname -> busybox*
-│   ├── echo -> busybox*
-│   ├── env -> busybox*
-│   ├── find -> busybox*
-│   ├── ls -> busybox*
-│   ├── mkdir -> busybox*
-│   ├── printf -> busybox*
-│   ├── rm -> busybox*
-│   ├── sh -> busybox*
-│   ├── sort -> busybox*
-│   └── stat -> busybox*
-├── docker-entrypoint.d/
-│   ├── 100-update-default-conf.sh*
-│   ├── 800-replace-config-from-volume.sh*
-│   └── 900-envsubst-on-templates.sh*
-├── etc/
-│   ├── nginx/
-│   │   ├── cfg/
-│   │   │   └── header_referrer_policy.conf
-│   │   ├── nginx/
-│   │   │   └── Readme.txt
-│   │   ├── njs/
-│   │   ├── sites/
-│   │   │   ├── default.conf
-│   │   │   ├── localhost.conf
-│   │   │   └── zzz999_default_server_name.conf
-│   │   ├── ssl/
-│   │   │   ├── cert.pem
-│   │   │   ├── dhparam.pem
-│   │   │   ├── fullchain.pem
-│   │   │   └── privkey.pem
-│   │   ├── debug_connection.conf
-│   │   ├── fastcgi.conf
-│   │   ├── fastcgi_params
-│   │   ├── koi-utf
-│   │   ├── koi-win
-│   │   ├── mime.types
-│   │   ├── modules -> /usr/lib/nginx/modules
-│   │   ├── nginx.conf
-│   │   ├── njs.conf
-│   │   ├── scgi_params
-│   │   ├── uwsgi_params
-│   │   └── win-utf
-│   ├── ssl/
-│   │   └── certs/
-│   │       └── ca-certificates.crt
-│   ├── group
-│   ├── passwd
-│   └── shadow
-├── tmp/
-├── usr/
-│   ├── bin/
-│   │   ├── envsubst*
-│   │   ├── nginx*
-│   │   └── posixtz*
-│   ├── lib/
-│   │   └── nginx/
-│   │       └── modules/
-│   ├── sbin/
-│   │   ├── zdump*
-│   │   └── zic*
-│   └── share/
-│       └── zoneinfo/
-│           └── many files and stuff, Yep.
-├── var/
-│   ├── cache/
-│   │   └── nginx/
-│   │       ├── client_temp/
-│   │       ├── fastcgi_temp/
-│   │       ├── proxy_temp/
-│   │       ├── scgi_temp/
-│   │       └── uwsgi_temp/
-│   ├── log/
-│   │   └── nginx/
-│   │       ├── access.log -> /dev/stdout|
-│   │       └── error.log -> /dev/stdout|
-│   ├── run/
-│   │   └── nginx/
-│   └── www/
-│       └── html/
-└── docker-entrypoint.sh*
-
-75 directories, 1248 files
-```
-
 ## Nginx Access Log Format
 There are two built-in default log formats configured:
 - `main` (default)
@@ -642,5 +511,136 @@ Example: `upstream_queue_time`
   "upstream_status": "",
   "uri": "/test.html"
 }
+```
+
+## Build Requirements
+- internet connection (HTTP/S)
+- docker
+- openssl
+- (optional) docker-compose
+- (optional) git
+
+## Building
+```sh
+git clone https://git.compilenix.org/compilenix/docker-nginx
+cd docker-nginx
+cp example.env .env
+$EDITOR .env
+./build.sh
+```
+
+## Run Nginx Using Docker-Compose
+```sh
+docker-compose up
+```
+
+## Test
+Firefox 103 and up should work.
+
+```sh
+curl -vk 'http://127.0.0.1:42661/'
+# Retry on https port
+curl -vk 'https://127.0.0.1:42662/'
+# It works!
+# Using: HTTP/2.0 | TLSv1.3 | TLS_AES_256_GCM_SHA384
+curl -vk 'https://127.0.0.1:42662/test.html'
+# <h1>It works!</h1>
+```
+
+## Making Updates & Changes
+If you want to change any versions used to build the container image take a look into `.env`.
+
+### Container Image Structure
+```
+./
+├── bin/
+│   ├── basename -> busybox*
+│   ├── busybox*
+│   ├── cat -> busybox*
+│   ├── cp -> busybox*
+│   ├── cut -> busybox*
+│   ├── dirname -> busybox*
+│   ├── echo -> busybox*
+│   ├── env -> busybox*
+│   ├── find -> busybox*
+│   ├── ls -> busybox*
+│   ├── mkdir -> busybox*
+│   ├── printf -> busybox*
+│   ├── rm -> busybox*
+│   ├── sh -> busybox*
+│   ├── sort -> busybox*
+│   └── stat -> busybox*
+├── docker-entrypoint.d/
+│   ├── 100-update-default-conf.sh*
+│   ├── 800-replace-config-from-volume.sh*
+│   └── 900-envsubst-on-templates.sh*
+├── etc/
+│   ├── nginx/
+│   │   ├── cfg/
+│   │   │   └── header_referrer_policy.conf
+│   │   ├── nginx/
+│   │   │   └── Readme.txt
+│   │   ├── njs/
+│   │   ├── sites/
+│   │   │   ├── default.conf
+│   │   │   ├── localhost.conf
+│   │   │   └── zzz999_default_server_name.conf
+│   │   ├── ssl/
+│   │   │   ├── cert.pem
+│   │   │   ├── dhparam.pem
+│   │   │   ├── fullchain.pem
+│   │   │   └── privkey.pem
+│   │   ├── debug_connection.conf
+│   │   ├── fastcgi.conf
+│   │   ├── fastcgi_params
+│   │   ├── koi-utf
+│   │   ├── koi-win
+│   │   ├── mime.types
+│   │   ├── modules -> /usr/lib/nginx/modules
+│   │   ├── nginx.conf
+│   │   ├── njs.conf
+│   │   ├── scgi_params
+│   │   ├── uwsgi_params
+│   │   └── win-utf
+│   ├── ssl/
+│   │   └── certs/
+│   │       └── ca-certificates.crt
+│   ├── group
+│   ├── passwd
+│   └── shadow
+├── tmp/
+├── usr/
+│   ├── bin/
+│   │   ├── envsubst*
+│   │   ├── nginx*
+│   │   └── posixtz*
+│   ├── lib/
+│   │   └── nginx/
+│   │       └── modules/
+│   ├── sbin/
+│   │   ├── zdump*
+│   │   └── zic*
+│   └── share/
+│       └── zoneinfo/
+│           └── many files and stuff, Yep.
+├── var/
+│   ├── cache/
+│   │   └── nginx/
+│   │       ├── client_temp/
+│   │       ├── fastcgi_temp/
+│   │       ├── proxy_temp/
+│   │       ├── scgi_temp/
+│   │       └── uwsgi_temp/
+│   ├── log/
+│   │   └── nginx/
+│   │       ├── access.log -> /dev/stdout|
+│   │       └── error.log -> /dev/stdout|
+│   ├── run/
+│   │   └── nginx/
+│   └── www/
+│       └── html/
+└── docker-entrypoint.sh*
+
+75 directories, 1248 files
 ```
 
