@@ -16,7 +16,7 @@ if [[ "$1" = "/usr/bin/nginx" ]]; then
     echo >&3 "$ME: /docker-entrypoint.d/ is not empty, will attempt to perform configuration"
 
     echo >&3 "$ME: Looking for shell scripts in /docker-entrypoint.d/"
-    find "/docker-entrypoint.d/" -follow -type f -print | sort --version-sort | while read -r f; do
+    find "/docker-entrypoint.d/" -follow -type f -print | sort -V | while read -r f; do
       case "$f" in
         *.sh)
           if [ -x "$f" ]; then
