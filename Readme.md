@@ -13,11 +13,11 @@ A smol (~ 6MB) [Nginx](https://nginx.org/en/CHANGES) container image with:
 Nginx binary is built from source (using alpine) into a `FROM scratch` container image.
 
 Project Links:
+- Container Image Registry: https://hub.docker.com/r/compilenix/nginx
 - Git Repository: https://git.compilenix.org/CompileNix/docker-nginx
 - Issues: https://git.compilenix.org/CompileNix/docker-nginx/-/issues
 - Git Mirror 1: https://github.com/CompileNix/docker-nginx
 - Git Mirror 2: https://gitlab.com/CompileNix/docker-nginx
-- Container Image Registry: tbd.
 
 ## Supported Container Image Tags
 - 1.23.1, 1.23, 1, latest, mainline
