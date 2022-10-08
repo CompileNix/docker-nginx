@@ -4,41 +4,53 @@
 set -eu
 
 ME=$(basename $0)
-
-if [ -z "${NGINX_ENTRYPOINT_QUIET_LOGS:-}" ]; then
-  exec 3>&1
+if [ -t 1 ]; then
+  # STDOUT is attached to TTY
+  terminal_bold_green="\033[0;32m"
+  terminal_reset="\033[0m"
 else
-  exec 3>/dev/null
+  terminal_bold_green=""
+  terminal_reset=""
+fi
+if [ -z "${ENTRYPOINT_QUIET:-}" ]; then
+  VERBOSE_FLAG="-v"
+  function prepend() { while read line; do echo -e "${terminal_bold_green}${ME}:${terminal_reset} ${line}"; done; }
+else
+  VERBOSE_FLAG=""
+  function prepend() { echo -n; }
 fi
 
 if [[ "$1" = "/usr/bin/nginx" ]]; then
   if find "/docker-entrypoint.d/" -mindepth 1 -maxdepth 1 -type f -print -quit 2>/dev/null | read v; then
-    echo >&3 "$ME: /docker-entrypoint.d/ is not empty, will attempt to perform configuration"
+    echo "/docker-entrypoint.d/ is not empty, will attempt to perform configuration" 2>&1 | prepend
 
-    echo >&3 "$ME: Looking for shell scripts in /docker-entrypoint.d/"
-    find "/docker-entrypoint.d/" -follow -type f -print | sort -V | while read -r f; do
-      case "$f" in
+    echo "Looking for shell scripts in /docker-entrypoint.d/" 2>&1 | prepend
+    find "/docker-entrypoint.d/" -follow -type f -print | sort -V | while read -r entrypoint_script; do
+      case "$entrypoint_script" in
         *.sh)
-          if [ -x "$f" ]; then
-            echo >&3 "$ME: Launching $f";
-            "$f"
+          if [ -x "$entrypoint_script" ]; then
+            echo "Launching $entrypoint_script" 2>&1 | prepend
+            "$entrypoint_script"
           else
             # warn on shell scripts without exec bit
-            echo >&3 "$ME: Ignoring $f, not executable";
+            echo "Ignoring $entrypoint_script, not executable" 2>&1 | prepend
           fi
           ;;
-        *) echo >&3 "$ME: Ignoring $f";;
+        *)
+          echo "Ignoring $entrypoint_script" 2>&1 | prepend
+          ;;
       esac
     done
 
-    echo >&3 "$ME: Configuration complete; ready for start up"
+    echo "Configuration complete; ready for start up" 2>&1 | prepend
   else
-    echo >&3 "$ME: No files found in /docker-entrypoint.d/, skipping configuration"
+    echo "No files found in /docker-entrypoint.d/, skipping configuration" 2>&1 | prepend
   fi
 else
-  echo >&3 "$ME: Start command override detected, skipping execution of /docker-entrypoint.d/*.sh"
+  echo "Start command override detected, skipping execution of /docker-entrypoint.d/*.sh" 2>&1 | prepend
 fi
 
-echo >&3 "$ME: exec: $@"
+echo "exec: $@" 2>&1 | prepend
+echo
 exec "$@"
 

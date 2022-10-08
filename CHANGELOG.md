@@ -41,7 +41,7 @@ Build log: [1.23.1-a63d0a70afea-2022-10-08.1724.log](https://compilenix.org/stat
   this is useful if you dont want to congest the cpu of your building system
 - `sites/localhost.conf` \
   override default content type for `GET /health` requests
-- add runtime env support of `NGINX_ENTRYPOINT_QUIET_LOGS` to docker entrypoint scripts
+- add runtime env support of `ENTRYPOINT_QUIET` to docker entrypoint scripts
 
 ### Nginx Build Info
 ```
