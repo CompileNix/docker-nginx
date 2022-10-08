@@ -20,6 +20,7 @@ RUN \
 
 FROM alpine:${ALPINE_VERSION} AS build
 
+ARG BUILD_THROTTLE
 ARG CFLAGS_ADD
 ARG HEADERS_MORE_VERSION
 ARG NGINX_COMMIT
@@ -52,18 +53,19 @@ RUN \
     make \
     mercurial \
     musl-dev \
-    pcre2-dev \
     perl-dev \
-    upx \
-    zlib-dev
+    upx
 
 WORKDIR /usr/src/
-
-COPY ./patches /patches
 
 RUN \
   echo "Cloning nginx $NGINX_VERSION (rev $NGINX_COMMIT from 'default' branch) ..." \
   && hg clone -b default --rev $NGINX_COMMIT https://hg.nginx.org/nginx /usr/src/nginx-$NGINX_VERSION
+
+RUN \
+  echo "Cloning njs-nginx-module (rev $NJS_COMMIT) ..." \
+  && cd /usr/src \
+  && hg clone --rev $NJS_COMMIT http://hg.nginx.org/njs /usr/src/njs-nginx-module-$NJS_COMMIT
 
 RUN \
   echo "Cloning brotli (rev $NGX_BROTLI_COMMIT) ..." \
@@ -82,24 +84,19 @@ RUN \
   && tar -xf headers-more-nginx-module.tar.gz
 
 RUN \
-  echo "Downloading njs-nginx-module (rev $NJS_COMMIT) ..." \
-  && cd /usr/src \
-  && hg clone --rev $NJS_COMMIT http://hg.nginx.org/njs /usr/src/njs-nginx-module-$NJS_COMMIT
-
-RUN \
   echo "Downloading zlib (version $ZLIB_VERSION) ..." \
   && cd /usr/src \
   && wget https://zlib.net/fossils/zlib-${ZLIB_VERSION}.tar.gz -O zlib-${ZLIB_VERSION}.tar.gz \
   && tar -xf zlib-${ZLIB_VERSION}.tar.gz
 
 RUN \
-  echo "Cloning OpenSSL (version $OPENSSL_VERSION) ..." \
+  echo "Downloading OpenSSL (version $OPENSSL_VERSION) ..." \
   && cd /usr/src \
   && wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz -O openssl-${OPENSSL_VERSION}.tar.gz \
   && tar -xf openssl-${OPENSSL_VERSION}.tar.gz
 
 RUN \
-  echo "Cloning PCRE (version $PCRE_VERSION) ..." \
+  echo "Downloading PCRE (version $PCRE_VERSION) ..." \
   && cd /usr/src \
   && wget https://github.com/PCRE2Project/pcre2/releases/download/pcre2-${PCRE_VERSION}/pcre2-${PCRE_VERSION}.tar.gz -O pcre2-${PCRE_VERSION}.tar.gz \
   && tar -xf pcre2-${PCRE_VERSION}.tar.gz
@@ -158,24 +155,33 @@ ARG CONFIG="\
   --with-zlib=/usr/src/zlib-$ZLIB_VERSION \
   "
 
-RUN \
-  echo "Apply nginx source patches ..." \
-  && cd /usr/src/nginx-$NGINX_VERSION \
-  && echo "apply ngx_http_error_tail.patch" && cat /patches/ngx_http_error_tail.patch && git apply /patches/ngx_http_error_tail.patch
+COPY ./patches /patches
 
 RUN \
-  echo "Building nginx (v$NGINX_VERSION)..." \
+  echo "Apply nginx patches ..." \
+  && cd /usr/src/nginx-$NGINX_VERSION \
+  && echo "apply ngx_http_error_tail.patch" && cat /patches/nginx/ngx_http_error_tail.patch && git apply /patches/nginx/ngx_http_error_tail.patch
+
+RUN \
+  echo "Apply zlib patches ..." \
+  && cd /usr/src/zlib-$ZLIB_VERSION \
+  && echo "apply CVE-2022-37434.patch" && cat /patches/zlib/CVE-2022-37434.patch && git apply /patches/zlib/CVE-2022-37434.patch
+
+RUN \
+  echo "Building nginx ($NGINX_VERSION)..." \
   && MAKE_JOBS=$(nproc) \
   # Reduce jobs by 4 if there are more then 7 cores else set jobs to half of core count
   && if [ "$MAKE_JOBS" -ge 8 ]; then export MAKE_JOBS=$(( $MAKE_JOBS - 4 )); else export MAKE_JOBS=$(( $MAKE_JOBS / 2 )); fi \
   && if [ "$MAKE_JOBS" -le 1 ]; then export MAKE_JOBS=1; fi \
+  # Set jobs back to result of nproc if BUILD_THROTTLE is not requested
+  && if [[ "$BUILD_THROTTLE" != "y" ]]; then export MAKE_JOBS=$(nproc); fi \
   && echo "Make job count: $MAKE_JOBS" \
   && cd /usr/src/nginx-$NGINX_VERSION \
   && ./auto/configure $CONFIG \
     --with-cc-opt="$CFLAGS_ADD" \
-    --with-ld-opt="-static" \
     --with-openssl-opt="$CFLAGS_ADD" \
     --with-zlib-opt="$CFLAGS_ADD" \
+    --with-ld-opt="-static" \
   && make -j$MAKE_JOBS \
   && make install
 
@@ -189,9 +195,11 @@ FROM alpine:${ALPINE_VERSION} AS alpine-base
 
 RUN apk add --no-cache tree tzdata
 COPY src/etc/group src/etc/passwd src/etc/shadow /etc/
+COPY --from=build-renvsubst /envsubst /tmp/scratch/usr/bin/
+COPY --from=busybox /bin/busybox /tmp/scratch/bin/
+COPY --from=build /usr/bin/nginx /tmp/scratch/usr/bin/
 # COPY --from=build /usr/lib/nginx/modules/ /usr/lib/nginx/modules/
 COPY --from=build /etc/nginx /etc/nginx
-COPY --from=build-renvsubst /envsubst /usr/bin/
 COPY src/etc/nginx/ /etc/nginx
 COPY config/ /etc/nginx
 
@@ -230,7 +238,6 @@ RUN \
   && cp -v /etc/passwd /tmp/scratch/etc/ \
   && cp -v /etc/shadow /tmp/scratch/etc/ \
   && cp -v /etc/ssl/certs/ca-certificates.crt /tmp/scratch/etc/ssl/certs/ \
-  && cp -v /usr/bin/envsubst /tmp/scratch/usr/bin/ \
   && cp -v /usr/bin/posixtz /tmp/scratch/usr/bin/ \
   && cp -v /usr/sbin/zdump /tmp/scratch/usr/sbin/ \
   && cp -v /usr/sbin/zic /tmp/scratch/usr/sbin/ \
@@ -241,11 +248,8 @@ RUN \
   && chown -Rv nginx:nginx /tmp/scratch/var/log/nginx \
   && chown -Rv nginx:nginx /tmp/scratch/var/run/nginx \
   && chmod -v 1777 /tmp/scratch/tmp
-RUN apk add --no-cache tzdata
 COPY src/docker-entrypoint.sh /tmp/scratch/
 COPY src/docker-entrypoint.d/* /tmp/scratch/docker-entrypoint.d/
-COPY --from=busybox /bin/busybox /tmp/scratch/bin/
-COPY --from=build /usr/bin/nginx /tmp/scratch/usr/bin/
 # link only required cli tools
 RUN \
   cd /tmp/scratch/bin \

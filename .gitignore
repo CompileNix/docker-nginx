@@ -1,3 +1,4 @@
 /config/ssl/*.pem
 /.env
+/*.log
 

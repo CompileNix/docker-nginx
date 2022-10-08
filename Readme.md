@@ -20,7 +20,7 @@ Project Links:
 - Git Mirror 2: https://gitlab.com/CompileNix/docker-nginx
 
 ## Supported Container Image Tags
-- 1.23.1, 1.23, 1, latest, mainline
+- 1.23.1, 1.23, 1, mainline, latest
 - 1.22.0, 1.22, stable
 
 ## How is this container image that small?
@@ -176,7 +176,7 @@ This can be acomplished by creating and starting a new container instance with a
 Example using `docker run`:
 ```sh
 source .env
-docker run --rm -it -e TZ=$TZ -v "$(pwd)/webroot:/var/www/html:ro,z" -v "/some/nginx/config:/config:ro,z" compilenix/nginx /usr/bin/nginx -t
+docker run -it --rm --env-file .env -v "$(pwd)/webroot:/var/www/html:ro,z" -v "/some/nginx/config:/config:ro,z" compilenix/nginx /usr/bin/nginx -t
 ```
 
 ### Set a custom timezone
@@ -529,7 +529,7 @@ git clone https://git.compilenix.org/CompileNix/docker-nginx
 cd docker-nginx
 cp example.env .env
 $EDITOR .env
-./build.sh
+./build.sh 2>&1 | tee
 ```
 
 ## Run Nginx Using Docker-Compose
@@ -550,6 +550,8 @@ curl -vk 'https://127.0.0.1:42662/test.html'
 # <h1>It works!</h1>
 curl -vk 'https://127.0.0.1:42662/njs'
 # Hello world!
+curl -vk 'https://127.0.0.1:42662/health'
+# healthy
 ```
 
 ## Making Updates & Changes

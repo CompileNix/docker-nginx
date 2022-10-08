@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # vim: sw=2 et
 
 # https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
@@ -13,9 +13,14 @@
 # v: Print shell input lines as they are read.
 set -euv
 
+build_date_start_timestamp=$(date +%s)
+build_date_start_pretty=$(LC_TIME="en_US.UTF-8" TZ="GMT" date "+%a, %d %b %Y %T %Z")
+build_date_start=$(LC_TIME="en_US.UTF-8" TZ="UTC" date +"%Y-%m-%d.%H%M")
+
 if [ ! -f ".env" ]; then
   cp -v "example.env" ".env"
 fi
+source ".env"
 
 mkdir -pv "config/ssl"
 if [ ! -f "config/ssl/dhparam.pem" ]; then
@@ -36,5 +41,28 @@ if [ ! -f "config/ssl/fullchain.pem" ]; then
   cp -v "config/ssl/cert.pem" "config/ssl/fullchain.pem"
 fi
 
-docker-compose build
+docker-compose build --progress plain --no-cache
+
+# Run config test
+docker run -it --rm --env-file .env -v "$(pwd)/webroot:/var/www/html:ro,z" compilenix/nginx:${NGINX_VERSION} /usr/bin/nginx -t
+
+# Get build version info
+docker run -it --rm --env-file .env -e NGINX_ENTRYPOINT_QUIET_LOGS=y -v "$(pwd)/webroot:/var/www/html:ro,z" compilenix/nginx:${NGINX_VERSION} /usr/bin/nginx -V
+
+build_date_end_timestamp=$(date +%s)
+build_date_end_pretty=$(LC_TIME="en_US.UTF-8" TZ="GMT" date "+%a, %d %b %Y %T %Z")
+build_date_end=$(LC_TIME="en_US.UTF-8" TZ="UTC" date +"%Y-%m-%d.%H%M")
+build_logfile="${NGINX_VERSION}-${NGINX_COMMIT}-${build_date_end}.log"
+
+set +v
+
+echo "build started at: $build_date_start_pretty"
+echo "build started at: $build_date_start"
+echo "build ended at: $build_date_end_pretty"
+echo "build ended at: $build_date_end"
+echo "build took $(expr $build_date_end_timestamp - $build_date_start_timestamp) seconds"
+echo
+echo "upload build log command"
+echo "rsync build.log wire:/var/www/compilenix.org/static/build-logs/nginx/$build_logfile"
+echo "https://compilenix.org/static/build-logs/nginx/$build_logfile"
 

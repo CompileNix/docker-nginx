@@ -37,8 +37,8 @@ if [[ "$1" = "/usr/bin/nginx" ]]; then
   fi
 else
   echo >&3 "$ME: Start command override detected, skipping execution of /docker-entrypoint.d/*.sh"
-  echo >&3 "$ME: Custom command: $@"
 fi
 
+echo >&3 "$ME: exec: $@"
 exec "$@"
 
