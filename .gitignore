@@ -1,4 +1,5 @@
 /config/ssl/*.pem
 /.env
-/*.log
+/tmpl.env
+/log/
 

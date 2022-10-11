@@ -41,6 +41,7 @@ for template_file in $(find "/tmp/nginx-envsubst/" -follow -type f -name "*$suff
   echo $template_file | while read -r template; do
     echo "Running envsubst for /etc/nginx/${template_file#/tmp/nginx-envsubst/}" 2>&1 | prepend
     envsubst "$defined_envs" <"$template" >"/etc/nginx/${template_file#/tmp/nginx-envsubst/}" 2>&1 | prepend
+    # cat "/etc/nginx/${template_file#/tmp/nginx-envsubst/}"
   done
 done
 

@@ -20,6 +20,8 @@ else
   function prepend() { echo -n; }
 fi
 
+env | sort | prepend
+
 if [[ "$1" = "/usr/bin/nginx" ]]; then
   if find "/docker-entrypoint.d/" -mindepth 1 -maxdepth 1 -type f -print -quit 2>/dev/null | read v; then
     echo "/docker-entrypoint.d/ is not empty, will attempt to perform configuration" 2>&1 | prepend
