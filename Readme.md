@@ -527,9 +527,9 @@ Example: `upstream_queue_time`
 ```sh
 git clone https://git.compilenix.org/CompileNix/docker-nginx
 cd docker-nginx
-cp example.env .env
-$EDITOR .env
-./build.sh 2>&1 | tee
+cp example.tmpl.env tmpl.env
+$EDITOR tmpl.env
+./build-all.sh
 ```
 
 ## Run Nginx Using Docker-Compose
