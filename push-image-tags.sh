@@ -18,3 +18,5 @@ while read -r line; do
   docker image push "${image}:${tag}"
 done <<< $(docker image ls compilenix/nginx | grep -vE '<none>|IMAGE ID' | awk '{ print $1,$2 }' | sort --version-sort)
 
+echo "images were published to: https://hub.docker.com/r/compilenix/nginx/tags"
+

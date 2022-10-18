@@ -26,7 +26,7 @@ while read -r line; do
   sed -i "s/{{ NGINX_COMMIT }}/$nginx_commit/g" ".env"
   build_date_start_timestamp=$(LC_TIME="en_US.UTF-8" TZ="UTC" date +"%Y-%m-%d.%H%M")
   build_logfile="${nginx_version}-${nginx_commit}-${build_date_start_timestamp}.log"
-  ./build.sh 2>&1 | tee "$build_logfile"
+  ./build.sh 2>&1 | tee "log/$build_logfile"
   echo
   echo "Upload build log command" >>"log/build_logfile_names.log"
   echo "rsync \"log/$build_logfile\" wire:/var/www/compilenix.org/static/build-logs/nginx/$build_logfile" >>"log/build_logfile_names.log"

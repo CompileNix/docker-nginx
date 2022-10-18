@@ -33,6 +33,7 @@ if [ ! -f "config/ssl/cert.pem" ]; then
   openssl req -key "config/ssl/privkey.pem" -config <(cat "/etc/ssl/openssl.cnf" <(printf "[SAN]\nbasicConstraints=CA:FALSE\nkeyUsage=nonRepudiation,digitalSignature,keyEncipherment\nsubjectAltName=DNS:localhost, DNS:localhost.localdomain, IP:127.0.0.1, IP:::1")) -sha256 -subj "/C=/ST=/L=/O=/OU=/CN=localhost" -extensions SAN -nodes -x509 -days 3650 -out "config/ssl/cert_temp.pem"
   openssl x509 -in "config/ssl/cert_temp.pem" -text >"config/ssl/cert.pem"
   rm -v "config/ssl/cert_temp.pem"
+  openssl x509 -noout -text -in "config/ssl/cert.pem"
 fi
 if [ ! -f "config/ssl/fullchain.pem" ]; then
   cp -v "config/ssl/cert.pem" "config/ssl/fullchain.pem"

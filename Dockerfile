@@ -162,10 +162,10 @@ RUN \
   && cd /usr/src/nginx-$NGINX_VERSION \
   && echo "apply ngx_http_error_tail.patch" && cat /patches/nginx/ngx_http_error_tail.patch && git apply /patches/nginx/ngx_http_error_tail.patch
 
-RUN \
-  echo "Apply zlib patches ..." \
-  && cd /usr/src/zlib-$ZLIB_VERSION \
-  && echo "apply CVE-2022-37434.patch" && cat /patches/zlib/CVE-2022-37434.patch && git apply /patches/zlib/CVE-2022-37434.patch
+# RUN \
+#   echo "Apply zlib patches ..." \
+#   && cd /usr/src/zlib-$ZLIB_VERSION \
+#   && echo "apply CVE-2022-37434.patch" && cat /patches/zlib/CVE-2022-37434.patch && git apply /patches/zlib/CVE-2022-37434.patch
 
 RUN \
   echo "Building nginx ($NGINX_VERSION)..." \
