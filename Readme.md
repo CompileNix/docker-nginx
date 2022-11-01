@@ -20,8 +20,8 @@ Project Links:
 - Git Mirror 2: https://gitlab.com/CompileNix/docker-nginx
 
 ## Supported Container Image Tags
-- 1.23.1, 1.23, 1, mainline, latest
-- 1.22.0, 1.22, stable
+- 1.23.2, 1.23, 1, mainline, latest
+- 1.22.1, 1.22, stable
 
 ## How is this container image that small?
 - based on `FROM scratch`
@@ -556,6 +556,18 @@ curl -vk 'https://127.0.0.1:42662/health'
 
 ## Making Updates & Changes
 If you want to change any versions used to build the container image take a look into `.env`.
+
+## Publish Checklist
+- [ ] Update or create `tmpl.env`
+- [ ] Update `nginx-build-versions.txt`
+- [ ] Run `./clean.sh`
+- [ ] Run `./build-all.sh`
+- [ ] Upload build logs (printed out at the end of previous step)
+- [ ] Update `Supported Container Image Tags`-Section of this Readme
+- [ ] Update `CHANGELOG.md`
+- [ ] Create / Update Docker Image Tags
+- [ ] Run `push-image-tags.sh`
+- [ ] 🚀 Profit 🚀
 
 ### Container Image Structure
 ```
