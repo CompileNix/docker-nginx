@@ -567,6 +567,8 @@ If you want to change any versions used to build the container image take a look
 - [ ] Update `CHANGELOG.md`
 - [ ] Create / Update Docker Image Tags
 - [ ] Run `push-image-tags.sh`
+- [ ] Update Readme on [Docker Hub](https://hub.docker.com/repository/docker/compilenix/nginx)
+  - `cp Readme.md /tmp/ && sed -i 's/\](\.\//](https:\/\/git.compilenix.org\/CompileNix\/docker-nginx\/-\/tree\/main\//g' "/tmp/Readme.md"`
 - [ ] 🚀 Profit 🚀
 
 ### Container Image Structure
