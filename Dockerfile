@@ -14,7 +14,12 @@ RUN \
   && rustup component add rust-src --toolchain nightly \
   && git clone https://github.com/CompileNix/renvsubst \
   && cd renvsubst \
-  && cargo +nightly build -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort --target x86_64-unknown-linux-musl --release \
+  && cargo \
+    +nightly build \
+    -Z build-std=std,panic_abort \
+    -Z build-std-features=panic_immediate_abort \
+    --target x86_64-unknown-linux-musl \
+    --release \
   && upx --best --lzma target/x86_64-unknown-linux-musl/release/cnx-renvsubst \
   && cp -v target/x86_64-unknown-linux-musl/release/cnx-renvsubst /envsubst
 
@@ -27,6 +32,7 @@ ARG NGINX_COMMIT
 ARG NGINX_VERSION
 ARG NGX_BROTLI_COMMIT
 ARG NJS_COMMIT
+ARG NJS_VERSION
 ARG OPENSSL_VERSION
 ARG PCRE_VERSION
 ARG ZLIB_VERSION
@@ -34,10 +40,10 @@ ARG ZLIB_VERSION
 RUN \
   env | sort
 
-RUN \
-  apk add --no-cache \
     # libxml2-dev \
     # libxslt-dev \
+RUN \
+  apk add --no-cache \
     autoconf \
     automake \
     cmake \
@@ -63,12 +69,12 @@ RUN \
   && hg clone -b default --rev $NGINX_COMMIT https://hg.nginx.org/nginx /usr/src/nginx-$NGINX_VERSION
 
 RUN \
-  echo "Cloning njs-nginx-module (rev $NJS_COMMIT) ..." \
+  echo "Cloning nginx njs module v${NJS_VERSION} (rev $NJS_COMMIT) ..." \
   && cd /usr/src \
-  && hg clone --rev $NJS_COMMIT http://hg.nginx.org/njs /usr/src/njs-nginx-module-$NJS_COMMIT
+  && hg clone --rev $NJS_COMMIT http://hg.nginx.org/njs /usr/src/njs-nginx-module-${NJS_COMMIT}-${NJS_VERSION}
 
 RUN \
-  echo "Cloning brotli (rev $NGX_BROTLI_COMMIT) ..." \
+  echo "Cloning brotli module (rev $NGX_BROTLI_COMMIT) ..." \
   && mkdir /usr/src/ngx_brotli \
   && cd /usr/src/ngx_brotli \
   && git init \
@@ -78,7 +84,7 @@ RUN \
   && git submodule update --init --depth 1
 
 RUN \
-  echo "Downloading headers-more-nginx-module (rev $HEADERS_MORE_VERSION) ..." \
+  echo "Downloading headers-more module (rev $HEADERS_MORE_VERSION) ..." \
   && cd /usr/src \
   && wget https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/v${HEADERS_MORE_VERSION}.tar.gz -O headers-more-nginx-module.tar.gz \
   && tar -xf headers-more-nginx-module.tar.gz
@@ -101,12 +107,12 @@ RUN \
   && wget https://github.com/PCRE2Project/pcre2/releases/download/pcre2-${PCRE_VERSION}/pcre2-${PCRE_VERSION}.tar.gz -O pcre2-${PCRE_VERSION}.tar.gz \
   && tar -xf pcre2-${PCRE_VERSION}.tar.gz
 
-ARG CONFIG="\
   # --with-http_image_filter_module \
   # --with-http_xslt_module \
+ARG CONFIG="\
   --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
   --add-module=/usr/src/ngx_brotli \
-  --add-module=/usr/src/njs-nginx-module-$NJS_COMMIT/nginx \
+  --add-module=/usr/src/njs-nginx-module-$NJS_COMMIT-$NJS_VERSION/nginx \
   --build=$NGINX_COMMIT \
   --conf-path=/etc/nginx/nginx.conf \
   --error-log-path=/var/log/nginx/error.log \
@@ -238,9 +244,6 @@ RUN \
   && cp -v /etc/passwd /tmp/scratch/etc/ \
   && cp -v /etc/shadow /tmp/scratch/etc/ \
   && cp -v /etc/ssl/certs/ca-certificates.crt /tmp/scratch/etc/ssl/certs/ \
-  && cp -v /usr/bin/posixtz /tmp/scratch/usr/bin/ \
-  && cp -v /usr/sbin/zdump /tmp/scratch/usr/sbin/ \
-  && cp -v /usr/sbin/zic /tmp/scratch/usr/sbin/ \
   && mv -v /var/log/nginx /tmp/scratch/var/log/ \
   && rm -rv /tmp/scratch/etc/nginx/html \
   && chown -Rv nginx:nginx /tmp/scratch/etc/nginx \

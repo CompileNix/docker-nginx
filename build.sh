@@ -11,7 +11,11 @@
 #    when performing parameter expansion. An error message will be written to
 #    the standard error, and a non-interactive shell will exit.
 # v: Print shell input lines as they are read.
-set -euv
+# pipefail: If set, the return value of a pipeline is the value of the last
+#           (rightmost) command to exit with a non-zero status, or zero if
+#           all commands in the pipeline exit successfully. This option is
+#           disabled by default.
+set -euv pipefail
 
 build_date_start_timestamp=$(date +%s)
 build_date_start_pretty=$(LC_TIME="en_US.UTF-8" TZ="GMT" date "+%a, %d %b %Y %T %Z")

@@ -1,5 +1,5 @@
-# docker-nginx <!-- omit from toc -->
-## What is this? <!-- omit from toc -->
+# docker-nginx<!-- omit from toc -->
+## What is this?<!-- omit from toc -->
 A smol (~ 6MB) [Nginx](https://nginx.org/en/CHANGES) container image with:
 - all optional first-party modules built-in except the following:
   - http_perl: It's large and I don't need it
@@ -13,18 +13,18 @@ A smol (~ 6MB) [Nginx](https://nginx.org/en/CHANGES) container image with:
 
 The nginx binary is built from source (using alpine) into a `FROM scratch` container image.
 
-## Supported Container Image Tags <!-- omit from toc -->
+## Supported Container Image Tags<!-- omit from toc -->
 - 1.23.2, 1.23, 1, mainline, latest
 - 1.22.1, 1.22, stable
 
-## Project Links <!-- omit from toc -->
+## Project Links<!-- omit from toc -->
 - [Container Image Registry](https://hub.docker.com/r/compilenix/nginx)
 - [Git Repository](https://git.compilenix.org/CompileNix/docker-nginx)
 - [Project issues](https://git.compilenix.org/CompileNix/docker-nginx/-/issues)
 - [Git Mirror 1](https://github.com/CompileNix/docker-nginx)
 - [Git Mirror 2](https://gitlab.com/CompileNix/docker-nginx)
 
-## Table of Contents <!-- omit from toc -->
+## Table of Contents<!-- omit from toc -->
 - [How is this container image that small?](#how-is-this-container-image-that-small)
 - [How to use this image](#how-to-use-this-image)
   - [Hosting some simple static content on port 443](#hosting-some-simple-static-content-on-port-443)
@@ -572,10 +572,10 @@ Example: `upstream_queue_time`
 ## Building
 ### Build Requirements
 - docker
+- docker-compose
 - git
 - internet connection (HTTP/S)
 - openssl
-- (optional) docker-compose
 
 ### Build Steps
 ```sh
@@ -612,17 +612,34 @@ curl -vk 'https://127.0.0.1:42662/health'
 If you want to change any versions used to build the container image take a look into `tmpl.env` and `nginx-build-versions.txt`.
 
 ### Publish Checklist
-- [ ] Update or create `tmpl.env`
+- [ ] Update or create `tmpl.env`:
+  - ```sh
+    cp tmpl.env example.tmpl.env
+    ```
 - [ ] Update `nginx-build-versions.txt`
-- [ ] Run `./clean.sh`
-- [ ] Run `./build-all.sh`
+- [ ] Run `./clean.sh && ./build-all.sh`
 - [ ] Upload build logs (printed out at the end of previous step)
-- [ ] Update `Supported Container Image Tags`-Section of this Readme
+- [ ] Update [Container Image Structure](#container-image-structure)
+- [ ] Update [Supported Container Image Tags](#supported-container-image-tags)
+- [ ] [Testing](#testing)
+  - ```sh
+    docker-compose up
+    # testing commands
+    docker-compose down
+    ```
 - [ ] Update `CHANGELOG.md`
 - [ ] Create / Update Docker Image Tags
-- [ ] Run `push-image-tags.sh`
-- [ ] Update Readme on [Docker Hub](https://hub.docker.com/repository/docker/compilenix/nginx)
-  - `cp Readme.md /tmp/ && sed -i 's/\](\.\//](https:\/\/git.compilenix.org\/CompileNix\/docker-nginx\/-\/tree\/main\//g' "/tmp/Readme.md"`
+  - ```sh
+    docker image tag compilenix/nginx:1.22.1 compilenix/nginx:stable
+    docker image tag compilenix/nginx:1.22.1 compilenix/nginx:1.22
+    docker image tag compilenix/nginx:1.23.2 compilenix/nginx:mainline
+    docker image tag compilenix/nginx:1.23.2 compilenix/nginx:latest
+    docker image tag compilenix/nginx:1.23.2 compilenix/nginx:1.23
+    docker image tag compilenix/nginx:1.23.2 compilenix/nginx:1
+    # inspect image tags
+    docker image ls compilenix/nginx
+    ```
+- [ ] Run `./push-image-tags.sh`
 - [ ] 🚀 Profit 🚀
 
 ## Container Image Structure
@@ -687,14 +704,11 @@ If you want to change any versions used to build the container image take a look
 ├── usr/
 │   ├── bin/
 │   │   ├── envsubst*
-│   │   ├── nginx*
-│   │   └── posixtz*
+│   │   └── nginx*
 │   ├── lib/
 │   │   └── nginx/
 │   │       └── modules/
 │   ├── sbin/
-│   │   ├── zdump*
-│   │   └── zic*
 │   └── share/
 │       └── zoneinfo/
 │           └── many files and stuff, Yep 😳
@@ -716,6 +730,6 @@ If you want to change any versions used to build the container image take a look
 │       └── html/
 └── docker-entrypoint.sh*
 
-75 directories, 1248 files
+75 directories, 1246 files
 ```
 
