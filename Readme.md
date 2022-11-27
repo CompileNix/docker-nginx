@@ -1,4 +1,5 @@
-## What is this?
+# docker-nginx <!-- omit from toc -->
+## What is this? <!-- omit from toc -->
 A smol (~ 6MB) [Nginx](https://nginx.org/en/CHANGES) container image with:
 - all optional first-party modules built-in except the following:
   - http_perl: It's large and I don't need it
@@ -10,18 +11,57 @@ A smol (~ 6MB) [Nginx](https://nginx.org/en/CHANGES) container image with:
 - [OpenSSL 3](https://github.com/openssl/openssl)
 - [envsubst](https://git.compilenix.org/CompileNix/renvsubst) nginx config processing on container startup
 
-Nginx binary is built from source (using alpine) into a `FROM scratch` container image.
+The nginx binary is built from source (using alpine) into a `FROM scratch` container image.
 
-Project Links:
-- Container Image Registry: https://hub.docker.com/r/compilenix/nginx
-- Git Repository: https://git.compilenix.org/CompileNix/docker-nginx
-- Issues: https://git.compilenix.org/CompileNix/docker-nginx/-/issues
-- Git Mirror 1: https://github.com/CompileNix/docker-nginx
-- Git Mirror 2: https://gitlab.com/CompileNix/docker-nginx
-
-## Supported Container Image Tags
+## Supported Container Image Tags <!-- omit from toc -->
 - 1.23.2, 1.23, 1, mainline, latest
 - 1.22.1, 1.22, stable
+
+## Project Links <!-- omit from toc -->
+- [Container Image Registry](https://hub.docker.com/r/compilenix/nginx)
+- [Git Repository](https://git.compilenix.org/CompileNix/docker-nginx)
+- [Project issues](https://git.compilenix.org/CompileNix/docker-nginx/-/issues)
+- [Git Mirror 1](https://github.com/CompileNix/docker-nginx)
+- [Git Mirror 2](https://gitlab.com/CompileNix/docker-nginx)
+
+## Table of Contents <!-- omit from toc -->
+- [How is this container image that small?](#how-is-this-container-image-that-small)
+- [How to use this image](#how-to-use-this-image)
+  - [Hosting some simple static content on port 443](#hosting-some-simple-static-content-on-port-443)
+  - [Provide Your Own Nginx Configuration Files](#provide-your-own-nginx-configuration-files)
+    - [Add A New HTTP Server Config Example](#add-a-new-http-server-config-example)
+  - [Using environment variables in nginx configuration](#using-environment-variables-in-nginx-configuration)
+  - [Running nginx as root user](#running-nginx-as-root-user)
+  - [NJS](#njs)
+  - [Nginx config test](#nginx-config-test)
+  - [Set a custom timezone](#set-a-custom-timezone)
+  - [Set a custom amount of nginx worker processes](#set-a-custom-amount-of-nginx-worker-processes)
+  - [Set a custom nginx http server response header value](#set-a-custom-nginx-http-server-response-header-value)
+  - [Change the DNS resolver nginx will use](#change-the-dns-resolver-nginx-will-use)
+- [Nginx Access Log Format](#nginx-access-log-format)
+  - [main](#main)
+    - [Example "main" Log Message](#example-main-log-message)
+    - [GROK Pattern](#grok-pattern)
+    - [GROK Pattern Example result](#grok-pattern-example-result)
+  - [JSON](#json)
+    - [sent\_http\_name](#sent_http_name)
+    - [upstream\_http\_name](#upstream_http_name)
+    - [cookie\_name](#cookie_name)
+    - [upstream\_cookie\_name](#upstream_cookie_name)
+    - [http3](#http3)
+      - [Available variables as part of the commercial subscription](#available-variables-as-part-of-the-commercial-subscription)
+        - [session\_log\_binary\_id](#session_log_binary_id)
+        - [session\_log\_id](#session_log_id)
+        - [upstream\_queue\_time](#upstream_queue_time)
+    - [Example JSON Log Message](#example-json-log-message)
+- [Building](#building)
+  - [Build Requirements](#build-requirements)
+  - [Build Steps](#build-steps)
+  - [Run Nginx Using Docker-Compose](#run-nginx-using-docker-compose)
+  - [Testing](#testing)
+- [Making Updates \& Changes](#making-updates--changes)
+  - [Publish Checklist](#publish-checklist)
+- [Container Image Structure](#container-image-structure)
 
 ## How is this container image that small?
 - based on `FROM scratch`
@@ -51,7 +91,7 @@ docker run --name nginx -v "/some/content:/var/www/html:ro,z" -p 443:2443 compil
 ```
 
 ### Provide Your Own Nginx Configuration Files
-You can either add or replace indivitual nginx config files to the [existing default configs](./config) by mapping them as a volume to `/config` into the container. For example would a mapped config file to `/config/nginx.conf` replace the default `nginx.conf` that is present in the container image.
+You can either add or replace individual nginx config files to the [existing default configs](./config) by mapping them as a volume to `/config` into the container. For example would a mapped config file to `/config/nginx.conf` replace the default `nginx.conf` that is present in the container image.
 
 For information on the syntax of nginx configuration files, see the [official documentation](http://nginx.org/en/docs/) and the [Beginner's Guide](http://nginx.org/en/docs/beginners_guide.html#conf_structure).
 
@@ -84,19 +124,25 @@ server {
 Remember to place the required ssl certificates into `./ssl` and add the website content to `./webroot`.
 
 ```sh
-docker run -v "$(pwd)/sites/domain.tld.conf:/config/sites/domain.tld.conf:ro,z" -v "$(pwd)/ssl:/config/ssl/domain.tld:ro,z" -v "$(pwd)/webroot:/var/www/domain.tld:ro,z" -p 80:2080 -p 443:2443 compilenix/nginx
+docker run \
+  -v "$(pwd)/sites/domain.tld.conf:/config/sites/domain.tld.conf:ro,z" \
+  -v "$(pwd)/ssl:/config/ssl/domain.tld:ro,z" \
+  -v "$(pwd)/webroot:/var/www/domain.tld:ro,z" \
+  -p 80:2080 \
+  -p 443:2443 \
+  compilenix/nginx
 ```
 
 ### Using environment variables in nginx configuration
 Environment variables can be used in any nginx config file, regardless if they are mapped as a volume, are part of the original container image or copied into custom container images which are based on this one.
 
-Environment variable substitution / templating is performed by [900-envsubst-on-templates.sh](./src/docker-entrypoint.d/900-envsubst-on-templates.sh) on each container start.
+Environment variable substitution / templating is performed by [900-envsubst-on-templates.sh](./src/docker-entrypoint.d/900-envsubst-on-templates.sh) on container start.
 
-__Mapped nginx config files directly to `/etc/nginx` (instead of `/config`) will be overritten / process by this process.__
+__Mapped nginx config files directly to `/etc/nginx` (instead of `/config`) will be overritten / process by this substitution process!__
 
 Only config files whose name ends with a certian suffix will be processed.
 
-This behavior can be changed via the `NGINX_ENVSUBST_TEMPLATE_SUFFIX` environment variable. The default value is defined as `.conf`.
+This behavior can be changed via the `NGINX_ENVSUBST_TEMPLATE_SUFFIX` environment variable. The default value is defined as "`.conf`".
 
 Here is an example using `docker-compose.yml`:
 ```yml
@@ -132,7 +178,7 @@ USER root
 
 ### NJS
 1. Override `njs.conf` via `/config/njs.conf`.
-2. Map / copy njs code into container / image.
+2. Map / copy njs code into container or image.
 
 Example `njs.conf`:
 ```nginx
@@ -171,12 +217,19 @@ curl -vk 'https://127.0.0.1:42662/njs'
 ```
 
 ### Nginx config test
-This can be acomplished by creating and starting a new container instance with all parameters, enviroment variables and mapped volumes as usual and then finally by overriding the start command.
+This can be acomplished by creating and starting a new container with the same parameters, enviroment variables and mapped volumes as the currently running container and by overriding the start command.
 
 Example using `docker run`:
 ```sh
 source .env
-docker run -it --rm --env-file .env -v "$(pwd)/webroot:/var/www/html:ro,z" -v "/some/nginx/config:/config:ro,z" compilenix/nginx /usr/bin/nginx -t
+docker run \
+  -it \
+  --rm \
+  --env-file .env \
+  -v "$(pwd)/webroot:/var/www/html:ro,z" \
+  -v "/some/nginx/config:/config:ro,z" \
+  compilenix/nginx \
+    /usr/bin/nginx -t
 ```
 
 ### Set a custom timezone
@@ -244,7 +297,7 @@ log_format main '[$time_iso8601] status:$status domain:$host port:$server_port r
 ```
 
 #### GROK Pattern
-`upstream_response_time` is omitted if the value is equal to `-`.
+`upstream_response_time` is omitted if the value is equal to "`-`".
 
 ```
 \[%{TIMESTAMP_ISO8601:time_local:date}\] status:%{INT:status:short} domain:%{HOSTNAME:domain:text} port:%{INT:port:integer} request_time:%{NUMBER:request_time:float} upstream_response_time:(-|%{NUMBER:upstream_response_time:float}) request_length:%{INT:request_length:integer} bytes_sent:%{INT:bytes_sent:integer} client_ip:%{IP:client_ip:ip} request:\"%{WORD:method:text} %{DATA:request:text} %{DATA:http_protocol_version:text}\" referer:\"%{DATA:referer:text}\" user_agent:\"%{DATA:user_agent:text}\"
@@ -269,7 +322,7 @@ log_format main '[$time_iso8601] status:$status domain:$host port:$server_port r
 }
 ```
 
-### json
+### JSON
 
 This log format contains the following properties:
 - body_bytes_sent
@@ -416,7 +469,7 @@ Keeps time the request spent in the upstream queue (1.13.9); the time is kept in
 
 Example: `upstream_queue_time`
 
-#### Example "json" Log Message
+#### Example JSON Log Message
 ```json
 {
   "body_bytes_sent": "25",
@@ -516,14 +569,15 @@ Example: `upstream_queue_time`
 }
 ```
 
-## Build Requirements
-- internet connection (HTTP/S)
+## Building
+### Build Requirements
 - docker
+- git
+- internet connection (HTTP/S)
 - openssl
 - (optional) docker-compose
-- (optional) git
 
-## Building
+### Build Steps
 ```sh
 git clone https://git.compilenix.org/CompileNix/docker-nginx
 cd docker-nginx
@@ -532,12 +586,12 @@ $EDITOR tmpl.env
 ./build-all.sh
 ```
 
-## Run Nginx Using Docker-Compose
+### Run Nginx Using Docker-Compose
 ```sh
 docker-compose up
 ```
 
-## Test
+### Testing
 Firefox 103 and up should work.
 
 ```sh
@@ -555,9 +609,9 @@ curl -vk 'https://127.0.0.1:42662/health'
 ```
 
 ## Making Updates & Changes
-If you want to change any versions used to build the container image take a look into `.env`.
+If you want to change any versions used to build the container image take a look into `tmpl.env` and `nginx-build-versions.txt`.
 
-## Publish Checklist
+### Publish Checklist
 - [ ] Update or create `tmpl.env`
 - [ ] Update `nginx-build-versions.txt`
 - [ ] Run `./clean.sh`
@@ -571,7 +625,7 @@ If you want to change any versions used to build the container image take a look
   - `cp Readme.md /tmp/ && sed -i 's/\](\.\//](https:\/\/git.compilenix.org\/CompileNix\/docker-nginx\/-\/tree\/main\//g' "/tmp/Readme.md"`
 - [ ] 🚀 Profit 🚀
 
-### Container Image Structure
+## Container Image Structure
 ```
 ./
 ├── bin/
@@ -643,7 +697,7 @@ If you want to change any versions used to build the container image take a look
 │   │   └── zic*
 │   └── share/
 │       └── zoneinfo/
-│           └── many files and stuff, Yep.
+│           └── many files and stuff, Yep 😳
 ├── var/
 │   ├── cache/
 │   │   └── nginx/

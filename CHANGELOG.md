@@ -1,4 +1,30 @@
+# Table of Contents <!-- omit from toc -->
+- [1.22.1: Tue, 01 Nov 2022 16:27:58 GMT](#1221-tue-01-nov-2022-162758-gmt)
+  - [Changes](#changes)
+  - [Nginx Build Info](#nginx-build-info)
+- [1.23.2: Tue, 01 Nov 2022 16:21:19 GMT](#1232-tue-01-nov-2022-162119-gmt)
+  - [Changes](#changes-1)
+  - [Nginx Build Info](#nginx-build-info-1)
+- [1.22.0: Tue, 18 Oct 2022 19:58:07 GMT](#1220-tue-18-oct-2022-195807-gmt)
+  - [Changes](#changes-2)
+  - [Nginx Build Info](#nginx-build-info-2)
+- [1.23.1: Tue, 18 Oct 2022 19:52:01 GMT](#1231-tue-18-oct-2022-195201-gmt)
+  - [Changes](#changes-3)
+  - [Nginx Build Info](#nginx-build-info-3)
+- [1.22.0: Tue, 11 Oct 2022 19:08:39 GMT](#1220-tue-11-oct-2022-190839-gmt)
+  - [Changes](#changes-4)
+  - [Nginx Build Info](#nginx-build-info-4)
+- [1.23.1: Tue, 11 Oct 2022 19:02:35 GMT](#1231-tue-11-oct-2022-190235-gmt)
+  - [Changes](#changes-5)
+  - [Nginx Build Info](#nginx-build-info-5)
+- [1.22.0: Sat, 08 Oct 2022 17:33:19 GMT](#1220-sat-08-oct-2022-173319-gmt)
+  - [Changes](#changes-6)
+  - [Nginx Build Info](#nginx-build-info-6)
+- [1.23.1: Sat, 08 Oct 2022 17:24:14 GMT](#1231-sat-08-oct-2022-172414-gmt)
+  - [Changes](#changes-7)
+  - [Nginx Build Info](#nginx-build-info-7)
 
+# Changes <!-- omit from toc -->
 ## 1.22.1: Tue, 01 Nov 2022 16:27:58 GMT
 
 Build log: [1.22.1-af7a3fb7558f-2022-11-01.1621.log](https://compilenix.org/static/build-logs/nginx/1.22.1-af7a3fb7558f-2022-11-01.1621.log)
