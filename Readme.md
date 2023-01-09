@@ -14,8 +14,8 @@ A smol (~ 6MB) [Nginx](https://nginx.org/en/CHANGES) container image with:
 The nginx binary is built from source (using alpine) into a `FROM scratch` container image.
 
 ## Supported Container Image Tags<!-- omit from toc -->
-- 1.23.2, 1.23, 1, mainline, latest
-- 1.22.1, 1.22, stable
+- `1.23.3`, `1.23`, `1`, `mainline`, `latest`
+- `1.22.1`, `1.22`, `stable`
 
 ## Project Links<!-- omit from toc -->
 - [Container Image Registry](https://hub.docker.com/r/compilenix/nginx)
@@ -498,7 +498,7 @@ Example: `upstream_queue_time`
   "limit_rate": "0",
   "limit_req_status": "",
   "msec": "1664306240.619",
-  "nginx_version": "1.23.1",
+  "nginx_version": "1.23.3",
   "pid": "46",
   "pipe": ".",
   "proxy_add_x_forwarded_for": "172.18.0.1",
@@ -614,7 +614,7 @@ If you want to change any versions used to build the container image take a look
 ### Publish Checklist
 - [ ] Update or create `tmpl.env`:
   - ```sh
-    cp tmpl.env example.tmpl.env
+    cp example.tmpl.env tmpl.env
     ```
 - [ ] Update `nginx-build-versions.txt`
 - [ ] Run `./clean.sh && ./build-all.sh`
@@ -632,10 +632,10 @@ If you want to change any versions used to build the container image take a look
   - ```sh
     docker image tag compilenix/nginx:1.22.1 compilenix/nginx:stable
     docker image tag compilenix/nginx:1.22.1 compilenix/nginx:1.22
-    docker image tag compilenix/nginx:1.23.2 compilenix/nginx:mainline
-    docker image tag compilenix/nginx:1.23.2 compilenix/nginx:latest
-    docker image tag compilenix/nginx:1.23.2 compilenix/nginx:1.23
-    docker image tag compilenix/nginx:1.23.2 compilenix/nginx:1
+    docker image tag compilenix/nginx:1.23.3 compilenix/nginx:mainline
+    docker image tag compilenix/nginx:1.23.3 compilenix/nginx:latest
+    docker image tag compilenix/nginx:1.23.3 compilenix/nginx:1.23
+    docker image tag compilenix/nginx:1.23.3 compilenix/nginx:1
     # inspect image tags
     docker image ls compilenix/nginx
     ```

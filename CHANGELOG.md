@@ -1,4 +1,39 @@
-# Changes <!-- omit from toc -->
+# Changes
+## 1.22.1: Sun, 08 Jan 2023 23:24:59 GMT
+
+Build log: [1.22.1-af7a3fb7558f-2023-01-08.2254.log](https://compilenix.org/static/build-logs/nginx/1.22.1-af7a3fb7558f-2023-01-08.2254.log)
+
+### Changes
+- update pcre2 from 10.40 to 10.42
+- update busybox from 1.34.1 to 1.36.0
+
+### Nginx Build Info
+```
+nginx version: nginx/1.22.1 (af7a3fb7558f)
+built by gcc 12.2.1 20220924 (Alpine 12.2.1_git20220924-r4) 
+built with OpenSSL 3.0.7 1 Nov 2022
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.34 --add-module=/usr/src/ngx_brotli --add-module=/usr/src/njs-nginx-module-5f705230a62c-0.7.9/nginx --build=af7a3fb7558f --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_addition_module --with-http_auth_request_module --with-http_flv_module --with-http_geoip_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.0.7 --with-pcre-jit --with-pcre=/usr/src/pcre2-10.42 --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-threads --with-zlib=/usr/src/zlib-1.2.13 --with-cc-opt='-O3 -pipe' --with-openssl-opt='-O3 -pipe' --with-zlib-opt='-O3 -pipe' --with-ld-opt=-static
+```
+
+## 1.23.3: Sun, 08 Jan 2023 23:52:49 GMT
+
+Build log: [1.23.3-ff3afd1ce6a6-2023-01-08.2324.log](https://compilenix.org/static/build-logs/nginx/1.23.3-ff3afd1ce6a6-2023-01-08.2324.log)
+
+### Changes
+- update nginx from 1.23.2 to 1.23.3
+- update pcre2 from 10.40 to 10.42
+- update busybox from 1.34.1 to 1.36.0
+
+### Nginx Build Info
+```
+nginx version: nginx/1.23.3 (ff3afd1ce6a6)
+built by gcc 12.2.1 20220924 (Alpine 12.2.1_git20220924-r4) 
+built with OpenSSL 3.0.7 1 Nov 2022
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.34 --add-module=/usr/src/ngx_brotli --add-module=/usr/src/njs-nginx-module-5f705230a62c-0.7.9/nginx --build=ff3afd1ce6a6 --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_addition_module --with-http_auth_request_module --with-http_flv_module --with-http_geoip_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.0.7 --with-pcre-jit --with-pcre=/usr/src/pcre2-10.42 --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-threads --with-zlib=/usr/src/zlib-1.2.13 --with-cc-opt='-O3 -pipe' --with-openssl-opt='-O3 -pipe' --with-zlib-opt='-O3 -pipe' --with-ld-opt=-static
+```
+
 ## 1.22.1: Sun, 27 Nov 2022 20:19:30 GMT
 
 Build log: [1.22.1-af7a3fb7558f-2022-11-27.2012.log](https://compilenix.org/static/build-logs/nginx/1.22.1-af7a3fb7558f-2022-11-27.2012.log)
