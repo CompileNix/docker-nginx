@@ -11,7 +11,7 @@ A smol (~ 6MB) [Nginx](https://nginx.org/en/CHANGES) container image with:
 - [OpenSSL 3](https://github.com/openssl/openssl)
 - [envsubst](https://git.compilenix.org/CompileNix/renvsubst) nginx config processing on container startup
 
-The nginx binary is built from source (using alpine) into a `FROM scratch` container image.
+The nginx binary is built from source (using fedora) into a `FROM scratch` container image.
 
 ## Supported Container Image Tags<!-- omit from toc -->
 - `1.23.3`, `1.23`, `1`, `mainline`, `latest`

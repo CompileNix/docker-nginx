@@ -7,7 +7,6 @@ services:
     build:
       context: .
       args:
-        ALPINE_VERSION: $ALPINE_VERSION
         BUILD_THROTTLE: $BUILD_THROTTLE
         BUSYBOX_VERSION: $BUSYBOX_VERSION
         CFLAGS_ADD: $CFLAGS_ADD
