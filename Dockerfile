@@ -1,7 +1,5 @@
 # vim: sw=2 et
 
-ARG BUSYBOX_VERSION
-
 FROM fedora:37 AS base-os
 RUN dnf upgrade --refresh -y \
   && dnf install -y \
@@ -220,9 +218,9 @@ RUN \
   && strip /usr/bin/nginx \
   && echo "Scan for reqired runtime libs ..." \
   # && scanelf --needed --nobanner /usr/bin/nginx /usr/lib/nginx/modules/*.so \
-  && NEEDED_LIBS=$(scanelf --needed --nobanner /usr/bin/nginx \
-    | awk '{ gsub(/,/, "\n", $2); print $2 }' \
-    | sort -u) \
+  && NEEDED_LIBS=$(scanelf --needed --nobanner /usr/bin/nginx /bin/basename /bin/bash /bin/cat /bin/cp /bin/cut /bin/dirname /bin/echo /bin/env /bin/find /bin/ls /bin/mkdir /bin/printf /bin/rm /bin/sh /bin/sort /bin/stat \
+    | awk '{ gsub(/,/, "\n", $2); print $2 }' | sort -u) \
+  && NEEDED_LIBS=$(echo "$NEEDED_LIBS ld-linux-x86-64.so.2 libz.so.1 liblzma.so.5 libpcre2-8.so.0 libgcc_s.so.1" | awk '{ gsub(/ /, "\n"); print }' | sort -u) \
   && echo -e "Scan found the following needed libs:\n$NEEDED_LIBS\nFinding libs in filesystem:" \
   && for LIB_NAME in $NEEDED_LIBS; do echo "Looking for $LIB_NAME ..."; LIB_PATHS=$(find / -name "$LIB_NAME" -type f,l -print); for LIB_PATH in $LIB_PATHS; do echo "Found lib at: $LIB_PATH"; mkdir -pv $(dirname "/tmp/needed_libs$LIB_PATH"); cp -v "$LIB_PATH" "/tmp/needed_libs$LIB_PATH"; done; done
 
@@ -269,25 +267,26 @@ RUN \
   && cp -rv /tmp/needed_libs/* /tmp/scratch/ \
   && cp -rv /etc/nginx /tmp/scratch/etc/ \
   && cp -rv /usr/share/zoneinfo /tmp/scratch/usr/share/ \
+  && cp -v /bin/basename /bin/bash /bin/cat /bin/cp /bin/cut /bin/dirname /bin/echo /bin/env /bin/find /bin/ls /bin/mkdir /bin/printf /bin/rm /bin/sh /bin/sort /bin/stat /tmp/scratch/bin/ \
   && cp -v /etc/group /tmp/scratch/etc/ \
   && cp -v /etc/passwd /tmp/scratch/etc/ \
   && cp -v /etc/shadow /tmp/scratch/etc/ \
   && cp -v /etc/ssl/certs/ca-certificates.crt /tmp/scratch/etc/ssl/certs/ \
+  && mv -v /tmp/scratch/usr/lib64 /tmp/scratch/lib \
   && mv -v /var/log/nginx /tmp/scratch/var/log/ \
   && rm -rv /tmp/scratch/etc/nginx/html \
   && chown -Rv nginx:nginx /tmp/scratch/etc/nginx \
   && chown -Rv nginx:nginx /tmp/scratch/var/cache/nginx \
   && chown -Rv nginx:nginx /tmp/scratch/var/log/nginx \
   && chown -Rv nginx:nginx /tmp/scratch/var/run/nginx \
-  && chmod -v 1777 /tmp/scratch/tmp \
-  && ldconfig -r /tmp/scratch --verbose
+  && chmod -v 1777 /tmp/scratch/tmp
 COPY src/docker-entrypoint.sh /tmp/scratch/
 COPY src/docker-entrypoint.d/* /tmp/scratch/docker-entrypoint.d/
 RUN \
   cd /tmp/scratch \
+  && ln -s lib lib64 \
   && tree -a -F --dirsfirst -A -n .
 
-# FROM busybox:${BUSYBOX_VERSION}-glibc
 FROM scratch
 ENV DNS_RESOLVER="1.1.1.1"
 ENV NGINX_ENVSUBST_TEMPLATE_SUFFIX=".conf"
