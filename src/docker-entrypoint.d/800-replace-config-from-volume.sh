@@ -26,5 +26,5 @@ if [ ! -d "/config" ]; then
 fi
 
 echo "Copy and override nginx config files from mapped volume (/config/) to /etc/nginx/ ..." 2>&1 | prepend
-cp $VERBOSE_FLAG -raf /config/* /etc/nginx 2>&1 | prepend
+cp $VERBOSE_FLAG -rf /config/* /etc/nginx 2>&1 | prepend
 

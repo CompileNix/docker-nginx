@@ -8,19 +8,13 @@ services:
       context: .
       args:
         BUILD_THROTTLE: $BUILD_THROTTLE
-        BUSYBOX_VERSION: $BUSYBOX_VERSION
-        CFLAGS_ADD: $CFLAGS_ADD
         HEADERS_MORE_VERSION: $HEADERS_MORE_VERSION
         NGINX_COMMIT: $NGINX_COMMIT
         NGINX_VERSION: $NGINX_VERSION
         NGX_BROTLI_COMMIT: $NGX_BROTLI_COMMIT
         NJS_COMMIT: $NJS_COMMIT
         NJS_VERSION: $NJS_VERSION
-        OPENSSL_VERSION: $OPENSSL_VERSION
-        PCRE_VERSION: $PCRE_VERSION
-        ZLIB_VERSION: $ZLIB_VERSION
-    image: compilenix/nginx:${NGINX_VERSION}
-    container_name: nginx
+    image: ${IMAGE_NAME}:${NGINX_VERSION}
     # command: ["/usr/bin/nginx", "-t"]
     environment:
       DNS_RESOLVER: ${DNS_RESOLVER:-1.1.1.1}

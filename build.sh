@@ -46,10 +46,10 @@ fi
 docker-compose build --progress plain $BUILD_CACHE
 
 # Run config test
-docker run --rm --env-file .env -v "$(pwd)/webroot:/var/www/html:ro,z" compilenix/nginx:${NGINX_VERSION} /usr/bin/nginx -t
+docker run --rm --env-file .env -v "$(pwd)/webroot:/var/www/html:ro,z" $IMAGE_NAME:$NGINX_VERSION /usr/bin/nginx -t
 
 # Get build version info
-docker run --rm --env-file .env -e ENTRYPOINT_QUIET=y -v "$(pwd)/webroot:/var/www/html:ro,z" compilenix/nginx:${NGINX_VERSION} /usr/bin/nginx -V
+docker run --rm --env-file .env -e ENTRYPOINT_QUIET=y -v "$(pwd)/webroot:/var/www/html:ro,z" $IMAGE_NAME:$NGINX_VERSION /usr/bin/nginx -V
 
 build_date_end_timestamp=$(date +%s)
 build_date_end_pretty=$(LC_TIME="en_US.UTF-8" TZ="GMT" date "+%a, %d %b %Y %T %Z")

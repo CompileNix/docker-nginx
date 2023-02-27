@@ -1,11 +1,34 @@
 # vim: sw=2 et
 
+ARG REQUIRED_TOOLS_IN_DIST_IMAGE="\
+  /bin/basename \
+  /bin/bash \
+  /bin/cat \
+  /bin/cp \
+  /bin/cut \
+  /bin/dirname \
+  /bin/echo \
+  /bin/env \
+  /bin/false \
+  /bin/find \
+  /bin/ls \
+  /bin/mkdir \
+  /bin/printf \
+  /bin/rm \
+  /bin/sort \
+  /bin/stat \
+  /bin/true \
+  /usr/sbin/nologin \
+  "
+
 FROM fedora:37 AS base-os
 RUN dnf upgrade --refresh -y \
   && dnf install -y \
     curl \
+    gcc \
     git \
     lld \
+    openssl-devel \
     tree \
     tzdata \
     upx \
@@ -13,35 +36,33 @@ RUN dnf upgrade --refresh -y \
 
 FROM base-os AS build-renvsubst
 RUN \
-  dnf install -y gcc \
-  && cd ~ \
+  cd ~ \
   && curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly \
   && source .cargo/env \
   && rustup component add rust-src --toolchain nightly \
-  && git clone https://github.com/CompileNix/renvsubst \
+  # https://github.com/rust-secure-code/cargo-auditable
+  && cargo install cargo-auditable cargo-audit \
+  && git clone https://git.compilenix.org/CompileNix/renvsubst.git \
   && cd renvsubst \
-  && cargo \
-    +nightly build \
+  && RUSTFLAGS="-C strip=symbols" CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 CARGO_PROFILE_RELEASE_LTO=true CARGO_PROFILE_RELEASE_OPT_LEVEL=s CARGO_PROFILE_RELEASE_PANIC=abort cargo \
+    +nightly auditable build \
     -Z build-std=std,panic_abort \
     -Z build-std-features=panic_immediate_abort \
     --target x86_64-unknown-linux-gnu \
     --release \
-  && upx --best --lzma target/x86_64-unknown-linux-gnu/release/cnx-renvsubst \
+  && cargo audit bin target/x86_64-unknown-linux-gnu/release/cnx-renvsubst \
   && cp -v target/x86_64-unknown-linux-gnu/release/cnx-renvsubst /envsubst
 
 FROM base-os AS build
 
 ARG BUILD_THROTTLE
-ARG CFLAGS_ADD
 ARG HEADERS_MORE_VERSION
 ARG NGINX_COMMIT
 ARG NGINX_VERSION
 ARG NGX_BROTLI_COMMIT
 ARG NJS_COMMIT
 ARG NJS_VERSION
-ARG OPENSSL_VERSION
-ARG PCRE_VERSION
-ARG ZLIB_VERSION
+ARG REQUIRED_TOOLS_IN_DIST_IMAGE
 
 RUN \
   env | sort
@@ -76,53 +97,41 @@ RUN \
   && wget --no-verbose https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/v${HEADERS_MORE_VERSION}.tar.gz -O headers-more-nginx-module-${HEADERS_MORE_VERSION}.tar.gz \
   && tar -xf headers-more-nginx-module-${HEADERS_MORE_VERSION}.tar.gz
 
-RUN \
-  echo "Downloading zlib (version $ZLIB_VERSION) ..." \
-  && cd /usr/src \
-  && wget --no-verbose https://zlib.net/fossils/zlib-${ZLIB_VERSION}.tar.gz -O zlib-${ZLIB_VERSION}.tar.gz \
-  && tar -xf zlib-${ZLIB_VERSION}.tar.gz
-
-RUN \
-  echo "Downloading OpenSSL (version $OPENSSL_VERSION) ..." \
-  && cd /usr/src \
-  && wget --no-verbose https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz -O openssl-${OPENSSL_VERSION}.tar.gz \
-  && tar -xf openssl-${OPENSSL_VERSION}.tar.gz
-
-RUN \
-  echo "Downloading PCRE (version $PCRE_VERSION) ..." \
-  && cd /usr/src \
-  && wget --no-verbose https://github.com/PCRE2Project/pcre2/releases/download/pcre2-${PCRE_VERSION}/pcre2-${PCRE_VERSION}.tar.gz -O pcre2-${PCRE_VERSION}.tar.gz \
-  && tar -xf pcre2-${PCRE_VERSION}.tar.gz
-
 # tools required for source patching and building
 RUN \
   dnf install -y \
+    GeoIP-devel \
     autoconf \
     automake \
     clang \
     cmake \
     diffutils \
-    gcc \
     gd-devel \
-    GeoIP-devel \
+    glib2-devel \
     glibc-devel \
+    glibc-headers-x86 \
     kernel-headers \
+    libpng-devel \
+    libtiff-devel \
     libtool \
+    libxcrypt-devel \
     libxml2-devel \
     libxslt-devel \
     make \
-    openssl-devel \
     pax-utils \
     pcre2-devel \
-    perl-devel \
     perl-FindBin \
     perl-IPC-Cmd \
     perl-Pod-Html \
+    perl-devel \
     python3 \
+    python3-pip \
     readline-devel \
-    which
+    redhat-rpm-config \
+    which \
+    zlib-devel
 
-  # --with-http_image_filter_module \
+  # --with-http_perl_module \
 ARG CONFIG="\
   --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
   --add-module=/usr/src/ngx_brotli \
@@ -152,6 +161,7 @@ ARG CONFIG="\
   --with-http_geoip_module \
   --with-http_gunzip_module \
   --with-http_gzip_static_module \
+  --with-http_image_filter_module \
   --with-http_mp4_module \
   --with-http_random_index_module \
   --with-http_realip_module \
@@ -164,16 +174,13 @@ ARG CONFIG="\
   --with-http_xslt_module \
   --with-mail \
   --with-mail_ssl_module \
-  --with-openssl=/usr/src/openssl-${OPENSSL_VERSION} \
   --with-pcre-jit \
-  --with-pcre=/usr/src/pcre2-$PCRE_VERSION \
   --with-stream \
   --with-stream_geoip_module \
   --with-stream_realip_module \
   --with-stream_ssl_module \
   --with-stream_ssl_preread_module \
   --with-threads \
-  --with-zlib=/usr/src/zlib-$ZLIB_VERSION \
   "
 
 COPY ./patches /patches
@@ -182,11 +189,6 @@ RUN \
   echo "Apply nginx patches ..." \
   && cd /usr/src/nginx-$NGINX_COMMIT \
   && echo "apply ngx_http_error_tail.patch" && cat /patches/nginx/ngx_http_error_tail.patch && git apply /patches/nginx/ngx_http_error_tail.patch
-
-# RUN \
-#   echo "Apply zlib patches ..." \
-#   && cd /usr/src/zlib-$ZLIB_VERSION \
-#   && echo "apply CVE-2022-37434.patch" && cat /patches/zlib/CVE-2022-37434.patch && git apply /patches/zlib/CVE-2022-37434.patch
 
 RUN \
   echo "Calculate MAKE_JOBS ..." \
@@ -203,31 +205,34 @@ RUN \
   echo "Building nginx ($NGINX_VERSION) ..." \
   && cd /usr/src/nginx-${NGINX_COMMIT} \
   # cc and ld opts from official fedora builds
+  && export CFLAGS="-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fPIC -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64  -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection" \
+  && export CXXFLAGS="$CFLAGS" \
+  && export LDFLAGS="-fPIC -Wl,-z,relro -Wl,--as-needed  -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -Wl,--build-id=sha1" \
   && ./auto/configure $CONFIG \
-    --with-cc-opt="$CFLAGS_ADD -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -fPIC -fstack-protector-strong -m64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection" \
-    --with-ld-opt='-fPIC -Wl,-z,relro -Wl,--as-needed -Wl,-z,now -Wl,--build-id=sha1 -Wl,-E' \
-    --with-openssl-opt="$CFLAGS_ADD" \
-    --with-zlib-opt="$CFLAGS_ADD" || cat objs/autoconf.err \
+    --with-cc-opt="$CFLAGS" \
+    --with-ld-opt="$LDFLAGS" || cat objs/autoconf.err \
   && make -j$MAKE_JOBS \
-  && make install \
-  && env | sort
+  && make install
 
 RUN \
   cd /usr/src/nginx-${NGINX_COMMIT} \
-  # && strip /usr/lib/nginx/modules/*.so
+  && echo "strip /usr/bin/nginx ..." \
   && strip /usr/bin/nginx \
+  # && strip /usr/lib/nginx/modules/*.so
   && echo "Scan for reqired runtime libs ..." \
-  # && scanelf --needed --nobanner /usr/bin/nginx /usr/lib/nginx/modules/*.so \
-  && NEEDED_LIBS=$(scanelf --needed --nobanner /usr/bin/nginx /bin/basename /bin/bash /bin/cat /bin/cp /bin/cut /bin/dirname /bin/echo /bin/env /bin/find /bin/ls /bin/mkdir /bin/printf /bin/rm /bin/sh /bin/sort /bin/stat \
-    | awk '{ gsub(/,/, "\n", $2); print $2 }' | sort -u) \
-  && NEEDED_LIBS=$(echo "$NEEDED_LIBS ld-linux-x86-64.so.2 libz.so.1 liblzma.so.5 libpcre2-8.so.0 libgcc_s.so.1" | awk '{ gsub(/ /, "\n"); print }' | sort -u) \
-  && echo -e "Scan found the following needed libs:\n$NEEDED_LIBS\nFinding libs in filesystem:" \
-  && for LIB_NAME in $NEEDED_LIBS; do echo "Looking for $LIB_NAME ..."; LIB_PATHS=$(find / -name "$LIB_NAME" -type f,l -print); for LIB_PATH in $LIB_PATHS; do echo "Found lib at: $LIB_PATH"; mkdir -pv $(dirname "/tmp/needed_libs$LIB_PATH"); cp -v "$LIB_PATH" "/tmp/needed_libs$LIB_PATH"; done; done
+  # && ldd /usr/lib/nginx/modules/*.so \
+  && LIBS=$(ldd /usr/bin/nginx $REQUIRED_TOOLS_IN_DIST_IMAGE | awk '{print $3}' | grep -v '^$' | sort -u) \
+  && for LIB_PATH in $LIBS; do echo "Found reqired lib at: $LIB_PATH"; mkdir -pv $(dirname "/tmp/needed_libs$LIB_PATH"); cp -v "$LIB_PATH" "/tmp/needed_libs$LIB_PATH"; done \
+  && cp -v /lib64/ld-linux-x86-64.so.2 /tmp/needed_libs/lib64/ \
+  && echo "strip /tmp/needed_libs/lib64/* ..." \
+  && strip /tmp/needed_libs/lib64/*
 
 FROM base-os AS dist-os
 
+ARG REQUIRED_TOOLS_IN_DIST_IMAGE
+
 COPY src/etc/group src/etc/passwd src/etc/shadow /etc/
-COPY --from=build-renvsubst /envsubst /tmp/scratch/usr/bin/
+COPY --from=build-renvsubst /envsubst /tmp/scratch/bin/
 COPY --from=build /usr/bin/nginx /tmp/scratch/usr/bin/
 COPY --from=build /tmp/needed_libs /tmp/needed_libs
 # COPY --from=build /usr/lib/nginx/modules/ /usr/lib/nginx/modules/
@@ -267,25 +272,35 @@ RUN \
   && cp -rv /tmp/needed_libs/* /tmp/scratch/ \
   && cp -rv /etc/nginx /tmp/scratch/etc/ \
   && cp -rv /usr/share/zoneinfo /tmp/scratch/usr/share/ \
-  && cp -v /bin/basename /bin/bash /bin/cat /bin/cp /bin/cut /bin/dirname /bin/echo /bin/env /bin/find /bin/ls /bin/mkdir /bin/printf /bin/rm /bin/sh /bin/sort /bin/stat /tmp/scratch/bin/ \
+  && cp -v $REQUIRED_TOOLS_IN_DIST_IMAGE /tmp/scratch/bin/ \
   && cp -v /etc/group /tmp/scratch/etc/ \
   && cp -v /etc/passwd /tmp/scratch/etc/ \
   && cp -v /etc/shadow /tmp/scratch/etc/ \
   && cp -v /etc/ssl/certs/ca-certificates.crt /tmp/scratch/etc/ssl/certs/ \
-  && mv -v /tmp/scratch/usr/lib64 /tmp/scratch/lib \
   && mv -v /var/log/nginx /tmp/scratch/var/log/ \
   && rm -rv /tmp/scratch/etc/nginx/html \
   && chown -Rv nginx:nginx /tmp/scratch/etc/nginx \
   && chown -Rv nginx:nginx /tmp/scratch/var/cache/nginx \
   && chown -Rv nginx:nginx /tmp/scratch/var/log/nginx \
   && chown -Rv nginx:nginx /tmp/scratch/var/run/nginx \
-  && chmod -v 1777 /tmp/scratch/tmp
+  && chmod -v 1777 /tmp/scratch/tmp \
+  && chmod -x -v /tmp/scratch/lib64/*.so* \
+  && chmod 0777 -Rv /tmp/scratch/etc/nginx \
+  && chmod 0777 -Rv /tmp/scratch/var/cache/nginx \
+  && chmod 0777 -Rv /tmp/scratch/var/log/nginx \
+  && chmod 0777 -Rv /tmp/scratch/var/run/nginx
+
 COPY src/docker-entrypoint.sh /tmp/scratch/
 COPY src/docker-entrypoint.d/* /tmp/scratch/docker-entrypoint.d/
+
 RUN \
   cd /tmp/scratch \
-  && ln -s lib lib64 \
-  && tree -a -F --dirsfirst -A -n .
+  && ln -s lib64 lib \
+  && tree -a -F --dirsfirst -A -n . \
+  && echo "Compressing binaries using upx ..." \
+  && upx --best --lzma usr/bin/nginx bin/* \
+  && cd bin \
+  && ln -s bash sh
 
 FROM scratch
 ENV DNS_RESOLVER="1.1.1.1"
@@ -297,7 +312,7 @@ ENV TZ="UTC"
 
 COPY --from=dist-os /tmp/scratch /
 
-USER nginx
+USER nginx:nginx
 EXPOSE 2080 2443
 STOPSIGNAL SIGQUIT
 

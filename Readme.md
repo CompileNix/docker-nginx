@@ -646,22 +646,25 @@ If you want to change any versions used to build the container image take a look
 ```
 ./
 ├── bin/
-│   ├── basename -> busybox*
-│   ├── busybox*
-│   ├── cat -> busybox*
-│   ├── cp -> busybox*
-│   ├── cut -> busybox*
-│   ├── dirname -> busybox*
-│   ├── echo -> busybox*
-│   ├── env -> busybox*
-│   ├── find -> busybox*
-│   ├── ls -> busybox*
-│   ├── mkdir -> busybox*
-│   ├── printf -> busybox*
-│   ├── rm -> busybox*
-│   ├── sh -> busybox*
-│   ├── sort -> busybox*
-│   └── stat -> busybox*
+│   ├── basename*
+│   ├── bash*
+│   ├── cat*
+│   ├── cp*
+│   ├── cut*
+│   ├── dirname*
+│   ├── echo*
+│   ├── env*
+│   ├── envsubst*
+│   ├── false*
+│   ├── find*
+│   ├── ls*
+│   ├── mkdir*
+│   ├── nologin*
+│   ├── printf*
+│   ├── rm*
+│   ├── sort*
+│   ├── stat*
+│   └── true*
 ├── docker-entrypoint.d/
 │   ├── 100-update-default-conf.sh*
 │   ├── 800-replace-config-from-volume.sh*
@@ -700,15 +703,66 @@ If you want to change any versions used to build the container image take a look
 │   ├── group
 │   ├── passwd
 │   └── shadow
+├── lib -> lib64/
+├── lib64/
+│   ├── ld-linux-x86-64.so.2
+│   ├── libGeoIP.so.1
+│   ├── libSvtAv1Enc.so.1
+│   ├── libX11.so.6
+│   ├── libXau.so.6
+│   ├── libXpm.so.4
+│   ├── libacl.so.1
+│   ├── libaom.so.3
+│   ├── libattr.so.1
+│   ├── libavif.so.15
+│   ├── libbrotlicommon.so.1
+│   ├── libbrotlidec.so.1
+│   ├── libbrotlienc.so.1
+│   ├── libbz2.so.1
+│   ├── libc.so.6
+│   ├── libcap.so.2
+│   ├── libcrypt.so.2
+│   ├── libcrypto.so.3
+│   ├── libdav1d.so.6
+│   ├── libexslt.so.0
+│   ├── libfontconfig.so.1
+│   ├── libfreetype.so.6
+│   ├── libgcc_s.so.1
+│   ├── libgd.so.3
+│   ├── libglib-2.0.so.0
+│   ├── libgomp.so.1
+│   ├── libgraphite2.so.3
+│   ├── libharfbuzz.so.0
+│   ├── libhwy.so.1
+│   ├── libimagequant.so.0
+│   ├── libjbig.so.2.1
+│   ├── libjpeg.so.62
+│   ├── libjxl.so.0.7
+│   ├── liblzma.so.5
+│   ├── libm.so.6
+│   ├── libpcre2-8.so.0
+│   ├── libpng16.so.16
+│   ├── librav1e.so.0
+│   ├── libselinux.so.1
+│   ├── libsharpyuv.so.0
+│   ├── libssl.so.3
+│   ├── libstdc++.so.6
+│   ├── libtiff.so.5
+│   ├── libtinfo.so.6
+│   ├── libvmaf.so.1
+│   ├── libwebp.so.7
+│   ├── libxcb.so.1
+│   ├── libxml2.so.2
+│   ├── libxslt.so.1
+│   ├── libz.so.1
+│   └── libzstd.so.1
 ├── tmp/
 ├── usr/
 │   ├── bin/
-│   │   ├── envsubst*
 │   │   └── nginx*
 │   ├── lib/
 │   │   └── nginx/
 │   │       └── modules/
-│   ├── sbin/
 │   └── share/
 │       └── zoneinfo/
 │           └── many files and stuff, Yep 😳
@@ -730,6 +784,6 @@ If you want to change any versions used to build the container image take a look
 │       └── html/
 └── docker-entrypoint.sh*
 
-75 directories, 1246 files
+98 directories, 1900 files
 ```
 
