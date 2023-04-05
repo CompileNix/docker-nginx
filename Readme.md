@@ -1,21 +1,16 @@
 # docker-nginx<!-- omit from toc -->
 ## What is this?<!-- omit from toc -->
-A smol (~ 6MB) [Nginx](https://nginx.org/en/CHANGES) container image with:
-- all optional first-party modules built-in except the following:
-  - http_perl: It's large and I don't need it
-  - http_xslt: Can't be build into statically linked binary
-  - http_image_filter: Can't be build into statically linked binary
+A smol [Nginx](https://nginx.org/en/CHANGES) container image, plus:
 - [Google's `brotli` compression](https://github.com/google/ngx_brotli)
 - [Nginx njs module](https://hg.nginx.org/njs/)
 - [OpenResty's headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module)
 - [OpenSSL 3](https://github.com/openssl/openssl)
-- [envsubst](https://git.compilenix.org/CompileNix/renvsubst) nginx config processing on container startup
+- `sh` & `envsubst` entrypoints for nginx config processing on container startup
 
 The nginx binary is built from source (using fedora) into a `FROM scratch` container image.
 
 ## Supported Container Image Tags<!-- omit from toc -->
-- `1.23.3`, `1.23`, `1`, `mainline`, `latest`
-- `1.22.1`, `1.22`, `stable`
+- `1.23.4`, `1.23`, `1`, `mainline`, `latest`
 
 ## Project Links<!-- omit from toc -->
 - [Container Image Registry](https://hub.docker.com/r/compilenix/nginx)
@@ -25,13 +20,12 @@ The nginx binary is built from source (using fedora) into a `FROM scratch` conta
 - [Git Mirror 2](https://gitlab.com/CompileNix/docker-nginx)
 
 ## Table of Contents<!-- omit from toc -->
-- [How is this container image that small?](#how-is-this-container-image-that-small)
 - [How to use this image](#how-to-use-this-image)
-  - [Hosting some simple static content on port 443](#hosting-some-simple-static-content-on-port-443)
-  - [Provide Your Own Nginx Configuration Files](#provide-your-own-nginx-configuration-files)
+  - [Hosting some simple static content on port 80 and 443](#hosting-some-simple-static-content-on-port-80-and-443)
+  - [Provide Your Own Nginx Configuration](#provide-your-own-nginx-configuration)
     - [Add A New HTTP Server Config Example](#add-a-new-http-server-config-example)
   - [Using environment variables in nginx configuration](#using-environment-variables-in-nginx-configuration)
-  - [Running nginx as root user](#running-nginx-as-root-user)
+  - [Running nginx using different UID and GID](#running-nginx-using-different-uid-and-gid)
   - [NJS](#njs)
   - [Nginx config test](#nginx-config-test)
   - [Set a custom timezone](#set-a-custom-timezone)
@@ -57,40 +51,21 @@ The nginx binary is built from source (using fedora) into a `FROM scratch` conta
 - [Building](#building)
   - [Build Requirements](#build-requirements)
   - [Build Steps](#build-steps)
-  - [Run Nginx Using Docker-Compose](#run-nginx-using-docker-compose)
-  - [Testing](#testing)
+- [Testing](#testing)
 - [Making Updates \& Changes](#making-updates--changes)
   - [Publish Checklist](#publish-checklist)
-- [Container Image Structure](#container-image-structure)
-
-## How is this container image that small?
-- based on `FROM scratch`
-- reducing container image layers to an absolute minimum by making usage of a multistaged `Dockerfile`
-- large executable binaries are compressed using [upx](https://upx.github.io/)
 
 ## How to use this image
-__*Note: (unencrypted) HTTP is discurraged by default!*__
-
-Nginx is running as a non-root user by default:
-- username: `nginx`
-- user id: 1000
-- groupname: `nginx`
-- group id: 1000
-
-HTTP: There is a default http server config section that responses to all plain HTTP requests with an 400 status code, listening on the container port `2080`.
-
-HTTPS: This image already contains a self-signed ssl certificate and is used by a default http server config section listening on the container port `2443`.
-
 Also have a look at the following sites to view some additonal examples and guidance on how to use nginx:
 - https://nginx.org/en/docs/
 - https://hub.docker.com/_/nginx
 
-### Hosting some simple static content on port 443
+### Hosting some simple static content on port 80 and 443
 ```sh
-docker run --name nginx -v "/some/content:/var/www/html:ro,z" -p 443:2443 compilenix/nginx
+docker run -v "/some/content:/var/www/html:ro,z" -p 80:80 -p 443:443 compilenix/nginx
 ```
 
-### Provide Your Own Nginx Configuration Files
+### Provide Your Own Nginx Configuration
 You can either add or replace individual nginx config files to the [existing default configs](./config) by mapping them as a volume to `/config` into the container. For example would a mapped config file to `/config/nginx.conf` replace the default `nginx.conf` that is present in the container image.
 
 For information on the syntax of nginx configuration files, see the [official documentation](http://nginx.org/en/docs/) and the [Beginner's Guide](http://nginx.org/en/docs/beginners_guide.html#conf_structure).
@@ -98,23 +73,26 @@ For information on the syntax of nginx configuration files, see the [official do
 #### Add A New HTTP Server Config Example
 `sites/domain.tld.conf`:
 ```nginx
-# vim: sw=2 et
+# vim: sw=2 et filetype=nginx
 
 server {
-  listen 2080;
+  listen 80;
   server_name domain.tld www.domain.tld;
+
   location / {
     return 307 https://www.domain.tld$request_uri;
   }
 }
 
 server {
-  listen 2443 ssl http2;
+  listen 443 ssl http2;
   server_name domain.tld www.domain.tld;
   root '/var/www/domain.tld';
+
   include 'cfg/header_referrer_policy.conf';
   ssl_certificate 'ssl/domain.tld/fullchain.pem';
   ssl_certificate_key 'ssl/domain.tld/privkey.pem';
+
   location / {
     allow all;
   }
@@ -128,8 +106,8 @@ docker run \
   -v "$(pwd)/sites/domain.tld.conf:/config/sites/domain.tld.conf:ro,z" \
   -v "$(pwd)/ssl:/config/ssl/domain.tld:ro,z" \
   -v "$(pwd)/webroot:/var/www/domain.tld:ro,z" \
-  -p 80:2080 \
-  -p 443:2443 \
+  -p 80:80 \
+  -p 443:443 \
   compilenix/nginx
 ```
 
@@ -145,7 +123,7 @@ Only config files whose name ends with a certian suffix will be processed.
 This behavior can be changed via the `NGINX_ENVSUBST_TEMPLATE_SUFFIX` environment variable. The default value is defined as "`.conf`".
 
 Here is an example using `docker-compose.yml`:
-```yml
+```yaml
 # vim: sw=2 et
 
 version: '2.4'
@@ -158,8 +136,8 @@ services:
       - "./ssl:/config/ssl/domain.tld:ro,z"
       - "./webroot:/var/www/html:ro,z"
     ports:
-      - "80:2080"
-      - "443:2443"
+      - "80:80"
+      - "443:443"
     environment:
       NGINX_HOST: "domain.tld"
       NGINX_HOST_CERT_PATH: "/etc/nginx/ssl/domain.tld"
@@ -168,12 +146,13 @@ services:
 
 Also have a look at the coresponding default nginx http server config: [default.conf](./config/sites/default.conf).
 
-### Running nginx as root user
-Create a custom container image based on this one.
+### Running nginx using different UID and GID
+Set the `USER_ID` and `GROUP_ID` env variables to the desired uid and gid. The entrypoint [`110-add-user.sh`](./src/docker-entrypoint.d/110-add-user.sh) will create a corresponding nginx user and group at container start.
 
-```Dockerfile
-FROM compilenix/nginx
-USER root
+Defaults are:
+```sh
+USER_ID="101"
+GROUP_ID="101"
 ```
 
 ### NJS
@@ -182,7 +161,7 @@ USER root
 
 Example `njs.conf`:
 ```nginx
-# vim: sw=2 et
+# vim: sw=2 et filetype=nginx
 
 js_path '/etc/nginx/njs/';
 js_import http.js;
@@ -193,7 +172,7 @@ See also:
 - https://nginx.org/en/docs/njs/reference.html
 
 Docker Compose Example:
-```yml
+```yaml
 # vim: sw=2 et
 
 version: '2.4'
@@ -206,14 +185,14 @@ services:
       - "./njs/http.js:/config/njs/http.js:ro,z"
       - "./njs/localhost.conf:/config/sites/localhost.conf:ro,z"
     ports:
-      - "0.0.0.0:42661:2080"
-      - "0.0.0.0:42662:2443"
+      - "0.0.0.0:42661:80"
+      - "0.0.0.0:42663:443"
 ```
 
 Testing:
 ```sh
-curl -vk 'https://127.0.0.1:42662/njs'
-# Hello world!
+curl -vk 'https://127.0.0.1:42663/njs'
+# Hello world from nginx njs!
 ```
 
 ### Nginx config test
@@ -250,7 +229,7 @@ Example:
 NGINX_WORKER_PROCESSES=4
 ```
 
-Default value: `2`
+Default value: `auto`
 
 ### Set a custom nginx http server response header value
 Set the enviroment variable `NGINX_SERVER_HEADER` to the desired value.
@@ -275,16 +254,18 @@ DNS_RESOLVER="8.8.8.8"
 Default value: `1.1.1.1`
 
 ## Nginx Access Log Format
-There are two built-in default log formats configured:
-- `main` (default)
+There are two built-in log formats configured:
+- `main`
 - `json`
 
-Switch the default nginx log format to the json log format by setting the enviroment variable `NGINX_LOG_FORMAT_NAME` to `json`.
+Switch the default nginx log format to the json log format by setting the enviroment variable `NGINX_LOG_FORMAT_NAME`.
 
 Example:
 ```sh
 NGINX_LOG_FORMAT_NAME="json"
 ```
+
+Default value: `main`
 
 ### main
 ```
@@ -293,32 +274,31 @@ log_format main '[$time_iso8601] status:$status domain:$host port:$server_port r
 
 #### Example "main" Log Message
 ```
-[2022-09-27T20:50:58+02:00] status:200 domain:127.0.0.1 port:2443 request_time:0.000 upstream_response_time:- request_length:26 bytes_sent:25 client_ip:172.18.0.1 request:"GET /test.html HTTP/2.0" referer:"-" user_agent:"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+[2022-09-27T20:50:58+02:00] status:200 domain:127.0.0.1 port:443 request_time:0.000 upstream_response_time:- request_length:26 bytes_sent:25 client_ip:172.18.0.1 request:"GET /test.html HTTP/2.0" referer:"-" user_agent:"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
 ```
 
 #### GROK Pattern
-`upstream_response_time` is omitted if the value is equal to "`-`".
+`upstream_response_time`, `user_agent` and `referer` are omitted if the value is equal to "`-`".
 
-```
-\[%{TIMESTAMP_ISO8601:time_local:date}\] status:%{INT:status:short} domain:%{HOSTNAME:domain:text} port:%{INT:port:integer} request_time:%{NUMBER:request_time:float} upstream_response_time:(-|%{NUMBER:upstream_response_time:float}) request_length:%{INT:request_length:integer} bytes_sent:%{INT:bytes_sent:integer} client_ip:%{IP:client_ip:ip} request:\"%{WORD:method:text} %{DATA:request:text} %{DATA:http_protocol_version:text}\" referer:\"%{DATA:referer:text}\" user_agent:\"%{DATA:user_agent:text}\"
+```grok
+\[%{TIMESTAMP_ISO8601:time_local:date}\] status:%{INT:status:short} domain:%{HOSTNAME:domain:text} port:%{INT:port:integer} request_time:%{NUMBER:request_time:float} upstream_response_time:(-|%{NUMBER:upstream_response_time:float}) request_length:%{INT:request_length:integer} bytes_sent:%{INT:bytes_sent:integer} client_ip:%{IP:client_ip:ip} request:\"%{WORD:method:text} %{DATA:request:text} %{DATA:http_protocol_version:text}\" referer:\"(-|%{DATA:referer:text})\" user_agent:\"(-|%{DATA:user_agent:text})\"
 ```
 
 #### GROK Pattern Example result
 ```json
 {
-  "bytes_sent": 25,
-  "client_ip": "172.18.0.1",
+  "bytes_sent": 20,
+  "client_ip": "172.17.0.1",
   "domain": "127.0.0.1",
   "http_protocol_version": "HTTP/2.0",
   "method": "GET",
-  "port": 2443,
-  "referer": "-",
+  "port": 443,
   "request": "/test.html",
-  "request_length": 26,
+  "request_length": 39,
   "request_time": 0,
   "status": 200,
-  "time_local": "2022-09-27T20:50:58+02:00",
-  "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"
+  "time_local": "2023-04-05T11:53:34+02:00",
+  "user_agent": "curl/7.85.0"
 }
 ```
 
@@ -498,7 +478,7 @@ Example: `upstream_queue_time`
   "limit_rate": "0",
   "limit_req_status": "",
   "msec": "1664306240.619",
-  "nginx_version": "1.23.3",
+  "nginx_version": "1.23.4",
   "pid": "46",
   "pipe": ".",
   "proxy_add_x_forwarded_for": "172.18.0.1",
@@ -581,209 +561,91 @@ Example: `upstream_queue_time`
 ```sh
 git clone https://git.compilenix.org/CompileNix/docker-nginx
 cd docker-nginx
-cp example.tmpl.env tmpl.env
-$EDITOR tmpl.env
-./build-all.sh
+cp example.env .env
+$EDITOR .env
+./build.sh
 ```
 
-### Run Nginx Using Docker-Compose
+## Testing
 ```sh
-docker-compose up
-```
+source .env
 
-### Testing
-Firefox 103 and up should work.
+# Generate random port numbers to use for testing and echo them for easy copy & paste to stdout
+export HTTP_PORT="$(shuf -i 32768-49152 -n 1)"; echo "export HTTP_PORT=\"$HTTP_PORT\""
+export HTTP_STUB_PORT="$(shuf -i 32768-49152 -n 1)"; echo "export HTTP_STUB_PORT=\"$HTTP_STUB_PORT\""
+export HTTPS_PORT="$(shuf -i 32768-49152 -n 1)"; echo "export HTTPS_PORT=\"$HTTPS_PORT\""
 
-```sh
-curl -vk 'http://127.0.0.1:42661/'
+# start container
+docker run --rm -it \
+  --env-file ".env" \
+  -p "127.0.0.1:$HTTP_PORT:80" \
+  -p "127.0.0.1:$HTTP_STUB_PORT:81" \
+  -p "127.0.0.1:$HTTPS_PORT:443" \
+  -v "$(pwd)/webroot:/var/www/html:ro,z" \
+  -v "$(pwd)/njs/njs.conf:/config/njs.conf:ro,z" \
+  -v "$(pwd)/njs/http.js:/config/njs/http.js:ro,z" \
+  -v "$(pwd)/njs/localhost.conf:/config/sites/localhost.conf:ro,z" \
+  "compilenix/nginx:$NGINX_VERSION"
+
+# Test commands from new shell on the same host
+curl -v "http://127.0.0.1:$HTTP_PORT/"
 # Retry on https port
-curl -vk 'https://127.0.0.1:42662/'
+curl -vk "https://127.0.0.1:$HTTPS_PORT/"
 # It works!
 # Using: HTTP/2.0 | TLSv1.3 | TLS_AES_256_GCM_SHA384
-curl -vk 'https://127.0.0.1:42662/test.html'
+curl -vk "https://127.0.0.1:$HTTPS_PORT/test.html"
 # <h1>It works!</h1>
-curl -vk 'https://127.0.0.1:42662/njs'
-# Hello world!
-curl -vk 'https://127.0.0.1:42662/health'
+curl -vk "https://127.0.0.1:$HTTPS_PORT/njs/date"
+# Wed Mar 15 2023 16:16:52 GMT+0000
+curl -vk "https://127.0.0.1:$HTTPS_PORT/njs/hello"
+# Hello world from nginx njs!
+curl -vk "https://127.0.0.1:$HTTPS_PORT/njs/version"
+# njs v0.7.11
+curl -vk "https://127.0.0.1:$HTTPS_PORT/health"
 # healthy
+curl -v "http://127.0.0.1:$HTTP_STUB_PORT/"
+# Active connections: 1 
+# server accepts handled requests
+#  8 8 8 
+# Reading: 0 Writing: 1 Waiting: 0 
+
+# start container
+docker run --rm -it \
+  --env-file ".env" \
+  -p "127.0.0.1:$HTTP_PORT:80" \
+  -p "127.0.0.1:$HTTP_STUB_PORT:81" \
+  -p "127.0.0.1:$HTTPS_PORT:443" \
+  -v "$(pwd)/webroot:/var/www/html:ro,z" \
+  "compilenix/nginx:$NGINX_VERSION"
+
+# Test commands from new shell on the same host
+curl -v "http://127.0.0.1:$HTTP_PORT/test.html"
+# <h1>It works!</h1>
+curl -vk "https://127.0.0.1:$HTTPS_PORT/test.html"
+# <h1>It works!</h1>
 ```
 
 ## Making Updates & Changes
-If you want to change any versions used to build the container image take a look into `tmpl.env` and `nginx-build-versions.txt`.
+If you want to change any versions used to build the container image take a look into `.env`.
 
 ### Publish Checklist
-- [ ] Update or create `tmpl.env`:
+- [ ] Update or create `.env`:
   - ```sh
-    cp example.tmpl.env tmpl.env
+    cp example.env .env
     ```
-- [ ] Update `nginx-build-versions.txt`
-- [ ] Run `./clean.sh && ./build-all.sh`
+- [ ] Run `./clean.sh && ./build-with-logs.sh`
 - [ ] Upload build logs (printed out at the end of previous step)
-- [ ] Update [Container Image Structure](#container-image-structure)
 - [ ] Update [Supported Container Image Tags](#supported-container-image-tags)
 - [ ] [Testing](#testing)
-  - ```sh
-    docker-compose up
-    # testing commands
-    docker-compose down
-    ```
 - [ ] Update `CHANGELOG.md`
 - [ ] Create / Update Docker Image Tags
   - ```sh
-    docker image tag compilenix/nginx:1.22.1 compilenix/nginx:stable
-    docker image tag compilenix/nginx:1.22.1 compilenix/nginx:1.22
-    docker image tag compilenix/nginx:1.23.3 compilenix/nginx:mainline
-    docker image tag compilenix/nginx:1.23.3 compilenix/nginx:latest
-    docker image tag compilenix/nginx:1.23.3 compilenix/nginx:1.23
-    docker image tag compilenix/nginx:1.23.3 compilenix/nginx:1
+    docker image tag compilenix/nginx:1.23.4 compilenix/nginx:mainline
+    docker image tag compilenix/nginx:1.23.4 compilenix/nginx:latest
+    docker image tag compilenix/nginx:1.23.4 compilenix/nginx:1.23
+    docker image tag compilenix/nginx:1.23.4 compilenix/nginx:1
     # inspect image tags
     docker image ls compilenix/nginx
     ```
 - [ ] Run `./push-image-tags.sh`
-- [ ] 🚀 Profit 🚀
-
-## Container Image Structure
-```
-./
-├── bin/
-│   ├── basename*
-│   ├── bash*
-│   ├── cat*
-│   ├── cp*
-│   ├── cut*
-│   ├── dirname*
-│   ├── echo*
-│   ├── env*
-│   ├── envsubst*
-│   ├── false*
-│   ├── find*
-│   ├── ls*
-│   ├── mkdir*
-│   ├── nologin*
-│   ├── printf*
-│   ├── rm*
-│   ├── sort*
-│   ├── stat*
-│   └── true*
-├── docker-entrypoint.d/
-│   ├── 100-update-default-conf.sh*
-│   ├── 800-replace-config-from-volume.sh*
-│   └── 900-envsubst-on-templates.sh*
-├── etc/
-│   ├── nginx/
-│   │   ├── cfg/
-│   │   │   └── header_referrer_policy.conf
-│   │   ├── nginx/
-│   │   │   └── Readme.txt
-│   │   ├── njs/
-│   │   ├── sites/
-│   │   │   ├── default.conf
-│   │   │   ├── localhost.conf
-│   │   │   └── zzz999_default_server_name.conf
-│   │   ├── ssl/
-│   │   │   ├── cert.pem
-│   │   │   ├── dhparam.pem
-│   │   │   ├── fullchain.pem
-│   │   │   └── privkey.pem
-│   │   ├── debug_connection.conf
-│   │   ├── fastcgi.conf
-│   │   ├── fastcgi_params
-│   │   ├── koi-utf
-│   │   ├── koi-win
-│   │   ├── mime.types
-│   │   ├── modules -> /usr/lib/nginx/modules
-│   │   ├── nginx.conf
-│   │   ├── njs.conf
-│   │   ├── scgi_params
-│   │   ├── uwsgi_params
-│   │   └── win-utf
-│   ├── ssl/
-│   │   └── certs/
-│   │       └── ca-certificates.crt
-│   ├── group
-│   ├── passwd
-│   └── shadow
-├── lib -> lib64/
-├── lib64/
-│   ├── ld-linux-x86-64.so.2
-│   ├── libGeoIP.so.1
-│   ├── libSvtAv1Enc.so.1
-│   ├── libX11.so.6
-│   ├── libXau.so.6
-│   ├── libXpm.so.4
-│   ├── libacl.so.1
-│   ├── libaom.so.3
-│   ├── libattr.so.1
-│   ├── libavif.so.15
-│   ├── libbrotlicommon.so.1
-│   ├── libbrotlidec.so.1
-│   ├── libbrotlienc.so.1
-│   ├── libbz2.so.1
-│   ├── libc.so.6
-│   ├── libcap.so.2
-│   ├── libcrypt.so.2
-│   ├── libcrypto.so.3
-│   ├── libdav1d.so.6
-│   ├── libexslt.so.0
-│   ├── libfontconfig.so.1
-│   ├── libfreetype.so.6
-│   ├── libgcc_s.so.1
-│   ├── libgd.so.3
-│   ├── libglib-2.0.so.0
-│   ├── libgomp.so.1
-│   ├── libgraphite2.so.3
-│   ├── libharfbuzz.so.0
-│   ├── libhwy.so.1
-│   ├── libimagequant.so.0
-│   ├── libjbig.so.2.1
-│   ├── libjpeg.so.62
-│   ├── libjxl.so.0.7
-│   ├── liblzma.so.5
-│   ├── libm.so.6
-│   ├── libpcre2-8.so.0
-│   ├── libpng16.so.16
-│   ├── librav1e.so.0
-│   ├── libselinux.so.1
-│   ├── libsharpyuv.so.0
-│   ├── libssl.so.3
-│   ├── libstdc++.so.6
-│   ├── libtiff.so.5
-│   ├── libtinfo.so.6
-│   ├── libvmaf.so.1
-│   ├── libwebp.so.7
-│   ├── libxcb.so.1
-│   ├── libxml2.so.2
-│   ├── libxslt.so.1
-│   ├── libz.so.1
-│   └── libzstd.so.1
-├── tmp/
-├── usr/
-│   ├── bin/
-│   │   └── nginx*
-│   ├── lib/
-│   │   └── nginx/
-│   │       └── modules/
-│   └── share/
-│       └── zoneinfo/
-│           └── many files and stuff, Yep 😳
-├── var/
-│   ├── cache/
-│   │   └── nginx/
-│   │       ├── client_temp/
-│   │       ├── fastcgi_temp/
-│   │       ├── proxy_temp/
-│   │       ├── scgi_temp/
-│   │       └── uwsgi_temp/
-│   ├── log/
-│   │   └── nginx/
-│   │       ├── access.log -> /dev/stdout|
-│   │       └── error.log -> /dev/stdout|
-│   ├── run/
-│   │   └── nginx/
-│   └── www/
-│       └── html/
-└── docker-entrypoint.sh*
-
-98 directories, 1900 files
-```
 

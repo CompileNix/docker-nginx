@@ -35,7 +35,8 @@ if [[ "$1" = "/usr/bin/nginx" ]]; then
             "$entrypoint_script"
           else
             # warn on shell scripts without exec bit
-            echo "Ignoring $entrypoint_script, not executable" 2>&1 | prepend
+            echo "Error: can't run non-executable script: $entrypoint_script" 2>&1 | prepend
+            exit 1
           fi
           ;;
         *)

@@ -2,7 +2,6 @@
 
 ARG REQUIRED_TOOLS_IN_DIST_IMAGE="\
   /bin/basename \
-  /bin/bash \
   /bin/cat \
   /bin/cp \
   /bin/cut \
@@ -15,9 +14,14 @@ ARG REQUIRED_TOOLS_IN_DIST_IMAGE="\
   /bin/mkdir \
   /bin/printf \
   /bin/rm \
+  /bin/sh \
   /bin/sort \
   /bin/stat \
   /bin/true \
+  /usr/bin/chmod \
+  /usr/bin/chown \
+  /usr/bin/envsubst \
+  /usr/bin/id \
   /usr/sbin/nologin \
   "
 
@@ -26,6 +30,7 @@ RUN dnf upgrade --refresh -y \
   && dnf install -y \
     curl \
     gcc \
+    gettext-envsubst \
     git \
     lld \
     openssl-devel \
@@ -33,25 +38,6 @@ RUN dnf upgrade --refresh -y \
     tzdata \
     upx \
     wget
-
-FROM base-os AS build-renvsubst
-RUN \
-  cd ~ \
-  && curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly \
-  && source .cargo/env \
-  && rustup component add rust-src --toolchain nightly \
-  # https://github.com/rust-secure-code/cargo-auditable
-  && cargo install cargo-auditable cargo-audit \
-  && git clone https://git.compilenix.org/CompileNix/renvsubst.git \
-  && cd renvsubst \
-  && RUSTFLAGS="-C strip=symbols" CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 CARGO_PROFILE_RELEASE_LTO=true CARGO_PROFILE_RELEASE_OPT_LEVEL=s CARGO_PROFILE_RELEASE_PANIC=abort cargo \
-    +nightly auditable build \
-    -Z build-std=std,panic_abort \
-    -Z build-std-features=panic_immediate_abort \
-    --target x86_64-unknown-linux-gnu \
-    --release \
-  && cargo audit bin target/x86_64-unknown-linux-gnu/release/cnx-renvsubst \
-  && cp -v target/x86_64-unknown-linux-gnu/release/cnx-renvsubst /envsubst
 
 FROM base-os AS build
 
@@ -132,6 +118,15 @@ RUN \
     zlib-devel
 
   # --with-http_perl_module \
+  # --with-http_image_filter_module \
+  # --with-http_xslt_module \
+  # --with-mail \
+  # --with-mail_ssl_module \
+  # --with-compat \ # enables dynamic modules compatibility
+  # --with-http_random_index_module \
+  # --with-http_slice_module \
+  # --with-http_secure_link_module \
+  # --with-http_dav_module
 ARG CONFIG="\
   --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
   --add-module=/usr/src/ngx_brotli \
@@ -152,34 +147,19 @@ ARG CONFIG="\
   --prefix=/etc/nginx \
   --sbin-path=/usr/bin/nginx \
   --user=nginx \
-  --with-compat \
   --with-debug \
   --with-file-aio \
-  --with-http_addition_module \
-  --with-http_auth_request_module \
-  --with-http_flv_module \
-  --with-http_geoip_module \
   --with-http_gunzip_module \
   --with-http_gzip_static_module \
-  --with-http_image_filter_module \
-  --with-http_mp4_module \
-  --with-http_random_index_module \
   --with-http_realip_module \
-  --with-http_secure_link_module \
-  --with-http_slice_module \
   --with-http_ssl_module \
   --with-http_stub_status_module \
-  --with-http_sub_module \
   --with-http_v2_module \
-  --with-http_xslt_module \
-  --with-mail \
-  --with-mail_ssl_module \
   --with-pcre-jit \
   --with-stream \
   --with-stream_geoip_module \
   --with-stream_realip_module \
   --with-stream_ssl_module \
-  --with-stream_ssl_preread_module \
   --with-threads \
   "
 
@@ -223,6 +203,7 @@ RUN \
   # && ldd /usr/lib/nginx/modules/*.so \
   && LIBS=$(ldd /usr/bin/nginx $REQUIRED_TOOLS_IN_DIST_IMAGE | awk '{print $3}' | grep -v '^$' | sort -u) \
   && for LIB_PATH in $LIBS; do echo "Found reqired lib at: $LIB_PATH"; mkdir -pv $(dirname "/tmp/needed_libs$LIB_PATH"); cp -v "$LIB_PATH" "/tmp/needed_libs$LIB_PATH"; done \
+  # required for .so file lookups by dynamic linked executables
   && cp -v /lib64/ld-linux-x86-64.so.2 /tmp/needed_libs/lib64/ \
   && echo "strip /tmp/needed_libs/lib64/* ..." \
   && strip /tmp/needed_libs/lib64/*
@@ -232,7 +213,6 @@ FROM base-os AS dist-os
 ARG REQUIRED_TOOLS_IN_DIST_IMAGE
 
 COPY src/etc/group src/etc/passwd src/etc/shadow /etc/
-COPY --from=build-renvsubst /envsubst /tmp/scratch/bin/
 COPY --from=build /usr/bin/nginx /tmp/scratch/usr/bin/
 COPY --from=build /tmp/needed_libs /tmp/needed_libs
 # COPY --from=build /usr/lib/nginx/modules/ /usr/lib/nginx/modules/
@@ -279,41 +259,35 @@ RUN \
   && cp -v /etc/ssl/certs/ca-certificates.crt /tmp/scratch/etc/ssl/certs/ \
   && mv -v /var/log/nginx /tmp/scratch/var/log/ \
   && rm -rv /tmp/scratch/etc/nginx/html \
-  && chown -Rv nginx:nginx /tmp/scratch/etc/nginx \
-  && chown -Rv nginx:nginx /tmp/scratch/var/cache/nginx \
-  && chown -Rv nginx:nginx /tmp/scratch/var/log/nginx \
-  && chown -Rv nginx:nginx /tmp/scratch/var/run/nginx \
   && chmod -v 1777 /tmp/scratch/tmp \
-  && chmod -x -v /tmp/scratch/lib64/*.so* \
-  && chmod 0777 -Rv /tmp/scratch/etc/nginx \
-  && chmod 0777 -Rv /tmp/scratch/var/cache/nginx \
-  && chmod 0777 -Rv /tmp/scratch/var/log/nginx \
-  && chmod 0777 -Rv /tmp/scratch/var/run/nginx
+  && chmod +x -v /tmp/scratch/lib64/*.so*
 
+COPY webroot/test.html* /tmp/scratch/var/www/html/
+RUN cd /tmp/scratch/var/www/html/ && mv -v test.html index.html && mv -v test.html.gz index.html.gz && mv -v test.html.br index.html.br
 COPY src/docker-entrypoint.sh /tmp/scratch/
 COPY src/docker-entrypoint.d/* /tmp/scratch/docker-entrypoint.d/
 
 RUN \
   cd /tmp/scratch \
-  && ln -s lib64 lib \
-  && tree -a -F --dirsfirst -A -n . \
-  && echo "Compressing binaries using upx ..." \
-  && upx --best --lzma usr/bin/nginx bin/* \
-  && cd bin \
-  && ln -s bash sh
+  # && echo "Compressing binaries using upx ..." \
+  # && upx --best --lzma usr/bin/* bin/* \
+  && echo "Create symlinks from /lib -> /lib64 ..." \
+  && ln -s lib64 lib
 
 FROM scratch
 ENV DNS_RESOLVER="1.1.1.1"
 ENV NGINX_ENVSUBST_TEMPLATE_SUFFIX=".conf"
 ENV NGINX_LOG_FORMAT_NAME="main"
 ENV NGINX_SERVER_HEADER=""
-ENV NGINX_WORKER_PROCESSES="2"
+ENV NGINX_WORKER_PROCESSES="auto"
 ENV TZ="UTC"
+ENV USER_ID="101"
+ENV GROUP_ID="101"
 
 COPY --from=dist-os /tmp/scratch /
 
-USER nginx:nginx
-EXPOSE 2080 2443
+USER root
+EXPOSE 80 443
 STOPSIGNAL SIGQUIT
 
 ENTRYPOINT ["/docker-entrypoint.sh"]

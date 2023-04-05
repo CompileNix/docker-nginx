@@ -1,8 +1,20 @@
 // vim: sw=2 et
 
-function hello(r) {
-  r.return(200, 'Hello world!\n');
+async function date(r) {
+  r.return(200, new Date() + '\n')
 }
 
-export default {hello};
+async function hello(r) {
+  r.return(200, 'Hello world from nginx njs!\n')
+}
+
+async function version(r) {
+  r.return(200, 'njs v' + njs.version + '\n')
+}
+
+export default {
+  date,
+  hello,
+  version,
+}
 

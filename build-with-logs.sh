@@ -10,11 +10,11 @@
 #    ‘@’ or ‘*’, or array variables subscripted with ‘@’ or ‘*’, as an error
 #    when performing parameter expansion. An error message will be written to
 #    the standard error, and a non-interactive shell will exit.
-# pipefail: If set, the return value of a pipeline is the value of the last
+#: If set, the return value of a pipeline is the value of the last
 #           (rightmost) command to exit with a non-zero status, or zero if
 #           all commands in the pipeline exit successfully. This option is
 #           disabled by default.
-set -eu pipefail
+set -eu
 
 if [ ! -f ".env" ]; then
   cp -v "example.env" ".env"

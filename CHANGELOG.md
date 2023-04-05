@@ -1,4 +1,65 @@
 # Changes
+
+## 1.23.3: Wed, 05 Apr 2023 11:48:57 GMT
+
+Build log: [1.23.4-ac779115ed6e-2023-04-05.1143.log](https://compilenix.org/static/build-logs/nginx/1.23.4-ac779115ed6e-2023-04-05.1143.log)
+
+### Changes
+- update nginx from 1.23.3 to 1.23.4
+  - we are now only building nginx mainline versions
+- update njs from 0.7.10 to 0.7.11
+- update openssl from 3.0.7 to 3.0.8
+- switch from static linked binary to dynamically linked
+- add `add-user.sh` and `permissions.sh`
+- put image name into env variable
+- dont build deps which can be linked from build-env os
+  - openssl
+  - pcre
+  - zlib
+- removed busybox; we are using build-env os binaries instead
+- no custom CFLAGS anymore; we are using now the same as fedora does
+- run `strip` on shared objects as well, in case there is something to
+  remove from any
+- remove default http response header `referrer-policy` from nginx config
+- cleanup `/etc/{group,passwd,shadow}` files
+  - remove some unused users and groups
+  - switch `nginx` user and group id from `1000` to `101`
+- remove obsolete zlib patch
+- add tools / binaries:
+  - `chmod`
+  - `chown`
+  - `id`
+- remove nginx modules:
+  - `http_xslt`
+  - `mail`
+  - `mail_ssl`
+  - `compat`
+  - `http_random_index`
+  - `http_slice`
+  - `http_secure_link`
+  - `http_dav`
+- add default index.html file to `/var/www/html`
+- change default value of `NGINX_WORKER_PROCESSES` from `2` to `auto`
+- switch from `nginx` user to `root`, this can be overriden via `--user`
+- change default exposed ports from `2080` & `2443` to `80` & `443`
+- add `status.conf`, listening on localhost inside the container on port `81`, serving `stub_status` at `/`.
+- update envsubst ob nginx configs on container start logic:
+  - merge existing configs and those coming from a mapped volume on every container start.
+    this allowes changed env vars between starts to be re-applied and updates to mapped
+    nginx conig files to take effect.
+- update file permissions on container start for merged configs in `/etc/nginx`
+- update `nginx.conf`:
+  - disable on-the-fly brotli compression of responses. Can be enabled via `brotli on;`
+  - same with on-the-fly gzip compression. Can be enabled via `gzip on;` and `gzip_vary on;`
+
+### Nginx Build Info
+```
+nginx version: nginx/1.23.4 (ac779115ed6e)
+built with OpenSSL 3.0.8 7 Feb 2023
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.34 --add-module=/usr/src/ngx_brotli --add-module=/usr/src/njs-26dd3824b9f3/nginx --build=ac779115ed6e --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-debug --with-file-aio --with-http_gunzip_module --with-http_gzip_static_module --with-http_realip_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-pcre-jit --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-threads --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fPIC -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection' --with-ld-opt='-fPIC -Wl,-z,relro -Wl,--as-needed -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1'
+```
+
 ## 1.22.1: Sun, 08 Jan 2023 23:24:59 GMT
 
 Build log: [1.22.1-af7a3fb7558f-2023-01-08.2254.log](https://compilenix.org/static/build-logs/nginx/1.22.1-af7a3fb7558f-2023-01-08.2254.log)

@@ -20,6 +20,24 @@ else
   function prepend() { echo -n; }
 fi
 
+# on first start: copy nginx default configs to /var/lib/nginx/default_config
+# on subsequent starts: remove generated configs from /etc/nginx and restore nginx default configs
+if [ ! -f "/var/run/nginx/envsubst-on-templates-done" ]; then
+  echo "Copy default nginx configs to /var/lib/nginx/default_config" 2>&1 | prepend
+  mkdir $VERBOSE_FLAG -p /var/lib/nginx/default_config 2>&1 | prepend
+  cp $VERBOSE_FLAG -r /etc/nginx/* /var/lib/nginx/default_config/ 2>&1 | prepend
+else
+  echo "Copy default nginx configs from /var/lib/nginx/default_config to /etc/nginx/" 2>&1 | prepend
+  rm $VERBOSE_FLAG -r /etc/nginx 2>&1 | prepend
+  mkdir $VERBOSE_FLAG -p /etc/nginx 2>&1 | prepend
+  cp $VERBOSE_FLAG -r /var/lib/nginx/default_config/* /etc/nginx/ 2>&1 | prepend
+fi
+
+if [ -d "/config" ]; then
+  echo "Copy nginx configs from mounted volume at /config to /etc/nginx/" 2>&1 | prepend
+  cp $VERBOSE_FLAG -r /config/* /etc/nginx/ 2>&1 | prepend
+fi
+
 templates="/etc/nginx ${NGINX_ENVSUBST_TEMPLATES:-}"
 suffix="$NGINX_ENVSUBST_TEMPLATE_SUFFIX"
 
@@ -47,4 +65,6 @@ done
 
 echo "Cleanup nginx config files in temp dir..." 2>&1 | prepend
 rm $VERBOSE_FLAG -rf "/tmp/nginx-envsubst" 2>&1 | prepend
+
+echo >"/var/run/nginx/envsubst-on-templates-done"
 

@@ -20,11 +20,12 @@ else
   function prepend() { echo -n; }
 fi
 
-if [ ! -d "/config" ]; then
-  echo "Nothing found on /config/, we are done here" 2>&1 | prepend
-  exit 0
-fi
+echo "Update nginx config permissions" 2>&1 | prepend
 
-echo "Copy and override nginx config files from mapped volume (/config/) to /etc/nginx/ ..." 2>&1 | prepend
-cp $VERBOSE_FLAG -rf /config/* /etc/nginx 2>&1 | prepend
+chown -R nginx:nginx /etc/nginx 2>&1 | prepend
+chmod -R g+r /etc/nginx 2>&1 | prepend
+chmod -R u+r /etc/nginx 2>&1 | prepend
+chmod -R o-rwx /etc/nginx 2>&1 | prepend
+chmod -R g-w /etc/nginx 2>&1 | prepend
+chmod -R u-w /etc/nginx 2>&1 | prepend
 

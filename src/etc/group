@@ -18,12 +18,8 @@ voice:x:22:
 cdrom:x:24:
 floppy:x:25:
 tape:x:26:
-sudo:x:27:
 audio:x:29:
 dip:x:30:
-www-data:x:33:
-backup:x:34:
-operator:x:37:
 list:x:38:
 irc:x:39:
 src:x:40:
@@ -33,8 +29,5 @@ utmp:x:43:
 video:x:44:
 sasl:x:45:
 plugdev:x:46:
-staff:x:50:
-games:x:60:
-users:x:100:
 nogroup:x:65534:
-nginx:x:101:
+
