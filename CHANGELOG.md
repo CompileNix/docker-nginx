@@ -1,6 +1,21 @@
 # Changes
 
-## 1.23.3: Wed, 05 Apr 2023 11:48:57 GMT
+## 1.23.4: Tue, 11 Apr 2023 11:17:11 GMT
+
+Build log: [1.23.4-ac779115ed6e-2023-04-11.1117.log](https://compilenix.org/static/build-logs/nginx/1.23.4-ac779115ed6e-2023-04-11.1117.log)
+
+### Changes
+- update njs from 0.7.11 to 0.7.12: [Release notes](https://nginx.org/en/docs/njs/changes.html#njs0.7.12)
+
+### Nginx Build Info
+```
+nginx version: nginx/1.23.4 (ac779115ed6e)
+built with OpenSSL 3.0.8 7 Feb 2023
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.34 --add-module=/usr/src/ngx_brotli-6e975bcb015f62e1f303054897783355e2a877dc --add-module=/usr/src/njs-a1faa64d4972/nginx --build=ac779115ed6e --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-debug --with-file-aio --with-http_gunzip_module --with-http_gzip_static_module --with-http_realip_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-pcre-jit --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-threads --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fPIC -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection' --with-ld-opt='-fPIC -Wl,-z,relro -Wl,--as-needed -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1'
+```
+
+## 1.23.4: Wed, 05 Apr 2023 11:48:57 GMT
 
 Build log: [1.23.4-ac779115ed6e-2023-04-05.1143.log](https://compilenix.org/static/build-logs/nginx/1.23.4-ac779115ed6e-2023-04-05.1143.log)
 

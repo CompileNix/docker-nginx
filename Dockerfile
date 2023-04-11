@@ -69,8 +69,8 @@ RUN \
 
 RUN \
   echo "Cloning brotli module (rev $NGX_BROTLI_COMMIT) ..." \
-  && mkdir -pv /usr/src/ngx_brotli \
-  && cd /usr/src/ngx_brotli \
+  && mkdir -pv /usr/src/ngx_brotli-$NGX_BROTLI_COMMIT \
+  && cd /usr/src/ngx_brotli-$NGX_BROTLI_COMMIT \
   && git init \
   && git remote add origin https://github.com/google/ngx_brotli.git \
   && git fetch --depth 1 origin $NGX_BROTLI_COMMIT \
@@ -129,7 +129,7 @@ RUN \
   # --with-http_dav_module
 ARG CONFIG="\
   --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
-  --add-module=/usr/src/ngx_brotli \
+  --add-module=/usr/src/ngx_brotli-$NGX_BROTLI_COMMIT \
   --add-module=/usr/src/njs-$NJS_COMMIT/nginx \
   --build=$NGINX_COMMIT \
   --conf-path=/etc/nginx/nginx.conf \
@@ -179,10 +179,9 @@ RUN \
   && if [ "$MAKE_JOBS" -lt 1 ]; then export MAKE_JOBS=1; fi \
   # Set jobs back to result of nproc if BUILD_THROTTLE is not requested
   && if [[ "$BUILD_THROTTLE" != "y" ]]; then export MAKE_JOBS=$(nproc); fi \
-  && echo "Make job count: $MAKE_JOBS"
-
-RUN \
-  echo "Building nginx ($NGINX_VERSION) ..." \
+  && echo "Make job count: $MAKE_JOBS" \
+  # Building nginx
+  && echo "Building nginx ($NGINX_VERSION) ..." \
   && cd /usr/src/nginx-${NGINX_COMMIT} \
   # cc and ld opts from official fedora builds
   && export CFLAGS="-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fPIC -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64  -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection" \
