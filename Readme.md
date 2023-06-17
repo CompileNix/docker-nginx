@@ -85,7 +85,8 @@ server {
 }
 
 server {
-  listen 443 ssl http2;
+  listen 443 ssl;
+  http2 on;
   server_name domain.tld www.domain.tld;
   root '/var/www/domain.tld';
 
