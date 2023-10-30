@@ -30,6 +30,6 @@ build_logfile="${NGINX_VERSION}-${NGINX_COMMIT}-${build_date_start_timestamp}.lo
 
 echo
 echo "Upload build log command"
-echo "rsync \"log/$build_logfile\" wire:/var/www/compilenix.org/static/build-logs/nginx/$build_logfile"
+echo "rsync \"log/$build_logfile\" wire:/var/www/compilenix.org/static/build-logs/nginx/"
 echo "https://compilenix.org/static/build-logs/nginx/$build_logfile"
 

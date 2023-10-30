@@ -48,6 +48,8 @@ ARG NGINX_VERSION
 ARG NGX_BROTLI_COMMIT
 ARG NJS_COMMIT
 ARG NJS_VERSION
+ARG OPENSSL_CFLAGS
+ARG OPENSSL_VERSION
 ARG REQUIRED_TOOLS_IN_DIST_IMAGE
 
 RUN \
@@ -83,6 +85,12 @@ RUN \
   && wget --no-verbose https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/v${HEADERS_MORE_VERSION}.tar.gz -O headers-more-nginx-module-${HEADERS_MORE_VERSION}.tar.gz \
   && tar -xf headers-more-nginx-module-${HEADERS_MORE_VERSION}.tar.gz
 
+RUN \
+  echo "Downloading OpenSSL (version $OPENSSL_VERSION) ..." \
+  && cd /usr/src \
+  && wget --no-verbose https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz -O openssl-${OPENSSL_VERSION}.tar.gz \
+  && tar -xf openssl-${OPENSSL_VERSION}.tar.gz
+
 # tools required for source patching and building
 RUN \
   dnf install -y \
@@ -104,6 +112,7 @@ RUN \
     libxml2-devel \
     libxslt-devel \
     make \
+    openssl-devel \
     pax-utils \
     pcre2-devel \
     perl-FindBin \
@@ -155,6 +164,7 @@ ARG CONFIG="\
   --with-http_ssl_module \
   --with-http_stub_status_module \
   --with-http_v2_module \
+  --with-openssl=/usr/src/openssl-${OPENSSL_VERSION} \
   --with-pcre-jit \
   --with-stream \
   --with-stream_geoip_module \
@@ -189,6 +199,7 @@ RUN \
   && export LDFLAGS="-fPIC -Wl,-z,relro -Wl,--as-needed  -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -Wl,--build-id=sha1" \
   && ./auto/configure $CONFIG \
     --with-cc-opt="$CFLAGS" \
+    --with-openssl-opt="$OPENSSL_CFLAGS" \
     --with-ld-opt="$LDFLAGS" || cat objs/autoconf.err \
   && make -j$MAKE_JOBS \
   && make install

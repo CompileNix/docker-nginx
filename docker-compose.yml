@@ -14,6 +14,8 @@ services:
         NGX_BROTLI_COMMIT: $NGX_BROTLI_COMMIT
         NJS_COMMIT: $NJS_COMMIT
         NJS_VERSION: $NJS_VERSION
+        OPENSSL_CFLAGS: $OPENSSL_CFLAGS
+        OPENSSL_VERSION: $OPENSSL_VERSION
     image: ${IMAGE_NAME}:${NGINX_VERSION}
     # command: ["/usr/bin/nginx", "-t"]
     environment:

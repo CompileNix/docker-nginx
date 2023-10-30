@@ -43,7 +43,7 @@ if [ ! -f "config/ssl/fullchain.pem" ]; then
   cp -v "config/ssl/cert.pem" "config/ssl/fullchain.pem"
 fi
 
-docker-compose build --progress plain $BUILD_CACHE
+docker-compose build $BUILD_CACHE
 
 # Run config test
 docker run --rm --env-file .env -v "$(pwd)/webroot:/var/www/html:ro,z" $IMAGE_NAME:$NGINX_VERSION /usr/bin/nginx -t

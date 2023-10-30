@@ -10,7 +10,7 @@ A smol [Nginx](https://nginx.org/en/CHANGES) container image, plus:
 The nginx binary is built from source (using fedora) into a `FROM scratch` container image.
 
 ## Supported Container Image Tags<!-- omit from toc -->
-- `1.25.2`, `1.25`, `1`, `latest`
+- `1.25.3`, `1.25`, `1`, `latest`
 
 ## Project Links<!-- omit from toc -->
 - [Container Image Registry](https://hub.docker.com/r/compilenix/nginx)
@@ -104,9 +104,9 @@ Remember to place the required ssl certificates into `./ssl` and add the website
 
 ```sh
 docker run \
-  -v "$(pwd)/sites/domain.tld.conf:/config/sites/domain.tld.conf:ro,z" \
-  -v "$(pwd)/ssl:/config/ssl/domain.tld:ro,z" \
-  -v "$(pwd)/webroot:/var/www/domain.tld:ro,z" \
+  -v "$PWD/sites/domain.tld.conf:/config/sites/domain.tld.conf:ro,z" \
+  -v "$PWD/ssl:/config/ssl/domain.tld:ro,z" \
+  -v "$PWD/webroot:/var/www/domain.tld:ro,z" \
   -p 80:80 \
   -p 443:443 \
   compilenix/nginx
@@ -206,7 +206,7 @@ docker run \
   -it \
   --rm \
   --env-file .env \
-  -v "$(pwd)/webroot:/var/www/html:ro,z" \
+  -v "$PWD/webroot:/var/www/html:ro,z" \
   -v "/some/nginx/config:/config:ro,z" \
   compilenix/nginx \
     /usr/bin/nginx -t
@@ -582,10 +582,10 @@ docker run --rm -it \
   -p "127.0.0.1:$HTTP_PORT:80" \
   -p "127.0.0.1:$HTTP_STUB_PORT:81" \
   -p "127.0.0.1:$HTTPS_PORT:443" \
-  -v "$(pwd)/webroot:/var/www/html:ro,z" \
-  -v "$(pwd)/njs/njs.conf:/config/njs.conf:ro,z" \
-  -v "$(pwd)/njs/http.js:/config/njs/http.js:ro,z" \
-  -v "$(pwd)/njs/localhost.conf:/config/sites/localhost.conf:ro,z" \
+  -v "$PWD/webroot:/var/www/html:ro,z" \
+  -v "$PWD/njs/njs.conf:/config/njs.conf:ro,z" \
+  -v "$PWD/njs/http.js:/config/njs/http.js:ro,z" \
+  -v "$PWD/njs/localhost.conf:/config/sites/localhost.conf:ro,z" \
   "compilenix/nginx:$NGINX_VERSION"
 
 # Test commands from new shell on the same host
@@ -616,7 +616,7 @@ docker run --rm -it \
   -p "127.0.0.1:$HTTP_PORT:80" \
   -p "127.0.0.1:$HTTP_STUB_PORT:81" \
   -p "127.0.0.1:$HTTPS_PORT:443" \
-  -v "$(pwd)/webroot:/var/www/html:ro,z" \
+  -v "$PWD/webroot:/var/www/html:ro,z" \
   "compilenix/nginx:$NGINX_VERSION"
 
 # Test commands from new shell on the same host
@@ -641,11 +641,12 @@ If you want to change any versions used to build the container image take a look
 - [ ] Update `CHANGELOG.md`
 - [ ] Create / Update Docker Image Tags
   - ```sh
-    docker image tag compilenix/nginx:1.25.2 compilenix/nginx:latest
-    docker image tag compilenix/nginx:1.25.2 compilenix/nginx:1.25
-    docker image tag compilenix/nginx:1.25.2 compilenix/nginx:1
+    docker image tag compilenix/nginx:1.25.3 compilenix/nginx:latest
+    docker image tag compilenix/nginx:1.25.3 compilenix/nginx:1.25
+    docker image tag compilenix/nginx:1.25.3 compilenix/nginx:1
     # inspect image tags
     docker image ls compilenix/nginx
     ```
 - [ ] Run `./push-image-tags.sh`
+- [ ] Update Supported Container Image Tags on [hub.docker.com](https://hub.docker.com/repository/docker/compilenix/nginx/general)
 
