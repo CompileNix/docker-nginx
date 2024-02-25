@@ -23,12 +23,13 @@ build_date_start=$(LC_TIME="en_US.UTF-8" TZ="UTC" date +"%Y-%m-%d.%H%M")
 
 source ".env"
 
-mkdir -pv "config/ssl"
-if [ ! -f "config/ssl/dhparam.pem" ]; then
-  openssl dhparam -out "config/ssl/dhparam.pem" 2048
+mkdir -pv "config"
+if [ ! -f "config/dhparam.pem" ]; then
+  openssl dhparam -out "config/dhparam.pem" 4096
 fi
+mkdir -pv "config/ssl"
 if [ ! -f "config/ssl/privkey.pem" ]; then
-  openssl genrsa -out "config/ssl/privkey.pem" 2048
+  openssl genrsa -out "config/ssl/privkey.pem" 4096
 fi
 if [ -f "config/ssl/cert_temp.pem" ]; then
   rm -v "config/ssl/cert_temp.pem"
@@ -43,7 +44,7 @@ if [ ! -f "config/ssl/fullchain.pem" ]; then
   cp -v "config/ssl/cert.pem" "config/ssl/fullchain.pem"
 fi
 
-docker-compose build $BUILD_CACHE
+docker compose build $BUILD_CACHE
 
 # Run config test
 docker run --rm --env-file .env -v "$(pwd)/webroot:/var/www/html:ro,z" $IMAGE_NAME:$NGINX_VERSION /usr/bin/nginx -t

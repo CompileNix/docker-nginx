@@ -1,8 +1,31 @@
 # Changes
 
+## 1.25.4: Sun, 25 Feb 2024 19:47:26 GMT
+
+Build log: [1.25.4-173a0a7dbce5-2024-02-25.1947.log](https://compilenix.org/static/build-logs/nginx/1.25.4-173a0a7dbce5-2024-02-25.1947.log)
+
+### Changes
+- update nginx from 1.25.3 to 1.25.4
+- update njs 0.8.2 to 0.8.3
+- update headers more module from 0.35 to 0.37
+- update base image of build enviroment from Fedora 38 to 39
+- update openssl from 3.0.12 to 3.2.1
+- change default rsa certificate and dhparam size from 2048 bits to 4096 bits
+- add dhparam file to container image
+- remove `AES256+EECDH` and `AES256+EDH` from `ssl_ciphers` in default `nginx.conf`
+- switch from `docker-compose` script to `docker compose` plugin
+
+### Nginx Build Info
+```
+nginx version: nginx/1.25.4 (173a0a7dbce5)
+built with OpenSSL 3.2.1 30 Jan 2024
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.37 --add-module=/usr/src/ngx_brotli-a71f9312c2deb28875acc7bacfdd5695a111aa53 --add-module=/usr/src/njs-3aba7ee62080/nginx --build=173a0a7dbce5 --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-debug --with-file-aio --with-http_gunzip_module --with-http_gzip_static_module --with-http_realip_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-openssl=/usr/src/openssl-3.2.1 --with-pcre-jit --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-threads --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fPIC -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection' --with-openssl-opt='-O2 -pipe' --with-ld-opt='-fPIC -Wl,-z,relro -Wl,--as-needed -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1'
+```
+
 ## 1.25.3: Mon, 30 Oct 2023 16:57:40 GMT
 
-Build log: [1.25.3-294a3d07234f-2023-10-30.1645](https://compilenix.org/static/build-logs/nginx/1.25.3-294a3d07234f-2023-10-30.1645)
+Build log: [1.25.3-294a3d07234f-2023-10-30.1645.log](https://compilenix.org/static/build-logs/nginx/1.25.3-294a3d07234f-2023-10-30.1645.log)
 
 ### Changes
 - build openssl from source again, because fedora ships an outdated version
