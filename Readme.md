@@ -10,7 +10,7 @@ A smol [Nginx](https://nginx.org/en/CHANGES) container image, plus:
 The nginx binary is built from source (using fedora) into a `FROM scratch` container image.
 
 ## Supported Container Image Tags<!-- omit from toc -->
-- `1.25.4`, `1.25`, `1`, `latest`
+- `1.25.5`, `1.25`, `1`, `latest`
 
 ## Project Links<!-- omit from toc -->
 - [Container Image Registry](https://hub.docker.com/r/compilenix/nginx)
@@ -641,9 +641,9 @@ If you want to change any versions used to build the container image take a look
 - [ ] Update `CHANGELOG.md`
 - [ ] Create / Update Docker Image Tags
   - ```sh
-    docker image tag compilenix/nginx:1.25.4 compilenix/nginx:latest
-    docker image tag compilenix/nginx:1.25.4 compilenix/nginx:1.25
-    docker image tag compilenix/nginx:1.25.4 compilenix/nginx:1
+    docker image tag compilenix/nginx:1.25.5 compilenix/nginx:latest
+    docker image tag compilenix/nginx:1.25.5 compilenix/nginx:1.25
+    docker image tag compilenix/nginx:1.25.5 compilenix/nginx:1
     # inspect image tags
     docker image ls compilenix/nginx
     ```
