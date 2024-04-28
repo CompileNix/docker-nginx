@@ -25,7 +25,7 @@ ARG REQUIRED_TOOLS_IN_DIST_IMAGE="\
   /usr/sbin/nologin \
   "
 
-FROM fedora:39 AS base-os
+FROM fedora:40 AS base-os
 RUN dnf upgrade --refresh -y \
   && dnf install -y \
     curl \
