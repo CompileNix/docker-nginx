@@ -586,6 +586,7 @@ docker run --rm -it \
   -v "$PWD/njs/njs.conf:/config/njs.conf:ro,z" \
   -v "$PWD/njs/http.js:/config/njs/http.js:ro,z" \
   -v "$PWD/njs/localhost.conf:/config/sites/localhost.conf:ro,z" \
+  -v "$PWD/config/sites/status.conf:/config/sites/status.conf:ro,z" \
   "compilenix/nginx:$NGINX_VERSION"
 
 # Test commands from new shell on the same host

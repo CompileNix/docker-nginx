@@ -1,4 +1,15 @@
+[TOC]
+
 # Changes
+
+## 1.26.0: Wed, 01 May 2024 22:32:46 GMT
+
+Some config and entrypoint script changes.
+
+### Changes
+- set `HTTP_PROXY` to empty string to mitigate httpoxy
+- disable `ssl_stapling` for default configs, since self-signed certs dont have OCSP
+- add entrypoint script `150-remove-default-sites.sh` to remove default sites if the user supplied one or more site configs via `/config/sites/*.conf`
 
 ## 1.26.0: Sat, 27 Apr 2024 23:41:39 GMT
 
