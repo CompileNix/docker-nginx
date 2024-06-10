@@ -22,7 +22,7 @@ fi
 
 echo "Update nginx config permissions" 2>&1 | prepend
 
-chown -R nginx:nginx /etc/nginx 2>&1 | prepend
+chown -R $USER_NAME:$GROUP_NAME /etc/nginx 2>&1 | prepend
 chmod -R g+r /etc/nginx 2>&1 | prepend
 chmod -R u+r /etc/nginx 2>&1 | prepend
 chmod -R o-rwx /etc/nginx 2>&1 | prepend

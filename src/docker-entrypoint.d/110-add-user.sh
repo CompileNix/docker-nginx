@@ -42,20 +42,17 @@ fi
 
 if [[ "$USER_EXISTS" = "false" ]]; then
   echo "Create nginx user and group" 2>&1 | prepend
-  echo "nginx:x:$USER_ID:$GROUP_ID:nginx user,,,:/nonexistent:/bin/false" >>/etc/passwd
-  echo "nginx:x:$GROUP_ID:" >>/etc/group
+  echo "$USER_NAME:x:$USER_ID:$GROUP_ID:$GROUP_NAME user,,,:/nonexistent:/bin/false" >>/etc/passwd
+  echo "$GROUP_NAME:x:$GROUP_ID:" >>/etc/group
 else
   echo "Nginx user and group already exist" 2>&1 | prepend
 fi
 echo >"/var/run/nginx/user-add-done"
 
 # set required permissions
-chown "$VERBOSE_FLAG" nginx:nginx \
+chown "$VERBOSE_FLAG" $USER_NAME:$GROUP_NAME \
   /var/cache/nginx \
   /var/log/nginx \
   /var/run/nginx \
   2>&1 | prepend
-
-unset USER_ID
-unset GROUP_ID
 

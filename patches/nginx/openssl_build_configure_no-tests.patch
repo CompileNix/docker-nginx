@@ -1,0 +1,13 @@
+diff --git a/auto/lib/openssl/make b/auto/lib/openssl/make
+index a7e9369e7..fa20edb6a 100644
+--- a/auto/lib/openssl/make
++++ b/auto/lib/openssl/make
+@@ -64,7 +64,7 @@ END
+ $OPENSSL/.openssl/include/openssl/ssl.h:	$NGX_MAKEFILE
+ 	cd $OPENSSL \\
+ 	&& if [ -f Makefile ]; then \$(MAKE) clean; fi \\
+-	&& ./config --prefix=$ngx_prefix no-shared no-threads $OPENSSL_OPT \\
++	&& ./config --prefix=$ngx_prefix no-shared no-threads no-tests $OPENSSL_OPT \\
+ 	&& \$(MAKE) \\
+ 	&& \$(MAKE) install_sw LIBDIR=lib
+ 

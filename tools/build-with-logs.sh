@@ -10,6 +10,7 @@
 #    ‘@’ or ‘*’, or array variables subscripted with ‘@’ or ‘*’, as an error
 #    when performing parameter expansion. An error message will be written to
 #    the standard error, and a non-interactive shell will exit.
+# a: Variables defined from now will be exported automatically.
 #: If set, the return value of a pipeline is the value of the last
 #           (rightmost) command to exit with a non-zero status, or zero if
 #           all commands in the pipeline exit successfully. This option is
@@ -21,12 +22,15 @@ if [ ! -f ".env" ]; then
 fi
 
 mkdir -p "log"
+
+set -a
 source ".env"
+set +a
 
 build_date_start_timestamp=$(LC_TIME="en_US.UTF-8" TZ="UTC" date +"%Y-%m-%d.%H%M")
 build_logfile="${NGINX_VERSION}-${NGINX_COMMIT}-${build_date_start_timestamp}.log"
 
-./build.sh 2>&1 | tee "log/$build_logfile"
+./tools/build.sh $* 2>&1 | tee "log/$build_logfile"
 
 echo
 echo "Upload build log command"

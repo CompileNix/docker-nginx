@@ -8,6 +8,6 @@
 #    the standard error, and a non-interactive shell will exit.
 set -u
 
-rm -rv log config/ssl
+rm -rv log
 exit 0
 

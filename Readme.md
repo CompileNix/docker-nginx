@@ -1,62 +1,83 @@
-# docker-nginx<!-- omit from toc -->
-## What is this?<!-- omit from toc -->
+## What is this?
 A smol [Nginx](https://nginx.org/en/CHANGES) container image, plus:
-- [Google's `brotli` compression](https://github.com/google/ngx_brotli)
-- [Nginx njs module](https://hg.nginx.org/njs/)
-- [OpenResty's headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module)
 - [OpenSSL 3](https://github.com/openssl/openssl)
+- Nginx NJS
+- [OpenResty's headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module)
+- [NGINX-based Media Streaming Server (nginx-rtmp-module)](https://github.com/arut/nginx-rtmp-module)
+- [Google's `brotli` compression](https://github.com/google/ngx_brotli)
+- Most optional / non-default nginx modules built-in
 - `sh` & `envsubst` entrypoints for nginx config processing on container startup
 
 The nginx binary is built from source (using fedora) into a `FROM scratch` container image.
 
-## Supported Container Image Tags<!-- omit from toc -->
-- `1.26.0`, `1.26`, `1`, `latest`
-
-## Project Links<!-- omit from toc -->
+## Project Links
 - [Container Image Registry](https://hub.docker.com/r/compilenix/nginx)
 - [Git Repository](https://git.compilenix.org/CompileNix/docker-nginx)
 - [Project issues](https://git.compilenix.org/CompileNix/docker-nginx/-/issues)
 - [Git Mirror 1](https://github.com/CompileNix/docker-nginx)
 - [Git Mirror 2](https://gitlab.com/CompileNix/docker-nginx)
 
-## Table of Contents<!-- omit from toc -->
-- [How to use this image](#how-to-use-this-image)
-  - [Hosting some simple static content on port 80 and 443](#hosting-some-simple-static-content-on-port-80-and-443)
-  - [Provide Your Own Nginx Configuration](#provide-your-own-nginx-configuration)
-    - [Add A New HTTP Server Config Example](#add-a-new-http-server-config-example)
-  - [Using environment variables in nginx configuration](#using-environment-variables-in-nginx-configuration)
-  - [Running nginx using different UID and GID](#running-nginx-using-different-uid-and-gid)
-  - [NJS](#njs)
-  - [Nginx config test](#nginx-config-test)
-  - [Set a custom timezone](#set-a-custom-timezone)
-  - [Set a custom amount of nginx worker processes](#set-a-custom-amount-of-nginx-worker-processes)
-  - [Set a custom nginx http server response header value](#set-a-custom-nginx-http-server-response-header-value)
-  - [Change the DNS resolver nginx will use](#change-the-dns-resolver-nginx-will-use)
-- [Nginx Access Log Format](#nginx-access-log-format)
-  - [main](#main)
-    - [Example "main" Log Message](#example-main-log-message)
-    - [GROK Pattern](#grok-pattern)
-    - [GROK Pattern Example result](#grok-pattern-example-result)
-  - [JSON](#json)
-    - [sent\_http\_name](#sent_http_name)
-    - [upstream\_http\_name](#upstream_http_name)
-    - [cookie\_name](#cookie_name)
-    - [upstream\_cookie\_name](#upstream_cookie_name)
-    - [http3](#http3)
-      - [Available variables as part of the commercial subscription](#available-variables-as-part-of-the-commercial-subscription)
-        - [session\_log\_binary\_id](#session_log_binary_id)
-        - [session\_log\_id](#session_log_id)
-        - [upstream\_queue\_time](#upstream_queue_time)
-    - [Example JSON Log Message](#example-json-log-message)
-- [Building](#building)
-  - [Build Requirements](#build-requirements)
-  - [Build Steps](#build-steps)
-- [Testing](#testing)
-- [Making Updates \& Changes](#making-updates--changes)
-  - [Publish Checklist](#publish-checklist)
+## Supported Container Image Tags
+- `1.27.0`, `1.27`, `1`, `latest`
+- `1.27.0-extras`, `1.27-extras`, `1-extras`, `latest-extras`
+
+## Container Image Variants
+### Default (`1.27.0`, `1.27`, `1`, `latest`)
+This container image has all features and modules built-in that will suit most regular use-cases, while maintaining a low image size.
+
+The following notable features are available:
+- `--with-compat`, so you can dynamically load your own nginx modules on startup
+- `--with-debug`, which enables you to use `debug_connection`
+- `--with-http_gzip_static_module`
+- `--with-http_realip_module`
+- `--with-http_stub_status_module`
+- `--with-http_v2_module`
+- `--with-http_v3_module`
+- `--with-pcre-jit`
+- `--with-stream`
+- `--with-stream_realip_module`
+- Nginx NJS
+- [Google's `brotli` compression](https://github.com/google/ngx_brotli)
+- [OpenResty's headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module)
+- [OpenSSL 3](https://github.com/openssl/openssl)
+- `sh` & `envsubst` entrypoints for nginx config processing on container startup
+
+The following nginx modules are **NOT** available:
+- `--without-http_empty_gif_module`
+- `--without-http_geo_module`
+- `--without-http_grpc_module`
+- `--without-http_memcached_module`
+- `--without-http_mirror_module`
+- `--without-http_scgi_module`
+- `--without-http_ssi_module`
+- `--without-http_uwsgi_module`
+- `--without-mail_imap_module`
+- `--without-mail_pop3_module`
+- `--without-mail_smtp_module`
+- `--without-stream_geo_module`
+
+### Extras (`1.27.0-extras`, `1.27-extras`, `1-extras`, `latest-extras`)
+This container image has all features and modules built-in, that I was able to build, without the focus on low image size.
+
+The following notable features are available:
+- Everything that is also part of the Default image variant
+- Nginx Perl module
+- `--with-http_dav_module`
+- `--with-http_gunzip_module`
+- `--with-http_image_filter_module`
+- `--with-http_random_index_module`
+- `--with-http_secure_link_module`
+- `--with-http_slice_module`
+- `--with-http_xslt_module`
+- `--with-mail`
+- `--with-stream_geoip_module`
+
+## Table of Contents
+
+[TOC]
 
 ## How to use this image
-Also have a look at the following sites to view some additonal examples and guidance on how to use nginx:
+Also have a look at the following sites to view some additional examples and guidance on how to use nginx:
 - https://nginx.org/en/docs/
 - https://hub.docker.com/_/nginx
 
@@ -115,19 +136,17 @@ docker run \
 ### Using environment variables in nginx configuration
 Environment variables can be used in any nginx config file, regardless if they are mapped as a volume, are part of the original container image or copied into custom container images which are based on this one.
 
-Environment variable substitution / templating is performed by [900-envsubst-on-templates.sh](./src/docker-entrypoint.d/900-envsubst-on-templates.sh) on container start.
+Environment variable substitution / template-ing is performed by [900-envsubst-on-templates.sh](./src/docker-entrypoint.d/900-envsubst-on-templates.sh) on container start.
 
 __Mapped nginx config files directly to `/etc/nginx` (instead of `/config`) will be overritten / process by this substitution process!__
 
-Only config files whose name ends with a certian suffix will be processed.
+Only config files whose name ends with a certain suffix will be processed.
 
 This behavior can be changed via the `NGINX_ENVSUBST_TEMPLATE_SUFFIX` environment variable. The default value is defined as "`.conf`".
 
 Here is an example using `docker-compose.yml`:
 ```yaml
 # vim: sw=2 et
-
-version: '2.4'
 
 services:
   nginx:
@@ -145,15 +164,17 @@ services:
       NGINX_HTTP_REDIRECT_LOCATION: "https://domain.tld$$request_uri"
 ```
 
-Also have a look at the coresponding default nginx http server config: [default.conf](./config/sites/default.conf).
+Also have a look at the corresponding default nginx http server config: [default.conf](./config/sites/default.conf).
 
 ### Running nginx using different UID and GID
 Set the `USER_ID` and `GROUP_ID` env variables to the desired uid and gid. The entrypoint [`110-add-user.sh`](./src/docker-entrypoint.d/110-add-user.sh) will create a corresponding nginx user and group at container start.
 
 Defaults are:
 ```sh
-USER_ID="101"
-GROUP_ID="101"
+USER_NAME=nginx
+USER_ID=101
+GROUP_NAME=nginx
+GROUP_ID=101
 ```
 
 ### NJS
@@ -176,8 +197,6 @@ Docker Compose Example:
 ```yaml
 # vim: sw=2 et
 
-version: '2.4'
-
 services:
   nginx:
     image: compilenix/nginx:${NGINX_VERSION}
@@ -197,7 +216,7 @@ curl -vk 'https://127.0.0.1:42663/njs'
 ```
 
 ### Nginx config test
-This can be acomplished by creating and starting a new container with the same parameters, enviroment variables and mapped volumes as the currently running container and by overriding the start command.
+This can be accomplished by creating and starting a new container with the same parameters, environment variables and mapped volumes as the currently running container and by overriding the start command.
 
 Example using `docker run`:
 ```sh
@@ -213,7 +232,7 @@ docker run \
 ```
 
 ### Set a custom timezone
-Simply set the enviroment variable `TZ` to the desired timezone.
+Simply set the environment variable `TZ` to the desired timezone.
 
 Example:
 ```sh
@@ -223,7 +242,7 @@ TZ="Europe/Berlin"
 Default value: `UTC`
 
 ### Set a custom amount of nginx worker processes
-Set the enviroment variable `NGINX_WORKER_PROCESSES` to the desired amount.
+Set the environment variable `NGINX_WORKER_PROCESSES` to the desired amount.
 
 Example:
 ```sh
@@ -233,7 +252,7 @@ NGINX_WORKER_PROCESSES=4
 Default value: `auto`
 
 ### Set a custom nginx http server response header value
-Set the enviroment variable `NGINX_SERVER_HEADER` to the desired value.
+Set the environment variable `NGINX_SERVER_HEADER` to the desired value.
 
 Example:
 ```sh
@@ -243,7 +262,7 @@ NGINX_SERVER_HEADER="nginx"
 Default value: (empty string)
 
 ### Change the DNS resolver nginx will use
-Set the enviroment variable `DNS_RESOLVER` to the desired ip address.
+Set the environment variable `DNS_RESOLVER` to the desired ip address.
 
 This dns server wll be used by nginx to perform dns lookups for dns based upstream targets and OCSP stapling queries.
 
@@ -259,7 +278,7 @@ There are two built-in log formats configured:
 - `main`
 - `json`
 
-Switch the default nginx log format to the json log format by setting the enviroment variable `NGINX_LOG_FORMAT_NAME`.
+Switch the default nginx log format to the json log format by setting the environment variable `NGINX_LOG_FORMAT_NAME`.
 
 Example:
 ```sh
@@ -401,7 +420,7 @@ This log format contains the following properties:
 - upstream_status
 - uri
 
-`binary_remote_addr` is intentionally not incuded beause the nginx built-in json escape system does weired stuff.
+`binary_remote_addr` is intentionally not included because the nginx built-in json escape system does weird stuff.
 
 There are a couple more values you could add, see here [./src/etc/nginx/nginx.conf#L23](./src/etc/nginx/nginx.conf).
 
@@ -426,8 +445,6 @@ Include a arbitrary Cookie with the specified name sent by the upstream server i
 Example: `upstream_cookie_sid`
 
 #### http3
-HTTP/3 isn't in mainline, yet.
-
 Negotiated protocol identifier: "h3" for HTTP/3 over TLS or an empty string.
 
 Example: `http3`
@@ -479,7 +496,7 @@ Example: `upstream_queue_time`
   "limit_rate": "0",
   "limit_req_status": "",
   "msec": "1664306240.619",
-  "nginx_version": "1.26.1",
+  "nginx_version": "1.27.1",
   "pid": "46",
   "pipe": ".",
   "proxy_add_x_forwarded_for": "172.18.0.1",
@@ -553,7 +570,6 @@ Example: `upstream_queue_time`
 ## Building
 ### Build Requirements
 - docker
-- docker-compose
 - git
 - internet connection (HTTP/S)
 - openssl
@@ -564,10 +580,43 @@ git clone https://git.compilenix.org/CompileNix/docker-nginx
 cd docker-nginx
 cp example.env .env
 $EDITOR .env
-./build.sh
+./tools/build.sh
 ```
 
 ## Testing
+### Default Image
+```sh
+source .env
+
+# Generate random port numbers to use for testing and echo them for easy copy & paste to stdout
+export HTTP_PORT="$(shuf -i 32768-49152 -n 1)"; echo "export HTTP_PORT=\"$HTTP_PORT\""
+export HTTP_STUB_PORT="$(shuf -i 32768-49152 -n 1)"; echo "export HTTP_STUB_PORT=\"$HTTP_STUB_PORT\""
+export HTTPS_PORT="$(shuf -i 32768-49152 -n 1)"; echo "export HTTPS_PORT=\"$HTTPS_PORT\""
+
+# start container
+docker run --rm -it \
+  --env-file ".env" \
+  -p "127.0.0.1:$HTTP_PORT:80" \
+  -p "127.0.0.1:$HTTP_STUB_PORT:81" \
+  -p "127.0.0.1:$HTTPS_PORT:443" \
+  -v "$PWD/webroot:/var/www/html:ro,z" \
+  -v "$PWD/config/sites/localhost.conf:/config/sites/localhost.conf:ro,z" \
+  -v "$PWD/config/sites/status.conf:/config/sites/status.conf:ro,z" \
+  "$IMAGE_NAME:$NGINX_VERSION"
+
+# Test commands from new shell on the same host
+curl -v "http://127.0.0.1:$HTTP_PORT/test.html"
+# <h1>It works!</h1>
+curl -vk "https://127.0.0.1:$HTTPS_PORT/test.html"
+# <h1>It works!</h1>
+curl -v "http://127.0.0.1:$HTTP_STUB_PORT/"
+# Active connections: 1
+# server accepts handled requests
+#  3 3 3
+# Reading: 0 Writing: 1 Waiting: 0
+```
+
+### Extras Image
 ```sh
 source .env
 
@@ -587,7 +636,7 @@ docker run --rm -it \
   -v "$PWD/njs/http.js:/config/njs/http.js:ro,z" \
   -v "$PWD/njs/localhost.conf:/config/sites/localhost.conf:ro,z" \
   -v "$PWD/config/sites/status.conf:/config/sites/status.conf:ro,z" \
-  "compilenix/nginx:$NGINX_VERSION"
+  "$IMAGE_NAME:$NGINX_VERSION-extras"
 
 # Test commands from new shell on the same host
 curl -v "http://127.0.0.1:$HTTP_PORT/"
@@ -611,44 +660,54 @@ curl -v "http://127.0.0.1:$HTTP_STUB_PORT/"
 #  8 8 8 
 # Reading: 0 Writing: 1 Waiting: 0 
 
-# start container
+# Test perl example 
 docker run --rm -it \
   --env-file ".env" \
   -p "127.0.0.1:$HTTP_PORT:80" \
-  -p "127.0.0.1:$HTTP_STUB_PORT:81" \
-  -p "127.0.0.1:$HTTPS_PORT:443" \
+  -v "$PWD/src/etc/nginx/nginx.conf:/config/nginx.conf:ro,z" \
   -v "$PWD/webroot:/var/www/html:ro,z" \
-  "compilenix/nginx:$NGINX_VERSION"
+  -v "$PWD/perl/perl.conf:/config/perl.conf:ro,z" \
+  -v "$PWD/perl/lib:/config/perl/lib:ro,z" \
+  -v "$PWD/perl/localhost.conf:/config/sites/localhost.conf:ro,z" \
+  "$IMAGE_NAME:$NGINX_VERSION-extras"
 
 # Test commands from new shell on the same host
+curl -v "http://127.0.0.1:$HTTP_PORT/"
+# hello!
+# <br/>/ exists!
 curl -v "http://127.0.0.1:$HTTP_PORT/test.html"
-# <h1>It works!</h1>
-curl -vk "https://127.0.0.1:$HTTPS_PORT/test.html"
-# <h1>It works!</h1>
+# hello!
+# <br/>/test.html exists!
+curl -v "http://127.0.0.1:$HTTP_PORT/fooo_bar.html"
+# hello!
 ```
 
 ## Making Updates & Changes
 If you want to change any versions used to build the container image take a look into `.env`.
 
-### Publish Checklist
+### Checklist
 - [ ] Update or create `.env`:
   - ```sh
     cp example.env .env
     ```
-- [ ] Run `./clean.sh && ./build-with-logs.sh`
+- [ ] Run `./tools/build-with-logs.sh Dockerfile`
+- [ ] Run `./tools/build-with-logs.sh extras.Dockerfile extras`
 - [ ] [Testing](#testing)
-- [ ] Upload build logs (printed out at the end of previous step)
+- [ ] Upload build logs (printed out at the end of the `build-with-logs.sh` command)
 - [ ] Update [Supported Container Image Tags](#supported-container-image-tags)
 - [ ] Update `CHANGELOG.md`
 - [ ] Remove Old Docker Image Tags
 - [ ] Create / Update Docker Image Tags
   - ```sh
-    docker image tag compilenix/nginx:1.26.0 compilenix/nginx:latest
-    docker image tag compilenix/nginx:1.26.0 compilenix/nginx:1.26
-    docker image tag compilenix/nginx:1.26.0 compilenix/nginx:1
+    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}" "${IMAGE_NAME}:latest"
+    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}" "${IMAGE_NAME}:1.27"
+    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}" "${IMAGE_NAME}:1"
+    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-extras" "${IMAGE_NAME}:latest-extras"
+    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-extras" "${IMAGE_NAME}:1.27-extras"
+    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-extras" "${IMAGE_NAME}:1-extras"
     # inspect image tags
-    docker image ls compilenix/nginx
+    docker image ls "${IMAGE_NAME}"
     ```
-- [ ] Run `./push-image-tags.sh`
+- [ ] Run `./tools/push-image-tags.sh`
 - [ ] Update Supported Container Image Tags on [hub.docker.com](https://hub.docker.com/repository/docker/compilenix/nginx/general)
 

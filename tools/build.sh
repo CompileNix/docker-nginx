@@ -11,6 +11,7 @@
 #    when performing parameter expansion. An error message will be written to
 #    the standard error, and a non-interactive shell will exit.
 # v: Print shell input lines as they are read.
+# a: Variables defined from now will be exported automatically.
 #: If set, the return value of a pipeline is the value of the last
 #           (rightmost) command to exit with a non-zero status, or zero if
 #           all commands in the pipeline exit successfully. This option is
@@ -21,11 +22,13 @@ build_date_start_timestamp=$(date +%s)
 build_date_start_pretty=$(LC_TIME="en_US.UTF-8" TZ="GMT" date "+%a, %d %b %Y %T %Z")
 build_date_start=$(LC_TIME="en_US.UTF-8" TZ="UTC" date +"%Y-%m-%d.%H%M")
 
+set -a
 source ".env"
+set +a
 
 mkdir -pv "config"
-if [ ! -f "config/dhparam.pem" ]; then
-  openssl dhparam -out "config/dhparam.pem" 4096
+if [ ! -f "config/ssl/dhparam.pem" ]; then
+  openssl dhparam -out "config/ssl/dhparam.pem" 4096
 fi
 mkdir -pv "config/ssl"
 if [ ! -f "config/ssl/privkey.pem" ]; then
@@ -44,13 +47,39 @@ if [ ! -f "config/ssl/fullchain.pem" ]; then
   cp -v "config/ssl/cert.pem" "config/ssl/fullchain.pem"
 fi
 
-docker compose build $BUILD_CACHE
+DOCKERFILE="$1"
+if [[ "$DOCKERFILE" = "" ]]; then
+  echo "Arg 1 is missing: Dockerfile path"
+  exit 1
+fi
+
+ARG_2="${2:-}"
+if [[ "$ARG_2" = "" ]]; then
+  IMAGE_TAG="$NGINX_VERSION"
+else
+  IMAGE_TAG="$NGINX_VERSION-$ARG_2"
+fi
+
+DOCKER_BUILDKIT=0 docker build \
+  $BUILD_CACHE \
+  --file "$DOCKERFILE" \
+  --build-arg BUILD_THROTTLE \
+  --build-arg HEADERS_MORE_VERSION \
+  --build-arg NGINX_COMMIT \
+  --build-arg NGINX_VERSION \
+  --build-arg NGX_BROTLI_COMMIT \
+  --build-arg NJS_COMMIT \
+  --build-arg NJS_VERSION \
+  --build-arg OPENSSL_VERSION \
+  --build-arg RTMP_VERSION \
+  --tag "${IMAGE_NAME}:${IMAGE_TAG}" \
+  .
 
 # Run config test
-docker run --rm --env-file .env -v "$(pwd)/webroot:/var/www/html:ro,z" $IMAGE_NAME:$NGINX_VERSION /usr/bin/nginx -t
+docker run --rm --env-file .env -v "$(pwd)/webroot:/var/www/html:ro,z" "$IMAGE_NAME:$IMAGE_TAG" /usr/bin/nginx -t
 
 # Get build version info
-docker run --rm --env-file .env -e ENTRYPOINT_QUIET=y -v "$(pwd)/webroot:/var/www/html:ro,z" $IMAGE_NAME:$NGINX_VERSION /usr/bin/nginx -V
+docker run --rm --env-file .env -e ENTRYPOINT_QUIET=y -v "$(pwd)/webroot:/var/www/html:ro,z" "$IMAGE_NAME:$IMAGE_TAG" /usr/bin/nginx -V
 
 build_date_end_timestamp=$(date +%s)
 build_date_end_pretty=$(LC_TIME="en_US.UTF-8" TZ="GMT" date "+%a, %d %b %Y %T %Z")

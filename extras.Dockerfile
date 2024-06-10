@@ -25,10 +25,10 @@ ARG REQUIRED_TOOLS_IN_DIST_IMAGE="\
   /usr/sbin/nologin \
   "
 
-  FROM fedora:40 AS base-os
+FROM fedora:40 AS base-os
 
-  # tools required for source patching and building
-  RUN dnf upgrade --refresh -y \
+# tools required for source patching and building
+RUN dnf upgrade --refresh -y \
     && dnf install -y \
       autoconf \
       automake \
@@ -158,30 +158,29 @@ ARG CONFIG="\
   --with-compat \
   --with-debug \
   --with-file-aio \
+  --with-http_dav_module \
+  --with-http_gunzip_module \
   --with-http_gzip_static_module \
+  --with-http_image_filter_module \
+  --with-http_perl_module \
+  --with-http_random_index_module \
   --with-http_realip_module \
+  --with-http_secure_link_module \
+  --with-http_slice_module \
   --with-http_ssl_module \
   --with-http_stub_status_module \
   --with-http_v2_module \
   --with-http_v3_module \
+  --with-http_xslt_module \
+  --with-mail \
+  --with-mail_ssl_module \
   --with-openssl=/usr/src/openssl-${OPENSSL_VERSION} \
   --with-pcre-jit \
   --with-stream \
+  --with-stream_geoip_module \
   --with-stream_realip_module \
   --with-stream_ssl_module \
   --with-threads \
-  --without-http_empty_gif_module \
-  --without-http_geo_module \
-  --without-http_grpc_module \
-  --without-http_memcached_module \
-  --without-http_mirror_module \
-  --without-http_scgi_module \
-  --without-http_ssi_module \
-  --without-http_uwsgi_module \
-  --without-mail_imap_module \
-  --without-mail_pop3_module \
-  --without-mail_smtp_module \
-  --without-stream_geo_module \
   "
 
 COPY ./patches /patches
@@ -202,6 +201,8 @@ RUN \
   # Set jobs back to result of nproc if BUILD_THROTTLE is not requested
   && if [[ "$BUILD_THROTTLE" != "y" ]]; then export MAKE_JOBS=$(nproc); fi \
   && echo "Make job count: $MAKE_JOBS" \
+  # Building nginx
+  && echo "Building nginx ($NGINX_VERSION) ..." \
   && cd /usr/src/nginx-${NGINX_COMMIT} \
   # cc and ld opts from official fedora builds
   # nginx: https://packages.fedoraproject.org/pkgs/nginx/nginx/
@@ -213,12 +214,10 @@ RUN \
   && export CFLAGS="-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer " \
   && export CXXFLAGS="$CFLAGS" \
   && export LDFLAGS="-Wl,-z,relro -Wl,--as-needed  -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld-errors -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes " \
-  && echo "Configure nginx ($NGINX_VERSION)" \
   && ./auto/configure $CONFIG \
     --with-cc-opt="$CFLAGS" \
     --with-openssl-opt="-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer " \
     --with-ld-opt="$LDFLAGS" || cat objs/autoconf.err \
-  && echo "Building nginx ($NGINX_VERSION) ..." \
   && make -j$MAKE_JOBS \
   && make install
 
@@ -244,6 +243,9 @@ COPY src/etc/group src/etc/passwd src/etc/shadow /etc/
 COPY --from=build /usr/bin/nginx /tmp/scratch/usr/bin/
 COPY --from=build /tmp/needed_libs /tmp/needed_libs
 # COPY --from=build /usr/lib/nginx/modules/ /tmp/nginx/modules/
+COPY --from=build /usr/local/lib64/perl5 /tmp/perl/usr/local/lib64/perl5
+COPY --from=build /usr/lib64/perl5 /tmp/perl/usr/lib64/perl5
+COPY --from=build /usr/share/perl5 /tmp/perl/usr/share/perl5
 COPY --from=build /etc/nginx /etc/nginx
 COPY src/etc/nginx/ /etc/nginx
 COPY config/ /etc/nginx
@@ -253,7 +255,6 @@ RUN \
   rm -v /etc/nginx/*.default \
   # link to nginx modules
   && ln -sv /usr/lib/nginx/modules /etc/nginx/modules \
-  # forward error logs to docker log collector
   && mkdir -pv /var/log/nginx \
   # && touch /var/log/nginx/access.log /var/log/nginx/error.log \
   && ln -sfv /dev/stdout /var/log/nginx/access.log \
@@ -261,6 +262,8 @@ RUN \
   # prepare new filesystem structure for next build stage
   && mkdir -pv /tmp/scratch/bin \
   && mkdir -pv /tmp/scratch/docker-entrypoint.d \
+  && mkdir -pv /tmp/scratch/etc/nginx/njs \
+  && mkdir -pv /tmp/scratch/etc/nginx/perl/lib \
   && mkdir -pv /tmp/scratch/etc/nginx/ssl \
   && mkdir -pv /tmp/scratch/etc/ssl/certs \
   && mkdir -pv /tmp/scratch/tmp \
@@ -275,11 +278,14 @@ RUN \
   && mkdir -pv /tmp/scratch/var/log/nginx \
   && mkdir -pv /tmp/scratch/var/run/nginx \
   && mkdir -pv /tmp/scratch/var/www/html \
+  && mkdir -pv /tmp/scratch/usr/local/lib64 \
+  && mkdir -pv /tmp/scratch/usr/lib64 \
   && touch /tmp/scratch/etc/nginx/njs.conf \
   && touch /tmp/scratch/etc/nginx/perl.conf \
   && cp -rv /tmp/needed_libs/* /tmp/scratch/ \
   # && cp -rv /tmp/nginx/modules /tmp/scratch/usr/lib/nginx/ \
   && cp -rv /etc/nginx /tmp/scratch/etc/ \
+  && cp -rv /tmp/perl/* /tmp/scratch/ \
   && cp -r /usr/share/zoneinfo /tmp/scratch/usr/share/ \
   && cp -v $REQUIRED_TOOLS_IN_DIST_IMAGE /tmp/scratch/bin/ \
   && cp -v /etc/group /tmp/scratch/etc/ \
@@ -321,6 +327,7 @@ ENV GROUP_ID="101"
 COPY --from=dist-os /tmp/scratch /
 
 USER root
+EXPOSE 80 443
 STOPSIGNAL SIGQUIT
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
