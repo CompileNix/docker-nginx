@@ -599,6 +599,7 @@ docker run --rm -it \
   -p "127.0.0.1:$HTTP_PORT:80" \
   -p "127.0.0.1:$HTTP_STUB_PORT:81" \
   -p "127.0.0.1:$HTTPS_PORT:443" \
+  -p "127.0.0.1:$HTTPS_PORT:443/udp" \
   -v "$PWD/webroot:/var/www/html:ro,z" \
   -v "$PWD/config/sites/localhost.conf:/config/sites/localhost.conf:ro,z" \
   -v "$PWD/config/sites/status.conf:/config/sites/status.conf:ro,z" \
@@ -609,6 +610,8 @@ curl -v "http://127.0.0.1:$HTTP_PORT/test.html"
 # <h1>It works!</h1>
 curl -vk "https://127.0.0.1:$HTTPS_PORT/test.html"
 # <h1>It works!</h1>
+docker run -it --rm --network host ymuski/curl-http3 curl -vk "https://127.0.0.1:$HTTPS_PORT/server_protocol" --http3
+# server_protocol: HTTP/3.0
 curl -v "http://127.0.0.1:$HTTP_STUB_PORT/"
 # Active connections: 1
 # server accepts handled requests
