@@ -690,8 +690,8 @@ If you want to change any versions used to build the container image take a look
   - ```sh
     cp example.env .env
     ```
-- [ ] Run `./tools/build-with-logs.sh Dockerfile`
-- [ ] Run `./tools/build-with-logs.sh extras.Dockerfile extras`
+- [ ] Run `./tools/build-with-logs.sh ./docker/latest.Dockerfile`
+- [ ] Run `./tools/build-with-logs.sh ./docker/latest-extras.Dockerfile extras`
 - [ ] [Testing](#testing)
 - [ ] Upload build logs (printed out at the end of the `build-with-logs.sh` command)
 - [ ] Update [Supported Container Image Tags](#supported-container-image-tags)
