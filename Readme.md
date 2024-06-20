@@ -612,6 +612,7 @@ curl -vk "https://127.0.0.1:$HTTPS_PORT/test.html"
 # <h1>It works!</h1>
 docker run -it --rm --network host ymuski/curl-http3 curl -vk "https://127.0.0.1:$HTTPS_PORT/server_protocol" --http3
 # server_protocol: HTTP/3.0
+# TODO: add test for static {gzip, brotli, zstd} using https://github.com/stunnel/static-curl
 curl -v "http://127.0.0.1:$HTTP_STUB_PORT/"
 # Active connections: 1
 # server accepts handled requests

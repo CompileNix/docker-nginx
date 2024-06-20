@@ -71,9 +71,11 @@ ARG REQUIRED_TOOLS_IN_DIST_IMAGE="\
       tree \
       tzdata \
       upx \
+      libzstd-devel \
       wget \
       which \
-      zlib-devel
+      zlib-devel \
+      zstd
 
 FROM base-os AS build
 
@@ -87,6 +89,7 @@ ARG NJS_VERSION
 ARG OPENSSL_VERSION
 ARG REQUIRED_TOOLS_IN_DIST_IMAGE
 ARG RTMP_VERSION
+ARG ZSTD_MODULE_VERSION
 
 RUN \
   env | sort
@@ -116,6 +119,12 @@ RUN \
   && tar -xf headers-more-nginx-module-${HEADERS_MORE_VERSION}.tar.gz
 
 RUN \
+  echo "Downloading zstd-nginx-module (version $ZSTD_MODULE_VERSION) ..." \
+  && cd /usr/src \
+  && wget --no-verbose https://github.com/tokers/zstd-nginx-module/archive/refs/tags/${ZSTD_MODULE_VERSION}.tar.gz -O zstd-nginx-module-${ZSTD_MODULE_VERSION}.tar.gz \
+  && tar -xf zstd-nginx-module-${ZSTD_MODULE_VERSION}.tar.gz
+
+RUN \
   echo "Downloading nginx njs module v${NJS_VERSION} (version $NJS_COMMIT) ..." \
   && cd /usr/src \
   && wget --no-verbose https://github.com/nginx/njs/archive/refs/tags/${NJS_VERSION}.tar.gz -O njs-${NJS_COMMIT}.tar.gz \
@@ -138,7 +147,8 @@ ARG CONFIG="\
   --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
   --add-module=/usr/src/nginx-rtmp-module-$RTMP_VERSION \
   --add-module=/usr/src/ngx_brotli-$NGX_BROTLI_COMMIT \
-  --add-module=/usr/src/njs-$NJS_VERSION/nginx \
+  --add-module=/usr/src/njs-${NJS_VERSION}/nginx \
+  --add-module=/usr/src/zstd-nginx-module-$ZSTD_MODULE_VERSION \
   --build=$NGINX_COMMIT \
   --conf-path=/etc/nginx/nginx.conf \
   --error-log-path=/var/log/nginx/error.log \

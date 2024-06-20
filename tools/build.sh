@@ -72,6 +72,7 @@ DOCKER_BUILDKIT=0 docker build \
   --build-arg NJS_VERSION \
   --build-arg OPENSSL_VERSION \
   --build-arg RTMP_VERSION \
+  --build-arg ZSTD_MODULE_VERSION \
   --tag "${IMAGE_NAME}:${IMAGE_TAG}" \
   .
 
