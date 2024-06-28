@@ -3,3 +3,4 @@
 /tmpl.env
 /log/
 *.log
+/tools/hurl

@@ -580,110 +580,9 @@ git clone https://git.compilenix.org/CompileNix/docker-nginx
 cd docker-nginx
 cp example.env .env
 $EDITOR .env
-./tools/build.sh
-```
-
-## Testing
-### Default Image
-```sh
-source .env
-
-# Generate random port numbers to use for testing and echo them for easy copy & paste to stdout
-export HTTP_PORT="$(shuf -i 32768-49152 -n 1)"; echo "export HTTP_PORT=\"$HTTP_PORT\""
-export HTTP_STUB_PORT="$(shuf -i 32768-49152 -n 1)"; echo "export HTTP_STUB_PORT=\"$HTTP_STUB_PORT\""
-export HTTPS_PORT="$(shuf -i 32768-49152 -n 1)"; echo "export HTTPS_PORT=\"$HTTPS_PORT\""
-
-# start container
-docker run --rm -it \
-  --env-file ".env" \
-  -p "127.0.0.1:$HTTP_PORT:80" \
-  -p "127.0.0.1:$HTTP_STUB_PORT:81" \
-  -p "127.0.0.1:$HTTPS_PORT:443" \
-  -p "127.0.0.1:$HTTPS_PORT:443/udp" \
-  -v "$PWD/webroot:/var/www/html:ro,z" \
-  -v "$PWD/config/sites/localhost.conf:/config/sites/localhost.conf:ro,z" \
-  -v "$PWD/config/sites/status.conf:/config/sites/status.conf:ro,z" \
-  "$IMAGE_NAME:$NGINX_VERSION"
-
-# Test commands from new shell on the same host
-curl -v "http://127.0.0.1:$HTTP_PORT/test.html"
-# <h1>It works!</h1>
-curl -vk "https://127.0.0.1:$HTTPS_PORT/test.html"
-# <h1>It works!</h1>
-docker run -it --rm --network host ymuski/curl-http3 curl -vk "https://127.0.0.1:$HTTPS_PORT/server_protocol" --http3
-# server_protocol: HTTP/3.0
-# TODO: add test for static {gzip, brotli, zstd} using https://github.com/stunnel/static-curl
-curl -v "http://127.0.0.1:$HTTP_STUB_PORT/"
-# Active connections: 1
-# server accepts handled requests
-#  3 3 3
-# Reading: 0 Writing: 1 Waiting: 0
-```
-
-### Extras Image
-```sh
-source .env
-
-# Generate random port numbers to use for testing and echo them for easy copy & paste to stdout
-export HTTP_PORT="$(shuf -i 32768-49152 -n 1)"; echo "export HTTP_PORT=\"$HTTP_PORT\""
-export HTTP_STUB_PORT="$(shuf -i 32768-49152 -n 1)"; echo "export HTTP_STUB_PORT=\"$HTTP_STUB_PORT\""
-export HTTPS_PORT="$(shuf -i 32768-49152 -n 1)"; echo "export HTTPS_PORT=\"$HTTPS_PORT\""
-
-# start container
-docker run --rm -it \
-  --env-file ".env" \
-  -p "127.0.0.1:$HTTP_PORT:80" \
-  -p "127.0.0.1:$HTTP_STUB_PORT:81" \
-  -p "127.0.0.1:$HTTPS_PORT:443" \
-  -v "$PWD/webroot:/var/www/html:ro,z" \
-  -v "$PWD/njs/njs.conf:/config/njs.conf:ro,z" \
-  -v "$PWD/njs/http.js:/config/njs/http.js:ro,z" \
-  -v "$PWD/njs/localhost.conf:/config/sites/localhost.conf:ro,z" \
-  -v "$PWD/config/sites/status.conf:/config/sites/status.conf:ro,z" \
-  "$IMAGE_NAME:$NGINX_VERSION-extras"
-
-# Test commands from new shell on the same host
-curl -v "http://127.0.0.1:$HTTP_PORT/"
-# Retry on https port
-curl -vk "https://127.0.0.1:$HTTPS_PORT/"
-# It works!
-# Using: HTTP/2.0 | TLSv1.3 | TLS_AES_256_GCM_SHA384
-curl -vk "https://127.0.0.1:$HTTPS_PORT/test.html"
-# <h1>It works!</h1>
-curl -vk "https://127.0.0.1:$HTTPS_PORT/njs/date"
-# Wed Mar 15 2023 16:16:52 GMT+0000
-curl -vk "https://127.0.0.1:$HTTPS_PORT/njs/hello"
-# Hello world from nginx njs!
-curl -vk "https://127.0.0.1:$HTTPS_PORT/njs/version"
-# njs v0.7.11
-curl -vk "https://127.0.0.1:$HTTPS_PORT/health"
-# healthy
-curl -v "http://127.0.0.1:$HTTP_STUB_PORT/"
-# Active connections: 1 
-# server accepts handled requests
-#  8 8 8 
-# Reading: 0 Writing: 1 Waiting: 0 
-
-# Test perl example 
-docker run --rm -it \
-  --env-file ".env" \
-  -p "127.0.0.1:$HTTP_PORT:80" \
-  -v "$PWD/src/etc/nginx/nginx.conf:/config/nginx.conf:ro,z" \
-  -v "$PWD/webroot:/var/www/html:ro,z" \
-  -v "$PWD/perl/perl.conf:/config/perl.conf:ro,z" \
-  -v "$PWD/perl/lib:/config/perl/lib:ro,z" \
-  -v "$PWD/perl/localhost.conf:/config/sites/localhost.conf:ro,z" \
-  "$IMAGE_NAME:$NGINX_VERSION-extras"
-
-# Test commands from new shell on the same host
-curl -v "http://127.0.0.1:$HTTP_PORT/"
-# hello!
-# <br/>/ exists!
-curl -v "http://127.0.0.1:$HTTP_PORT/test.html"
-# hello!
-# <br/>/test.html exists!
-curl -v "http://127.0.0.1:$HTTP_PORT/fooo_bar.html"
-# hello!
+./tools/build-with-logs.sh ./docker/latest.Dockerfile
+./tools/build-with-logs.sh ./docker/latest-extras.Dockerfile extras
+./tools/tests.sh
 ```
 
 ## Making Updates & Changes
@@ -696,7 +595,7 @@ If you want to change any versions used to build the container image take a look
     ```
 - [ ] Run `./tools/build-with-logs.sh ./docker/latest.Dockerfile`
 - [ ] Run `./tools/build-with-logs.sh ./docker/latest-extras.Dockerfile extras`
-- [ ] [Testing](#testing)
+- [ ] Run `./tools/tests.sh`
 - [ ] Upload build logs (printed out at the end of the `build-with-logs.sh` command)
 - [ ] Update [Supported Container Image Tags](#supported-container-image-tags)
 - [ ] Update `CHANGELOG.md`
