@@ -2,6 +2,36 @@
 
 # Changes
 
+## 1.27.0: Tue, 02 Jul 2024 16:24:00 GMT
+
+Build logs: 
+- image tag `1.27.0`: [1.27.0-2166e329fb4e-2024-07-02.1619.log](https://compilenix.org/static/build-logs/nginx/1.27.0-2166e329fb4e-2024-07-02.1619.log)
+- image tag `1.27.0-extras`: [1.27.0-2166e329fb4e-2024-07-02.1624.log](https://compilenix.org/static/build-logs/nginx/1.27.0-2166e329fb4e-2024-07-02.1624.log)
+
+### Changes
+- Update NJS from 0.8.4 to 0.8.5
+- Automated testing using `hurl`
+- Add a couple more tests
+- Move docker files into dedicated folder
+- add nginx zstd module
+
+### Nginx Build Info
+#### Default Image Variant
+```
+nginx version: nginx/1.27.0 (2166e329fb4e)
+built with OpenSSL 3.3.1 4 Jun 2024
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.37 --add-module=/usr/src/nginx-rtmp-module-1.2.2 --add-module=/usr/src/ngx_brotli-a71f9312c2deb28875acc7bacfdd5695a111aa53 --add-module=/usr/src/njs-0.8.5/nginx --add-module=/usr/src/zstd-nginx-module-0.1.1 --build=2166e329fb4e --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_gzip_static_module --with-http_realip_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-openssl=/usr/src/openssl-3.3.1 --with-pcre-jit --with-stream --with-stream_realip_module --with-stream_ssl_module --with-threads --without-http_empty_gif_module --without-http_geo_module --without-http_grpc_module --without-http_memcached_module --without-http_mirror_module --without-http_scgi_module --without-http_ssi_module --without-http_uwsgi_module --without-mail_imap_module --without-mail_pop3_module --without-mail_smtp_module --without-stream_geo_module --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld-errors -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes'
+```
+
+#### Extras Image Variant
+```
+nginx version: nginx/1.27.0 (2166e329fb4e)
+built with OpenSSL 3.3.1 4 Jun 2024
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.37 --add-module=/usr/src/nginx-rtmp-module-1.2.2 --add-module=/usr/src/ngx_brotli-a71f9312c2deb28875acc7bacfdd5695a111aa53 --add-module=/usr/src/njs-0.8.5/nginx --add-module=/usr/src/zstd-nginx-module-0.1.1 --build=2166e329fb4e --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_dav_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_image_filter_module --with-http_perl_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-http_xslt_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.3.1 --with-pcre-jit --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-threads --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld-errors -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes'
+```
+
 ## 1.27.0: Mon, 10 Jun 2024 05:54:18 GMT
 
 Build logs: 
@@ -54,7 +84,7 @@ Some config and entrypoint script changes.
 
 ### Changes
 - set `HTTP_PROXY` to empty string to mitigate httpoxy
-- disable `ssl_stapling` for default configs, since self-signed certs dont have OCSP
+- disable `ssl_stapling` for default configs, since self-signed certs don't have OCSP
 - add entrypoint script `150-remove-default-sites.sh` to remove default sites if the user supplied one or more site configs via `/config/sites/*.conf`
 
 ## 1.26.0: Sat, 27 Apr 2024 23:41:39 GMT
@@ -113,7 +143,7 @@ Build log: [1.25.4-173a0a7dbce5-2024-02-25.1947.log](https://compilenix.org/stat
 - update nginx from 1.25.3 to 1.25.4
 - update njs 0.8.2 to 0.8.3
 - update headers more module from 0.35 to 0.37
-- update base image of build enviroment from Fedora 38 to 39
+- update base image of build environment from Fedora 38 to 39
 - update openssl from 3.0.12 to 3.2.1
 - change default rsa certificate and dhparam size from 2048 bits to 4096 bits
 - add dhparam file to container image
@@ -239,7 +269,7 @@ Build log: [1.23.4-ac779115ed6e-2023-04-05.1143.log](https://compilenix.org/stat
 - switch from static linked binary to dynamically linked
 - add `add-user.sh` and `permissions.sh`
 - put image name into env variable
-- dont build deps which can be linked from build-env os
+- don't build deps which can be linked from build-env os
   - openssl
   - pcre
   - zlib
@@ -267,13 +297,13 @@ Build log: [1.23.4-ac779115ed6e-2023-04-05.1143.log](https://compilenix.org/stat
   - `http_dav`
 - add default index.html file to `/var/www/html`
 - change default value of `NGINX_WORKER_PROCESSES` from `2` to `auto`
-- switch from `nginx` user to `root`, this can be overriden via `--user`
+- switch from `nginx` user to `root`, this can be overridden via `--user`
 - change default exposed ports from `2080` & `2443` to `80` & `443`
 - add `status.conf`, listening on localhost inside the container on port `81`, serving `stub_status` at `/`.
 - update envsubst ob nginx configs on container start logic:
   - merge existing configs and those coming from a mapped volume on every container start.
-    this allowes changed env vars between starts to be re-applied and updates to mapped
-    nginx conig files to take effect.
+    this allows changed env vars between starts to be re-applied and updates to mapped
+    nginx config files to take effect.
 - update file permissions on container start for merged configs in `/etc/nginx`
 - update `nginx.conf`:
   - disable on-the-fly brotli compression of responses. Can be enabled via `brotli on;`
@@ -513,14 +543,14 @@ Build log: [1.23.1-a63d0a70afea-2022-10-08.1724.log](https://compilenix.org/stat
   - switch from `sh` to `bash`
   - run `nginx -t` config test after build completion
   - run `nginx -V` after build completion
-  - add build start and end timesamps
+  - add build start and end timestamps
   - add build log upload command and url
 - remove some packages for the build env
   - pcre2-dev
   - zlib-dev
 - add `BUILD_THROTTLE` build env
   Reduce build jobs by 4 if there are more then 7 cores else set jobs to half of core count. \
-  this is useful if you dont want to congest the cpu of your building system
+  this is useful if you don't want to congest the cpu of your building system
 - `sites/localhost.conf` \
   override default content type for `GET /health` requests
 - add runtime env support of `ENTRYPOINT_QUIET` to docker entrypoint scripts

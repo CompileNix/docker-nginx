@@ -1,7 +1,8 @@
 ## What is this?
 A smol [Nginx](https://nginx.org/en/CHANGES) container image, plus:
 - [OpenSSL 3](https://github.com/openssl/openssl)
-- Nginx NJS
+- Nginx NJS Module
+- Nginx Perl Module
 - [OpenResty's headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module)
 - [NGINX-based Media Streaming Server (nginx-rtmp-module)](https://github.com/arut/nginx-rtmp-module)
 - [Google's `brotli` compression](https://github.com/google/ngx_brotli)
@@ -36,7 +37,7 @@ The following notable features are available:
 - `--with-pcre-jit`
 - `--with-stream`
 - `--with-stream_realip_module`
-- Nginx NJS
+- Nginx NJS Module
 - [Google's `brotli` compression](https://github.com/google/ngx_brotli)
 - [OpenResty's headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module)
 - [OpenSSL 3](https://github.com/openssl/openssl)
@@ -61,7 +62,7 @@ This container image has all features and modules built-in, that I was able to b
 
 The following notable features are available:
 - Everything that is also part of the Default image variant
-- Nginx Perl module
+- Nginx Perl Module
 - `--with-http_dav_module`
 - `--with-http_gunzip_module`
 - `--with-http_image_filter_module`
@@ -138,7 +139,7 @@ Environment variables can be used in any nginx config file, regardless if they a
 
 Environment variable substitution / template-ing is performed by [900-envsubst-on-templates.sh](./src/docker-entrypoint.d/900-envsubst-on-templates.sh) on container start.
 
-__Mapped nginx config files directly to `/etc/nginx` (instead of `/config`) will be overritten / process by this substitution process!__
+__Mapped nginx config files directly to `/etc/nginx` (instead of `/config`) will be overwritten / process by this substitution process!__
 
 Only config files whose name ends with a certain suffix will be processed.
 
