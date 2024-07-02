@@ -40,6 +40,7 @@ The following notable features are available:
 - Nginx NJS Module
 - [Google's `brotli` compression](https://github.com/google/ngx_brotli)
 - [OpenResty's headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module)
+- [Nginx module for the Zstandard compression](https://github.com/tokers/zstd-nginx-module)
 - [OpenSSL 3](https://github.com/openssl/openssl)
 - `sh` & `envsubst` entrypoints for nginx config processing on container startup
 
