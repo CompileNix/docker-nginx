@@ -6,6 +6,7 @@ A smol [Nginx](https://nginx.org/en/CHANGES) container image, plus:
 - [OpenResty's headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module)
 - [NGINX-based Media Streaming Server (nginx-rtmp-module)](https://github.com/arut/nginx-rtmp-module)
 - [Google's `brotli` compression](https://github.com/google/ngx_brotli)
+- [Nginx module for the Zstandard compression](https://github.com/tokers/zstd-nginx-module)
 - Most optional / non-default nginx modules built-in
 - `sh` & `envsubst` entrypoints for nginx config processing on container startup
 
@@ -40,6 +41,7 @@ The following notable features are available:
 - Nginx NJS Module
 - [Google's `brotli` compression](https://github.com/google/ngx_brotli)
 - [OpenResty's headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module)
+- [NGINX-based Media Streaming Server (nginx-rtmp-module)](https://github.com/arut/nginx-rtmp-module)
 - [Nginx module for the Zstandard compression](https://github.com/tokers/zstd-nginx-module)
 - [OpenSSL 3](https://github.com/openssl/openssl)
 - `sh` & `envsubst` entrypoints for nginx config processing on container startup
