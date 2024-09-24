@@ -140,8 +140,9 @@ RUN \
 RUN \
   echo "Downloading nginx $NGINX_VERSION (commit $NGINX_COMMIT) ..." \
   && cd /usr/src \
-  && wget --no-verbose https://hg.nginx.org/nginx/archive/${NGINX_COMMIT}.tar.gz -O nginx-${NGINX_COMMIT}.tar.gz \
-  && tar -xf nginx-${NGINX_COMMIT}.tar.gz
+  && wget --no-verbose https://github.com/nginx/nginx/archive/${NGINX_COMMIT}.tar.gz -O nginx-${NGINX_COMMIT}.tar.gz \
+  && tar -xf nginx-${NGINX_COMMIT}.tar.gz \
+  && mv nginx-${NGINX_COMMIT} nginx-${NGINX_VERSION}
 
 ARG CONFIG="\
   --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
@@ -197,7 +198,7 @@ COPY ./patches /patches
 
 RUN \
   echo "Apply nginx patches ..." \
-  && cd /usr/src/nginx-$NGINX_COMMIT \
+  && cd /usr/src/nginx-$NGINX_VERSION \
   && echo "apply ngx_http_error_tail.patch" && cat /patches/nginx/ngx_http_error_tail.patch && git apply /patches/nginx/ngx_http_error_tail.patch \
   && echo "apply openssl_build_configure_no-tests.patch" && cat /patches/nginx/openssl_build_configure_no-tests.patch && git apply /patches/nginx/openssl_build_configure_no-tests.patch
 
@@ -213,7 +214,7 @@ RUN \
   && echo "Make job count: $MAKE_JOBS" \
   # Building nginx
   && echo "Building nginx ($NGINX_VERSION) ..." \
-  && cd /usr/src/nginx-${NGINX_COMMIT} \
+  && cd /usr/src/nginx-${NGINX_VERSION} \
   # cc and ld opts from official fedora builds
   # nginx: https://packages.fedoraproject.org/pkgs/nginx/nginx/
   # openssl: https://packages.fedoraproject.org/pkgs/openssl/openssl/
@@ -232,7 +233,7 @@ RUN \
   && make install
 
 RUN \
-  cd /usr/src/nginx-${NGINX_COMMIT} \
+  cd /usr/src/nginx-${NGINX_VERSION} \
   && echo "strip /usr/bin/nginx ..." \
   && strip /usr/bin/nginx \
   # && strip /usr/lib/nginx/modules/*.so \
@@ -324,6 +325,7 @@ ENV DNS_RESOLVER="1.1.1.1"
 ENV NGINX_ENVSUBST_TEMPLATE_SUFFIX=".conf"
 ENV NGINX_LOG_ERROR_LEVEL="warn"
 ENV NGINX_LOG_FORMAT_NAME="main"
+ENV NGINX_LOG_INFO_ON_START="buildinfo"
 ENV NGINX_LOG_PATH_ACCESS="/var/log/nginx/access.log"
 ENV NGINX_LOG_PATH_ERROR="/var/log/nginx/error.log"
 ENV NGINX_SERVER_HEADER=""

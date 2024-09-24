@@ -39,6 +39,11 @@ export HTTPS_PORT="$(shuf -i 32768-49152 -n 1)"
 
 docker rm --force "nginx-test"
 
+# show nginx build config to stdout
+docker run --rm -it \
+  --name "nginx-test" \
+  "$IMAGE_NAME:$NGINX_VERSION" nginx -T
+
 # Testing default
 docker run --rm -d \
   --name "nginx-test" \
@@ -136,3 +141,8 @@ set -ex
 ./tools/hurl --verbose --variable HTTP_PORT="$HTTP_PORT" ./tests/http_perl.hurl
 
 docker rm --force "nginx-test"
+
+set +xv
+
+echo
+echo -e "\033[1;32mTests complete 🙌🚀\033[0m"

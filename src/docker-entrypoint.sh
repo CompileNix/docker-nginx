@@ -6,15 +6,15 @@ set -eu
 ME=$(basename $0)
 if [ -t 1 ]; then
   # STDOUT is attached to TTY
-  terminal_bold_green="\033[0;32m"
+  terminal_green="\033[0;32m"
   terminal_reset="\033[0m"
 else
-  terminal_bold_green=""
+  terminal_green=""
   terminal_reset=""
 fi
 if [ -z "${ENTRYPOINT_QUIET:-}" ]; then
   VERBOSE_FLAG="-v"
-  function prepend() { while read line; do echo -e "${terminal_bold_green}${ME}:${terminal_reset} ${line}"; done; }
+  function prepend() { while read line; do echo -e "${terminal_green}${ME}:${terminal_reset} ${line}"; done; }
 else
   VERBOSE_FLAG=""
   function prepend() { echo -n; }

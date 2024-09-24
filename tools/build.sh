@@ -26,10 +26,6 @@ set -a
 source ".env"
 set +a
 
-mkdir -pv "config"
-if [ ! -f "config/ssl/dhparam.pem" ]; then
-  openssl dhparam -out "config/ssl/dhparam.pem" 4096
-fi
 mkdir -pv "config/ssl"
 if [ ! -f "config/ssl/privkey.pem" ]; then
   openssl genrsa -out "config/ssl/privkey.pem" 4096

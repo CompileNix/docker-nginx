@@ -277,6 +277,21 @@ DNS_RESOLVER="8.8.8.8"
 
 Default value: `1.1.1.1`
 
+### Log the current nginx version and buildinfo on container start
+Set the environment variable `NGINX_LOG_INFO_ON_START` to the desired value.
+
+The following values are valid:
+- false (or any other value): show nothing
+- version: show version which translates to `nginx -v`
+- buildinfo: show version and configure options which translates to `nginx -V`
+
+Example:
+```sh
+NGINX_LOG_INFO_ON_START="version"
+```
+
+Default value: `buildinfo`
+
 ## Nginx Access Log Format
 There are two built-in log formats configured:
 - `main`
