@@ -20,11 +20,11 @@ The nginx binary is built from source (using fedora) into a `FROM scratch` conta
 - [Git Mirror 2](https://gitlab.com/CompileNix/docker-nginx)
 
 ## Supported Container Image Tags
-- `1.27.1`, `1.27`, `1`, `latest`
-- `1.27.1-extras`, `1.27-extras`, `1-extras`, `latest-extras`
+- `1.27.2`, `1.27`, `1`, `latest`
+- `1.27.2-extras`, `1.27-extras`, `1-extras`, `latest-extras`
 
 ## Container Image Variants
-### Default (`1.27.1`, `1.27`, `1`, `latest`)
+### Default (`1.27.2`, `1.27`, `1`, `latest`)
 This container image has all features and modules built-in that will suit most regular use-cases, while maintaining a low image size.
 
 The following notable features are available:
@@ -60,7 +60,7 @@ The following nginx modules are **NOT** available:
 - `--without-mail_smtp_module`
 - `--without-stream_geo_module`
 
-### Extras (`1.27.1-extras`, `1.27-extras`, `1-extras`, `latest-extras`)
+### Extras (`1.27.2-extras`, `1.27-extras`, `1-extras`, `latest-extras`)
 This container image has all features and modules built-in, that I was able to build, without the focus on low image size.
 
 The following notable features are available:
@@ -515,7 +515,7 @@ Example: `upstream_queue_time`
   "limit_rate": "0",
   "limit_req_status": "",
   "msec": "1664306240.619",
-  "nginx_version": "1.27.1",
+  "nginx_version": "1.27.2",
   "pid": "46",
   "pipe": ".",
   "proxy_add_x_forwarded_for": "172.18.0.1",
