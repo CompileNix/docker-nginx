@@ -597,7 +597,7 @@ Example: `upstream_queue_time`
 ```sh
 git clone https://git.compilenix.org/CompileNix/docker-nginx
 cd docker-nginx
-cp example.env .env
+cp .env.example .env
 $EDITOR .env
 ./tools/build-with-logs.sh ./docker/latest.Dockerfile
 ./tools/build-with-logs.sh ./docker/latest-extras.Dockerfile extras
@@ -610,7 +610,7 @@ If you want to change any versions used to build the container image take a look
 ### Checklist
 - [ ] Update or create `.env`:
   - ```sh
-    cp example.env .env
+    cp .env.example .env
     ```
 - [ ] Run `./tools/build-with-logs.sh ./docker/latest.Dockerfile`
 - [ ] Run `./tools/build-with-logs.sh ./docker/latest-extras.Dockerfile extras`
@@ -618,7 +618,6 @@ If you want to change any versions used to build the container image take a look
 - [ ] Upload build logs (printed out at the end of the `build-with-logs.sh` command)
 - [ ] Update [Supported Container Image Tags](#supported-container-image-tags)
 - [ ] Update `CHANGELOG.md`
-- [ ] Remove Old Docker Image Tags
 - [ ] Create / Update Docker Image Tags
   - ```sh
     docker image tag "${IMAGE_NAME}:${NGINX_VERSION}" "${IMAGE_NAME}:latest"
@@ -630,6 +629,7 @@ If you want to change any versions used to build the container image take a look
     # inspect image tags
     docker image ls "${IMAGE_NAME}"
     ```
+- [ ] Remove Old Docker Image Tags
 - [ ] Run `./tools/push-image-tags.sh`
 - [ ] Update Supported Container Image Tags on [hub.docker.com](https://hub.docker.com/repository/docker/compilenix/nginx/general)
 

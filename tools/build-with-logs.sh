@@ -18,7 +18,7 @@
 set -eu
 
 if [ ! -f ".env" ]; then
-  cp -v "example.env" ".env"
+  cp -v ".env.example" ".env"
 fi
 
 mkdir -p "log"
