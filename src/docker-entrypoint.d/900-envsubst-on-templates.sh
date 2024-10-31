@@ -20,6 +20,11 @@ else
   function prepend() { echo -n; }
 fi
 
+if [ ! -z "${NGINX_ENVSUBST_DISABLE:-}" ]; then
+  echo "NGINX_ENVSUBST_DISABLE is set, skipping envsubst on templates" 2>&1 | prepend
+  exit 0
+fi
+
 # on first start: copy nginx default configs to /var/lib/nginx/default_config
 # on subsequent starts: remove generated configs from /etc/nginx and restore nginx default configs
 if [ ! -f "/var/run/nginx/envsubst-on-templates-done" ]; then

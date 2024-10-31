@@ -292,6 +292,26 @@ NGINX_LOG_INFO_ON_START="version"
 
 Default value: `buildinfo`
 
+### Disable envsubst template processing on container startup
+Set the environment variable `NGINX_ENVSUBST_DISABLE` to any value.
+
+Example:
+```sh
+NGINX_ENVSUBST_DISABLE="y"
+```
+
+Default value: not set
+
+### Disable verbose logging on container startup
+Set the environment variable `ENTRYPOINT_QUIET` to any value.
+
+Example:
+```sh
+ENTRYPOINT_QUIET="y"
+```
+
+Default value: not set
+
 ## Nginx Access Log Format
 There are two built-in log formats configured:
 - `main`
