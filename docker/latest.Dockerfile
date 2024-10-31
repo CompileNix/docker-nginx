@@ -87,6 +87,7 @@ ARG NGX_BROTLI_COMMIT
 ARG NJS_COMMIT
 ARG NJS_VERSION
 ARG OPENSSL_VERSION
+ARG QUICK_JS_COMMIT
 ARG REQUIRED_TOOLS_IN_DIST_IMAGE
 ARG RTMP_VERSION
 ARG ZSTD_MODULE_VERSION
@@ -111,6 +112,15 @@ RUN \
   && git fetch --depth 1 origin $NGX_BROTLI_COMMIT \
   && git checkout --recurse-submodules -q FETCH_HEAD \
   && git submodule update --init --depth 1
+
+RUN \
+  echo "Cloning QuickJS library for NJS module (commit $QUICK_JS_COMMIT) ..." \
+  && mkdir -pv /usr/src/quickjs-$QUICK_JS_COMMIT \
+  && cd /usr/src/quickjs-$QUICK_JS_COMMIT \
+  && git init \
+  && git remote add origin https://github.com/bellard/quickjs.git \
+  && git fetch --depth 1 origin $QUICK_JS_COMMIT \
+  && git checkout -q FETCH_HEAD
 
 RUN \
   echo "Downloading headers-more module (version $HEADERS_MORE_VERSION) ..." \
@@ -213,7 +223,6 @@ RUN \
   # Set jobs back to result of nproc if BUILD_THROTTLE is not requested
   && if [[ "$BUILD_THROTTLE" != "y" ]]; then export MAKE_JOBS=$(nproc); fi \
   && echo "Make job count: $MAKE_JOBS" \
-  && cd /usr/src/nginx-${NGINX_VERSION} \
   # cc and ld opts from official fedora builds
   # nginx: https://packages.fedoraproject.org/pkgs/nginx/nginx/
   # openssl: https://packages.fedoraproject.org/pkgs/openssl/openssl/
@@ -221,14 +230,19 @@ RUN \
   && export RPM_PACKAGE_VERSION="$NGINX_VERSION" \
   && export RPM_PACKAGE_RELEASE="1.fc40" \
   && export RPM_ARCH="x86_64" \
-  && export CFLAGS="-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer " \
+  && export CFLAGS="-O2 -flto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer " \
   && export CXXFLAGS="$CFLAGS" \
   && export LDFLAGS="-Wl,-z,relro -Wl,--as-needed  -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld-errors -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes " \
+  && echo "Build QuickJS ($QUICK_JS_COMMIT)" \
+  && cd /usr/src/quickjs-$QUICK_JS_COMMIT \
+  && make -j$MAKE_JOBS \
+  && make install \
   && echo "Configure nginx ($NGINX_VERSION)" \
+  && cd /usr/src/nginx-${NGINX_VERSION} \
   && ./auto/configure $CONFIG \
-    --with-cc-opt="$CFLAGS" \
-    --with-openssl-opt="-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer enable-ktls " \
-    --with-ld-opt="$LDFLAGS" || cat objs/autoconf.err \
+    --with-cc-opt="$CFLAGS -I/usr/src/quickjs-$QUICK_JS_COMMIT" \
+    --with-openssl-opt="-O2 -flto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer enable-ktls " \
+    --with-ld-opt="$LDFLAGS -L/usr/src/quickjs-$QUICK_JS_COMMIT" || cat objs/autoconf.err \
   && echo "Building nginx ($NGINX_VERSION) ..." \
   && make -j$MAKE_JOBS \
   && make install
