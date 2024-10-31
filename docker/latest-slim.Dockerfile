@@ -83,14 +83,8 @@ ARG BUILD_THROTTLE
 ARG HEADERS_MORE_VERSION
 ARG NGINX_COMMIT
 ARG NGINX_VERSION
-ARG NGX_BROTLI_COMMIT
-ARG NJS_COMMIT
-ARG NJS_VERSION
 ARG OPENSSL_VERSION
-ARG QUICK_JS_COMMIT
 ARG REQUIRED_TOOLS_IN_DIST_IMAGE
-ARG RTMP_VERSION
-ARG ZSTD_MODULE_VERSION
 
 RUN \
   env | sort
@@ -98,47 +92,10 @@ RUN \
 WORKDIR /usr/src/
 
 RUN \
-  echo "Downloading nginx-rtmp module (version $RTMP_VERSION) ..." \
-  && cd /usr/src \
-  && wget --no-verbose https://github.com/arut/nginx-rtmp-module/archive/refs/tags/v${RTMP_VERSION}.tar.gz -O nginx-rtmp-module-${RTMP_VERSION}.tar.gz \
-  && tar -xf nginx-rtmp-module-${RTMP_VERSION}.tar.gz
-
-RUN \
-  echo "Cloning brotli module (commit $NGX_BROTLI_COMMIT) ..." \
-  && mkdir -pv /usr/src/ngx_brotli-$NGX_BROTLI_COMMIT \
-  && cd /usr/src/ngx_brotli-$NGX_BROTLI_COMMIT \
-  && git init \
-  && git remote add origin https://github.com/google/ngx_brotli.git \
-  && git fetch --depth 1 origin $NGX_BROTLI_COMMIT \
-  && git checkout --recurse-submodules -q FETCH_HEAD \
-  && git submodule update --init --depth 1
-
-RUN \
-  echo "Cloning QuickJS library for NJS module (commit $QUICK_JS_COMMIT) ..." \
-  && mkdir -pv /usr/src/quickjs-$QUICK_JS_COMMIT \
-  && cd /usr/src/quickjs-$QUICK_JS_COMMIT \
-  && git init \
-  && git remote add origin https://github.com/bellard/quickjs.git \
-  && git fetch --depth 1 origin $QUICK_JS_COMMIT \
-  && git checkout -q FETCH_HEAD
-
-RUN \
   echo "Downloading headers-more module (version $HEADERS_MORE_VERSION) ..." \
   && cd /usr/src \
   && wget --no-verbose https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/v${HEADERS_MORE_VERSION}.tar.gz -O headers-more-nginx-module-${HEADERS_MORE_VERSION}.tar.gz \
   && tar -xf headers-more-nginx-module-${HEADERS_MORE_VERSION}.tar.gz
-
-RUN \
-  echo "Downloading zstd-nginx-module (version $ZSTD_MODULE_VERSION) ..." \
-  && cd /usr/src \
-  && wget --no-verbose https://github.com/tokers/zstd-nginx-module/archive/refs/tags/${ZSTD_MODULE_VERSION}.tar.gz -O zstd-nginx-module-${ZSTD_MODULE_VERSION}.tar.gz \
-  && tar -xf zstd-nginx-module-${ZSTD_MODULE_VERSION}.tar.gz
-
-RUN \
-  echo "Downloading nginx njs module v${NJS_VERSION} (version $NJS_COMMIT) ..." \
-  && cd /usr/src \
-  && wget --no-verbose https://github.com/nginx/njs/archive/refs/tags/${NJS_VERSION}.tar.gz -O njs-${NJS_COMMIT}.tar.gz \
-  && tar -xf njs-${NJS_COMMIT}.tar.gz
 
 RUN \
   echo "Downloading OpenSSL (version $OPENSSL_VERSION) ..." \
@@ -156,10 +113,6 @@ RUN \
 
 ARG CONFIG="\
   --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
-  --add-module=/usr/src/nginx-rtmp-module-$RTMP_VERSION \
-  --add-module=/usr/src/ngx_brotli-$NGX_BROTLI_COMMIT \
-  --add-module=/usr/src/njs-${NJS_VERSION}/nginx \
-  --add-module=/usr/src/zstd-nginx-module-$ZSTD_MODULE_VERSION \
   --build=$NGINX_COMMIT \
   --conf-path=/etc/nginx/nginx.conf \
   --error-log-path=/var/log/nginx/error.log \
@@ -233,16 +186,12 @@ RUN \
   && export CFLAGS="-O2 -flto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer " \
   && export CXXFLAGS="$CFLAGS" \
   && export LDFLAGS="-Wl,-z,relro -Wl,--as-needed  -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld-errors -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes " \
-  && echo "Build QuickJS ($QUICK_JS_COMMIT)" \
-  && cd /usr/src/quickjs-$QUICK_JS_COMMIT \
-  && make -j$MAKE_JOBS \
-  && make install \
   && echo "Configure nginx ($NGINX_VERSION)" \
   && cd /usr/src/nginx-${NGINX_VERSION} \
   && ./auto/configure $CONFIG \
-    --with-cc-opt="$CFLAGS -I/usr/src/quickjs-$QUICK_JS_COMMIT" \
+    --with-cc-opt="$CFLAGS" \
     --with-openssl-opt="-O2 -flto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer enable-ktls " \
-    --with-ld-opt="$LDFLAGS -L/usr/src/quickjs-$QUICK_JS_COMMIT" || cat objs/autoconf.err \
+    --with-ld-opt="$LDFLAGS" || cat objs/autoconf.err \
   && echo "Building nginx ($NGINX_VERSION) ..." \
   && make -j$MAKE_JOBS \
   && make install
@@ -318,6 +267,18 @@ RUN \
 
 COPY webroot/test.html* /tmp/scratch/var/www/html/
 RUN cd /tmp/scratch/var/www/html/ && mv -v test.html index.html && mv -v test.html.gz index.html.gz && mv -v test.html.br index.html.br
+# Remove stuff that the slim image variant doesn't support
+RUN cd /tmp/scratch/var/www/html \
+  && rm index.html.br \
+  && sed -i '/zstd off;/d' /tmp/scratch/etc/nginx/nginx.conf \
+  && sed -i '/zstd_static on;/d' /tmp/scratch/etc/nginx/nginx.conf \
+  && sed -i '/njs\.conf/d' /tmp/scratch/etc/nginx/nginx.conf \
+  && sed -i '/perl\.conf/d' /tmp/scratch/etc/nginx/nginx.conf \
+  && sed -i '/brotli off;/d' /tmp/scratch/etc/nginx/nginx.conf \
+  && sed -i '/brotli_static on;/d' /tmp/scratch/etc/nginx/nginx.conf \
+  && sed -i '/zstd_ratio/d' /tmp/scratch/etc/nginx/nginx.conf \
+  && sed -i '/brotli_ratio/d' /tmp/scratch/etc/nginx/nginx.conf \
+  && sed -i '/perl\.conf/d' /tmp/scratch/etc/nginx/nginx.conf
 COPY src/docker-entrypoint.sh /tmp/scratch/
 COPY src/docker-entrypoint.d/* /tmp/scratch/docker-entrypoint.d/
 

@@ -20,7 +20,21 @@ set -euv
 
 source .env
 
-if [ ! -f "./tools/hurl" ]; then
+download_hurl="true"
+if [ -f "./tools/hurl" ]; then
+  download_hurl="false"
+  echo "./tools/hurl is present"
+
+  present_hurl_version="$(./tools/hurl --version 2>/dev/null | rg 'hurl ([\d.]{1,5})' -or '$1')"
+  if [[ "$present_hurl_version" != "$HURL_VERSION" ]]; then
+    download_hurl="true"
+    echo "./tools/hurl has the version $present_hurl_version but we expected to have $HURL_VERSION"
+  else
+    echo "./tools/hurl has the expected version of $HURL_VERSION"
+  fi
+fi
+
+if [[ "$download_hurl" = "true" ]]; then
     INSTALL_DIR="/tmp"
 
     if [ -d "${INSTALL_DIR}/hurl-${HURL_VERSION}-x86_64-unknown-linux-gnu" ]; then
@@ -139,6 +153,41 @@ done
 set -ex
 
 ./tools/hurl --verbose --variable HTTP_PORT="$HTTP_PORT" ./tests/http_perl.hurl
+
+docker rm --force "nginx-test"
+
+# Testing slim
+docker run --rm -d \
+  --name "nginx-test" \
+  --env-file ".env" \
+  -p "127.0.0.1:$HTTP_PORT:80" \
+  -p "127.0.0.1:$HTTP_STUB_PORT:81" \
+  -p "127.0.0.1:$HTTPS_PORT:443" \
+  -p "127.0.0.1:$HTTPS_PORT:443/udp" \
+  -v "$PWD/webroot:/var/www/html:ro,z" \
+  -v "$PWD/config/sites/localhost.conf:/config/sites/localhost.conf:ro,z" \
+  -v "$PWD/config/sites/status.conf:/config/sites/status.conf:ro,z" \
+  "$IMAGE_NAME:$NGINX_VERSION-slim"
+
+set +ex
+echo "GET http://127.0.0.1:$HTTP_PORT/test.html" | ./tools/hurl >/dev/null 2>&1
+while [ $? -eq 3 ]; do
+    sleep 0.2
+    echo "GET http://127.0.0.1:$HTTP_PORT/test.html" | ./tools/hurl >/dev/null 2>&1
+done
+set -ex
+
+# https://github.com/yurymuski/curl-http3
+# https://github.com/stunnel/static-curl
+# TODO: build curl from source with http3 support
+# && ./tools/hurl --verbose --variable HTTPS_PORT="$HTTPS_PORT" --cacert ./config/ssl/cert.pem --compressed --http3 ./tests/https_test_compressed_h3.hurl \
+
+./tools/hurl --verbose --variable HTTP_STUB_PORT="$HTTP_STUB_PORT" ./tests/http_stub.hurl
+./tools/hurl --verbose --variable HTTP_PORT="$HTTP_PORT" ./tests/http_test.hurl
+./tools/hurl --verbose --variable HTTPS_PORT="$HTTPS_PORT" --cacert ./config/ssl/cert.pem ./tests/https_test.hurl
+./tools/hurl --verbose --variable HTTPS_PORT="$HTTPS_PORT" --cacert ./config/ssl/cert.pem --compressed ./tests/slim_https_test_compressed.hurl
+./tools/hurl --verbose --variable HTTPS_PORT="$HTTPS_PORT" --cacert ./config/ssl/cert.pem ./tests/https_server_protocol_h2.hurl
+./tools/hurl --verbose --variable HTTPS_PORT="$HTTPS_PORT" --cacert ./config/ssl/cert.pem --compressed ./tests/https_test_compressed_static_gzip.hurl
 
 docker rm --force "nginx-test"
 

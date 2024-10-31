@@ -22,6 +22,7 @@ The nginx binary is built from source (using fedora) into a `FROM scratch` conta
 ## Supported Container Image Tags
 - `1.27.2`, `1.27`, `1`, `latest`
 - `1.27.2-extras`, `1.27-extras`, `1-extras`, `latest-extras`
+- `1.27.2-slim`, `1.27-slim`, `1-slim`, `latest-slim`
 
 ## Container Image Variants
 ### Default (`1.27.2`, `1.27`, `1`, `latest`)
@@ -61,7 +62,7 @@ The following nginx modules are **NOT** available:
 - `--without-stream_geo_module`
 
 ### Extras (`1.27.2-extras`, `1.27-extras`, `1-extras`, `latest-extras`)
-This container image has all features and modules built-in, that I was able to build, without the focus on low image size.
+This container image has all features and modules built-in, without the focus on low image size.
 
 The following notable features are available:
 - Everything that is also part of the Default image variant
@@ -75,6 +76,17 @@ The following notable features are available:
 - `--with-http_xslt_module`
 - `--with-mail`
 - `--with-stream_geoip_module`
+
+### Slim (`1.27.2-slim`, `1.27-slim`, `1-slim`, `latest-slim`)
+This container image has most features and modules built-in, with a focus on the least amount of non-upstream dependencies, modules and overall small image size.
+
+[OpenResty's headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module) is the only non-upstream module built-in.
+
+The following nginx modules are **NOT** available:
+- Nginx NJS Module
+- [Google's `brotli` compression](https://github.com/google/ngx_brotli)
+- [NGINX-based Media Streaming Server (nginx-rtmp-module)](https://github.com/arut/nginx-rtmp-module)
+- [Nginx module for the Zstandard compression](https://github.com/tokers/zstd-nginx-module)
 
 ## Table of Contents
 
@@ -612,6 +624,7 @@ Example: `upstream_queue_time`
 - git
 - internet connection (HTTP/S)
 - openssl
+- ripgrep (for running tests)
 
 ### Build Steps
 ```sh
@@ -621,6 +634,7 @@ cp .env.example .env
 $EDITOR .env
 ./tools/build-with-logs.sh ./docker/latest.Dockerfile
 ./tools/build-with-logs.sh ./docker/latest-extras.Dockerfile extras
+./tools/build-with-logs.sh ./docker/latest-slim.Dockerfile slim
 ./tools/tests.sh
 ```
 
@@ -634,6 +648,7 @@ If you want to change any versions used to build the container image take a look
     ```
 - [ ] Run `./tools/build-with-logs.sh ./docker/latest.Dockerfile`
 - [ ] Run `./tools/build-with-logs.sh ./docker/latest-extras.Dockerfile extras`
+- [ ] Run `./tools/build-with-logs.sh ./docker/latest-slim.Dockerfile slim`
 - [ ] Run `./tools/tests.sh`
 - [ ] Upload build logs (printed out at the end of the `build-with-logs.sh` command)
 - [ ] Update [Supported Container Image Tags](#supported-container-image-tags)
@@ -646,6 +661,9 @@ If you want to change any versions used to build the container image take a look
     docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-extras" "${IMAGE_NAME}:latest-extras"
     docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-extras" "${IMAGE_NAME}:1.27-extras"
     docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-extras" "${IMAGE_NAME}:1-extras"
+    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-slim" "${IMAGE_NAME}:latest-slim"
+    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-slim" "${IMAGE_NAME}:1.27-slim"
+    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-slim" "${IMAGE_NAME}:1-slim"
     # inspect image tags
     docker image ls "${IMAGE_NAME}"
     ```
