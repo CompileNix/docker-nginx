@@ -1,6 +1,16 @@
 ## What is this?
-A smol [Nginx](https://nginx.org/en/CHANGES) container image, plus:
-- [OpenSSL 3](https://github.com/openssl/openssl)
+A set of smol [Nginx](https://nginx.org/en/) container images, built from source (using fedora) into a `FROM scratch` container image.
+
+The primary motivations for this container image are:
+- up-to-date libraries and build-tools
+- frequently used and popular 3rd party modules built-in
+- smaller image size
+- ability for custom source code [patches](./patches/)
+- multiple image variants, to balance between size and features
+
+## Key Features
+- [OpenSSL 3.4](https://github.com/openssl/openssl)
+- kTLS supported and enabled by default
 - Nginx NJS Module
 - Nginx Perl Module
 - [OpenResty's headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module)
@@ -9,8 +19,6 @@ A smol [Nginx](https://nginx.org/en/CHANGES) container image, plus:
 - [Nginx module for the Zstandard compression](https://github.com/tokers/zstd-nginx-module)
 - Most optional / non-default nginx modules built-in
 - `sh` & `envsubst` entrypoints for nginx config processing on container startup
-
-The nginx binary is built from source (using fedora) into a `FROM scratch` container image.
 
 ## Project Links
 - [Container Image Registry](https://hub.docker.com/r/compilenix/nginx)
