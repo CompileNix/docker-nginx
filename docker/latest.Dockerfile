@@ -252,7 +252,7 @@ RUN \
   && echo "strip /usr/bin/nginx ..." \
   && strip /usr/bin/nginx \
   # && strip /usr/lib/nginx/modules/*.so \
-  && echo "Scan for reqired runtime libs ..." \
+  && echo "Scan for required runtime libs ..." \
   # && ldd /usr/lib/nginx/modules/*.so \
   && LIBS=$(ldd /usr/bin/nginx $REQUIRED_TOOLS_IN_DIST_IMAGE | awk '{print $3}' | grep -v '^$' | sort -u) \
   && for LIB_PATH in $LIBS; do mkdir -pv $(dirname "/tmp/needed_libs$LIB_PATH"); cp -v "$LIB_PATH" "/tmp/needed_libs$LIB_PATH"; done \

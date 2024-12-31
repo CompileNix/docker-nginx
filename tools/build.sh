@@ -56,7 +56,7 @@ else
   IMAGE_TAG="$NGINX_VERSION-$ARG_2"
 fi
 
-DOCKER_BUILDKIT=0 docker build \
+docker build --progress plain \
   $BUILD_CACHE \
   --file "$DOCKERFILE" \
   --build-arg BUILD_THROTTLE \
