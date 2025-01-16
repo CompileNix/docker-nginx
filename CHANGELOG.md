@@ -2,9 +2,64 @@
 
 # Changes
 
-## 1.27.2: Tue, 31 Dec 2024 01:25:20 GMT
+## 1.27.3: Wed, 15 Jan 2025 19:11:27 GMT
 
-Build logs: 
+Build logs:
+- image tag `1.27.3`: [1.27.3-e7bd2557458c26839da89e694067017eeb214348-2025-01-15.1940.log](https://compilenix.org/static/build-logs/nginx/1.27.3-e7bd2557458c26839da89e694067017eeb214348-2025-01-15.1940.log)
+- image tag `1.27.3-extras`: [1.27.3-e7bd2557458c26839da89e694067017eeb214348-2025-01-15.1944.log](https://compilenix.org/static/build-logs/nginx/1.27.3-e7bd2557458c26839da89e694067017eeb214348-2025-01-15.1944.log)
+- image tag `1.27.3-slim`: [1.27.3-e7bd2557458c26839da89e694067017eeb214348-2025-01-15.1947.log](https://compilenix.org/static/build-logs/nginx/1.27.3-e7bd2557458c26839da89e694067017eeb214348-2025-01-15.1947.log)
+
+### Changes
+- Update NJS from 0.8.8 to 0.8.9
+
+```
+Changes with njs 0.8.9                                       14 Jan 2025
+
+    nginx modules:
+
+    *) Bugfix: removed extra VM creation per server.
+       Previously, when js_import was declared in http or stream blocks,
+       an extra copy of the VM instance was created for each server
+       block. This was not needed and consumed a lot of memory for
+       configurations with many server blocks.
+
+      This issue was introduced in 9b674412 (0.8.6) and was partially
+      fixed for location blocks only in 685b64f0 (0.8.7).
+
+    Core:
+
+    *) Feature: added fs module for QuickJS engine.
+```
+
+### Nginx Build Info
+#### Default Image Variant
+```
+nginx version: nginx/1.27.3 (e7bd2557458c26839da89e694067017eeb214348)
+built with OpenSSL 3.4.0 22 Oct 2024
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.37 --add-module=/usr/src/nginx-rtmp-module-1.2.2 --add-module=/usr/src/ngx_brotli-a71f9312c2deb28875acc7bacfdd5695a111aa53 --add-module=/usr/src/njs-0.8.9/nginx --add-module=/usr/src/zstd-nginx-module-0.1.1 --build=e7bd2557458c26839da89e694067017eeb214348 --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_gzip_static_module --with-http_realip_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-openssl=/usr/src/openssl-3.4.0 --with-pcre-jit --with-stream --with-stream_realip_module --with-stream_ssl_module --with-threads --without-http_empty_gif_module --without-http_geo_module --without-http_grpc_module --without-http_memcached_module --without-http_mirror_module --without-http_scgi_module --without-http_ssi_module --without-http_uwsgi_module --without-mail_imap_module --without-mail_pop3_module --without-mail_smtp_module --without-stream_geo_module --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -I/usr/src/quickjs-6e2e68fd0896957f92eb6c242a2e048c1ef3cae0' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2 -L/usr/src/quickjs-6e2e68fd0896957f92eb6c242a2e048c1ef3cae0'
+```
+
+#### Extras Image Variant
+```
+nginx version: nginx/1.27.3 (e7bd2557458c26839da89e694067017eeb214348)
+built with OpenSSL 3.4.0 22 Oct 2024
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.37 --add-module=/usr/src/nginx-rtmp-module-1.2.2 --add-module=/usr/src/ngx_brotli-a71f9312c2deb28875acc7bacfdd5695a111aa53 --add-module=/usr/src/njs-0.8.9/nginx --add-module=/usr/src/zstd-nginx-module-0.1.1 --build=e7bd2557458c26839da89e694067017eeb214348 --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_dav_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_image_filter_module --with-http_perl_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-http_xslt_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.4.0 --with-pcre-jit --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-threads --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -I/usr/src/quickjs-6e2e68fd0896957f92eb6c242a2e048c1ef3cae0' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2 -L/usr/src/quickjs-6e2e68fd0896957f92eb6c242a2e048c1ef3cae0'
+```
+
+#### Slim Image Variant
+```
+nginx version: nginx/1.27.3 (e7bd2557458c26839da89e694067017eeb214348)
+built with OpenSSL 3.4.0 22 Oct 2024
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.37 --build=e7bd2557458c26839da89e694067017eeb214348 --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_gzip_static_module --with-http_realip_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-openssl=/usr/src/openssl-3.4.0 --with-pcre-jit --with-stream --with-stream_realip_module --with-stream_ssl_module --with-threads --without-http_empty_gif_module --without-http_geo_module --without-http_grpc_module --without-http_memcached_module --without-http_mirror_module --without-http_scgi_module --without-http_ssi_module --without-http_uwsgi_module --without-mail_imap_module --without-mail_pop3_module --without-mail_smtp_module --without-stream_geo_module --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2'
+```
+
+
+## 1.27.3: Tue, 31 Dec 2024 01:25:20 GMT
+
+Build logs:
 - image tag `1.27.3`: [1.27.3-e7bd2557458c26839da89e694067017eeb214348-2024-12-31.0125.log](https://compilenix.org/static/build-logs/nginx/1.27.3-e7bd2557458c26839da89e694067017eeb214348-2024-12-31.0125.log)
 - image tag `1.27.3-extras`: [1.27.3-e7bd2557458c26839da89e694067017eeb214348-2024-12-31.0130.log](https://compilenix.org/static/build-logs/nginx/1.27.3-e7bd2557458c26839da89e694067017eeb214348-2024-12-31.0130.log)
 - image tag `1.27.3-slim`: [1.27.3-e7bd2557458c26839da89e694067017eeb214348-2024-12-31.0134.log](https://compilenix.org/static/build-logs/nginx/1.27.3-e7bd2557458c26839da89e694067017eeb214348-2024-12-31.0134.log)
@@ -66,9 +121,9 @@ configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.37 --buil
 ```
 
 
-## 1.27.2: Fri, 29 Nov 2024 21:45:18 GMT
+## 1.27.3: Fri, 29 Nov 2024 21:45:18 GMT
 
-Build logs: 
+Build logs:
 - image tag `1.27.3`: [1.27.3-e7bd2557458c26839da89e694067017eeb214348-2024-11-29.2145.log](https://compilenix.org/static/build-logs/nginx/1.27.3-e7bd2557458c26839da89e694067017eeb214348-2024-11-29.2145.log)
 - image tag `1.27.3-extras`: [1.27.3-e7bd2557458c26839da89e694067017eeb214348-2024-11-29.2151.log](https://compilenix.org/static/build-logs/nginx/1.27.3-e7bd2557458c26839da89e694067017eeb214348-2024-11-29.2151.log)
 - image tag `1.27.3-slim`: [1.27.3-e7bd2557458c26839da89e694067017eeb214348-2024-11-29.2158.log](https://compilenix.org/static/build-logs/nginx/1.27.3-e7bd2557458c26839da89e694067017eeb214348-2024-11-29.2158.log)
@@ -133,7 +188,7 @@ configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.37 --buil
 
 ## 1.27.2: Thu, 31 Oct 2024 22:20:02 GMT
 
-Build logs: 
+Build logs:
 - image tag `1.27.2-slim`: [1.27.2-e24f7ccc161f1a2a759eb27263ec9af4fc7c8e96-2024-10-31.2220.log](https://compilenix.org/static/build-logs/nginx/1.27.2-e24f7ccc161f1a2a759eb27263ec9af4fc7c8e96-2024-10-31.2220.log)
 
 ### Changes
@@ -150,7 +205,7 @@ configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.37 --buil
 
 ## 1.27.2: Mon, 28 Oct 2024 08:23:41 GMT
 
-Build logs: 
+Build logs:
 - image tag `1.27.2`: [1.27.2-e24f7ccc161f1a2a759eb27263ec9af4fc7c8e96-2024-10-28.0823.log](https://compilenix.org/static/build-logs/nginx/1.27.2-e24f7ccc161f1a2a759eb27263ec9af4fc7c8e96-2024-10-28.0823.log)
 - image tag `1.27.2-extras`: [1.27.2-e24f7ccc161f1a2a759eb27263ec9af4fc7c8e96-2024-10-28.0832.log](https://compilenix.org/static/build-logs/nginx/1.27.2-e24f7ccc161f1a2a759eb27263ec9af4fc7c8e96-2024-10-28.0832.log)
 
@@ -178,7 +233,7 @@ configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.37 --add-
 
 ## 1.27.2: Tue, 24 Sep 2024 12:07:14 GMT
 
-Build logs: 
+Build logs:
 - image tag `1.27.2`: [1.27.2-e24f7ccc161f1a2a759eb27263ec9af4fc7c8e96-2024-10-03.0010.log](https://compilenix.org/static/build-logs/nginx/1.27.2-e24f7ccc161f1a2a759eb27263ec9af4fc7c8e96-2024-10-03.0010.log)
 - image tag `1.27.2-extras`: [1.27.2-e24f7ccc161f1a2a759eb27263ec9af4fc7c8e96-2024-10-03.0010.log](https://compilenix.org/static/build-logs/nginx/1.27.2-e24f7ccc161f1a2a759eb27263ec9af4fc7c8e96-2024-10-03.0010.log)
 
@@ -204,7 +259,7 @@ configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.37 --add-
 
 ## 1.27.1: Tue, 24 Sep 2024 12:07:14 GMT
 
-Build logs: 
+Build logs:
 - image tag `1.27.1`: [1.27.1-e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928-2024-09-24.1222.log](https://compilenix.org/static/build-logs/nginx/1.27.1-e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928-2024-09-24.1222.log)
 - image tag `1.27.1-extras`: [1.27.1-e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928-2024-09-24.1207.log](https://compilenix.org/static/build-logs/nginx/1.27.1-e06bdbd4a20912c5223d7c6c6e2b3f0d6086c928-2024-09-24.1207.log)
 
@@ -232,7 +287,7 @@ configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.37 --add-
 
 ## 1.27.1: Tue, 03 Sep 2024 19:12:04 GMT
 
-Build logs: 
+Build logs:
 - image tag `1.27.1`: [1.27.1-417b1045b18e-2024-09-03.1912.log](https://compilenix.org/static/build-logs/nginx/1.27.1-417b1045b18e-2024-09-03.1912.log)
 - image tag `1.27.1-extras`: [1.27.1-417b1045b18e-2024-09-03.1912.log](https://compilenix.org/static/build-logs/nginx/1.27.1-417b1045b18e-2024-09-03.1912.log)
 
@@ -259,7 +314,7 @@ configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.37 --add-
 
 ## 1.27.1: Wed, 21 Aug 2024 16:31:43 GMT
 
-Build logs: 
+Build logs:
 - image tag `1.27.1`: [1.27.1-417b1045b18e-2024-08-21.1631.log](https://compilenix.org/static/build-logs/nginx/1.27.1-417b1045b18e-2024-08-21.1631.log)
 - image tag `1.27.1-extras`: [1.27.1-417b1045b18e-2024-08-21.1637.log](https://compilenix.org/static/build-logs/nginx/1.27.1-417b1045b18e-2024-08-21.1637.log)
 
@@ -286,7 +341,7 @@ configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.37 --add-
 
 ## 1.27.0: Tue, 02 Jul 2024 16:24:00 GMT
 
-Build logs: 
+Build logs:
 - image tag `1.27.0`: [1.27.0-2166e329fb4e-2024-07-02.1619.log](https://compilenix.org/static/build-logs/nginx/1.27.0-2166e329fb4e-2024-07-02.1619.log)
 - image tag `1.27.0-extras`: [1.27.0-2166e329fb4e-2024-07-02.1624.log](https://compilenix.org/static/build-logs/nginx/1.27.0-2166e329fb4e-2024-07-02.1624.log)
 
@@ -316,7 +371,7 @@ configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.37 --add-
 
 ## 1.27.0: Mon, 10 Jun 2024 05:54:18 GMT
 
-Build logs: 
+Build logs:
 - image tag `1.27.0`: [1.27.0-2166e329fb4e-2024-06-10.0554.log](https://compilenix.org/static/build-logs/nginx/1.27.0-2166e329fb4e-2024-06-10.0554.log)
 - image tag `1.27.0-extras`: [1.27.0-2166e329fb4e-2024-06-10.0601.log](https://compilenix.org/static/build-logs/nginx/1.27.0-2166e329fb4e-2024-06-10.0601.log)
 
@@ -610,7 +665,7 @@ Build log: [1.22.1-af7a3fb7558f-2023-01-08.2254.log](https://compilenix.org/stat
 ### Nginx Build Info
 ```
 nginx version: nginx/1.22.1 (af7a3fb7558f)
-built by gcc 12.2.1 20220924 (Alpine 12.2.1_git20220924-r4) 
+built by gcc 12.2.1 20220924 (Alpine 12.2.1_git20220924-r4)
 built with OpenSSL 3.0.7 1 Nov 2022
 TLS SNI support enabled
 configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.34 --add-module=/usr/src/ngx_brotli --add-module=/usr/src/njs-nginx-module-5f705230a62c-0.7.9/nginx --build=af7a3fb7558f --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_addition_module --with-http_auth_request_module --with-http_flv_module --with-http_geoip_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.0.7 --with-pcre-jit --with-pcre=/usr/src/pcre2-10.42 --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-threads --with-zlib=/usr/src/zlib-1.2.13 --with-cc-opt='-O3 -pipe' --with-openssl-opt='-O3 -pipe' --with-zlib-opt='-O3 -pipe' --with-ld-opt=-static
@@ -628,7 +683,7 @@ Build log: [1.23.3-ff3afd1ce6a6-2023-01-08.2324.log](https://compilenix.org/stat
 ### Nginx Build Info
 ```
 nginx version: nginx/1.23.3 (ff3afd1ce6a6)
-built by gcc 12.2.1 20220924 (Alpine 12.2.1_git20220924-r4) 
+built by gcc 12.2.1 20220924 (Alpine 12.2.1_git20220924-r4)
 built with OpenSSL 3.0.7 1 Nov 2022
 TLS SNI support enabled
 configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.34 --add-module=/usr/src/ngx_brotli --add-module=/usr/src/njs-nginx-module-5f705230a62c-0.7.9/nginx --build=ff3afd1ce6a6 --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_addition_module --with-http_auth_request_module --with-http_flv_module --with-http_geoip_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.0.7 --with-pcre-jit --with-pcre=/usr/src/pcre2-10.42 --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-threads --with-zlib=/usr/src/zlib-1.2.13 --with-cc-opt='-O3 -pipe' --with-openssl-opt='-O3 -pipe' --with-zlib-opt='-O3 -pipe' --with-ld-opt=-static
@@ -649,7 +704,7 @@ Build log: [1.22.1-af7a3fb7558f-2022-11-27.2012.log](https://compilenix.org/stat
 ### Nginx Build Info
 ```
 nginx version: nginx/1.22.1 (af7a3fb7558f)
-built by gcc 12.2.1 20220924 (Alpine 12.2.1_git20220924-r4) 
+built by gcc 12.2.1 20220924 (Alpine 12.2.1_git20220924-r4)
 built with OpenSSL 3.0.7 1 Nov 2022
 TLS SNI support enabled
 configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.34 --add-module=/usr/src/ngx_brotli --add-module=/usr/src/njs-nginx-module-5f705230a62c-0.7.9/nginx --build=af7a3fb7558f --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_addition_module --with-http_auth_request_module --with-http_flv_module --with-http_geoip_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.0.7 --with-pcre-jit --with-pcre=/usr/src/pcre2-10.40 --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-threads --with-zlib=/usr/src/zlib-1.2.13 --with-cc-opt='-O3 -pipe' --with-openssl-opt='-O3 -pipe' --with-zlib-opt='-O3 -pipe' --with-ld-opt=-static
@@ -670,7 +725,7 @@ Build log: [1.23.2-aa901551a7eb-2022-11-27.2005.log](https://compilenix.org/stat
 ### Nginx Build Info
 ```
 nginx version: nginx/1.23.2 (aa901551a7eb)
-built by gcc 12.2.1 20220924 (Alpine 12.2.1_git20220924-r4) 
+built by gcc 12.2.1 20220924 (Alpine 12.2.1_git20220924-r4)
 built with OpenSSL 3.0.7 1 Nov 2022
 TLS SNI support enabled
 configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.34 --add-module=/usr/src/ngx_brotli --add-module=/usr/src/njs-nginx-module-5f705230a62c-0.7.9/nginx --build=aa901551a7eb --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_addition_module --with-http_auth_request_module --with-http_flv_module --with-http_geoip_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.0.7 --with-pcre-jit --with-pcre=/usr/src/pcre2-10.40 --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-threads --with-zlib=/usr/src/zlib-1.2.13 --with-cc-opt='-O3 -pipe' --with-openssl-opt='-O3 -pipe' --with-zlib-opt='-O3 -pipe' --with-ld-opt=-static
@@ -691,7 +746,7 @@ Build log: [1.22.1-af7a3fb7558f-2022-11-01.1621.log](https://compilenix.org/stat
 ### Nginx Build Info
 ```
 nginx version: nginx/1.22.1 (af7a3fb7558f)
-built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219) 
+built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219)
 built with OpenSSL 3.0.7 1 Nov 2022
 TLS SNI support enabled
 configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.34 --add-module=/usr/src/ngx_brotli --add-module=/usr/src/njs-nginx-module-3308415d7de8/nginx --build=af7a3fb7558f --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_addition_module --with-http_auth_request_module --with-http_flv_module --with-http_geoip_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.0.7 --with-pcre-jit --with-pcre=/usr/src/pcre2-10.40 --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-threads --with-zlib=/usr/src/zlib-1.2.13 --with-cc-opt='-O3 -pipe' --with-openssl-opt='-O3 -pipe' --with-zlib-opt='-O3 -pipe' --with-ld-opt=-static
@@ -712,7 +767,7 @@ Build log: [1.23.2-aa901551a7eb-2022-11-01.1614.log](https://compilenix.org/stat
 ### Nginx Build Info
 ```
 nginx version: nginx/1.23.2 (aa901551a7eb)
-built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219) 
+built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219)
 built with OpenSSL 3.0.7 1 Nov 2022
 TLS SNI support enabled
 configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.34 --add-module=/usr/src/ngx_brotli --add-module=/usr/src/njs-nginx-module-3308415d7de8/nginx --build=aa901551a7eb --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_addition_module --with-http_auth_request_module --with-http_flv_module --with-http_geoip_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.0.7 --with-pcre-jit --with-pcre=/usr/src/pcre2-10.40 --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-threads --with-zlib=/usr/src/zlib-1.2.13 --with-cc-opt='-O3 -pipe' --with-openssl-opt='-O3 -pipe' --with-zlib-opt='-O3 -pipe' --with-ld-opt=-static
@@ -732,7 +787,7 @@ Build log: [1.22.0-f669c9c2a617-2022-10-18.1952.log](https://compilenix.org/stat
 ### Nginx Build Info
 ```
 nginx version: nginx/1.22.0 (f669c9c2a617)
-built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219) 
+built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219)
 built with OpenSSL 3.0.5 5 Jul 2022
 TLS SNI support enabled
 configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.34 --add-module=/usr/src/ngx_brotli --add-module=/usr/src/njs-nginx-module-1592d46d9076/nginx --build=f669c9c2a617 --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_addition_module --with-http_auth_request_module --with-http_flv_module --with-http_geoip_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.0.5 --with-pcre-jit --with-pcre=/usr/src/pcre2-10.40 --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-threads --with-zlib=/usr/src/zlib-1.2.13 --with-cc-opt='-O3 -pipe' --with-openssl-opt='-O3 -pipe' --with-zlib-opt='-O3 -pipe' --with-ld-opt=-static
@@ -753,7 +808,7 @@ Build log: [1.23.1-a63d0a70afea-2022-10-18.1945.log](https://compilenix.org/stat
 ### Nginx Build Info
 ```
 nginx version: nginx/1.23.1 (a63d0a70afea)
-built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219) 
+built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219)
 built with OpenSSL 3.0.5 5 Jul 2022
 TLS SNI support enabled
 configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.34 --add-module=/usr/src/ngx_brotli --add-module=/usr/src/njs-nginx-module-1592d46d9076/nginx --build=a63d0a70afea --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_addition_module --with-http_auth_request_module --with-http_flv_module --with-http_geoip_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.0.5 --with-pcre-jit --with-pcre=/usr/src/pcre2-10.40 --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-threads --with-zlib=/usr/src/zlib-1.2.13 --with-cc-opt='-O3 -pipe' --with-openssl-opt='-O3 -pipe' --with-zlib-opt='-O3 -pipe' --with-ld-opt=-static
@@ -769,7 +824,7 @@ Build log: [1.22.0-f669c9c2a617-2022-10-11.1902.log](https://compilenix.org/stat
 ### Nginx Build Info
 ```
 nginx version: nginx/1.22.0 (f669c9c2a617)
-built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219) 
+built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219)
 built with OpenSSL 3.0.6 11 Oct 2022
 TLS SNI support enabled
 configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.34 --add-module=/usr/src/ngx_brotli --add-module=/usr/src/njs-nginx-module-1592d46d9076/nginx --build=f669c9c2a617 --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_addition_module --with-http_auth_request_module --with-http_flv_module --with-http_geoip_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.0.6 --with-pcre-jit --with-pcre=/usr/src/pcre2-10.40 --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-threads --with-zlib=/usr/src/zlib-1.2.12 --with-cc-opt='-O3 -pipe' --with-openssl-opt='-O3 -pipe' --with-zlib-opt='-O3 -pipe' --with-ld-opt=-static
@@ -787,7 +842,7 @@ Build log: [1.23.1-a63d0a70afea-2022-10-11.1856.log](https://compilenix.org/stat
 ### Nginx Build Info
 ```
 nginx version: nginx/1.23.1 (a63d0a70afea)
-built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219) 
+built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219)
 built with OpenSSL 3.0.6 11 Oct 2022
 TLS SNI support enabled
 configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.34 --add-module=/usr/src/ngx_brotli --add-module=/usr/src/njs-nginx-module-1592d46d9076/nginx --build=a63d0a70afea --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_addition_module --with-http_auth_request_module --with-http_flv_module --with-http_geoip_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.0.6 --with-pcre-jit --with-pcre=/usr/src/pcre2-10.40 --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-threads --with-zlib=/usr/src/zlib-1.2.12 --with-cc-opt='-O3 -pipe' --with-openssl-opt='-O3 -pipe' --with-zlib-opt='-O3 -pipe' --with-ld-opt=-static
@@ -805,7 +860,7 @@ Build log: [1.22.0-f669c9c2a617-2022-10-08.1733.log](https://compilenix.org/stat
 ### Nginx Build Info
 ```
 nginx version: nginx/1.22.0 (f669c9c2a617)
-built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219) 
+built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219)
 built with OpenSSL 3.0.5 5 Jul 2022
 TLS SNI support enabled
 configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.34 --add-module=/usr/src/ngx_brotli --add-module=/usr/src/njs-nginx-module-1592d46d9076/nginx --build=f669c9c2a617 --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_addition_module --with-http_auth_request_module --with-http_flv_module --with-http_geoip_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.0.5 --with-pcre-jit --with-pcre=/usr/src/pcre2-10.40 --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-threads --with-zlib=/usr/src/zlib-1.2.12 --with-cc-opt='-O3 -pipe' --with-openssl-opt='-O3 -pipe' --with-zlib-opt='-O3 -pipe' --with-ld-opt=-static
@@ -840,9 +895,8 @@ Build log: [1.23.1-a63d0a70afea-2022-10-08.1724.log](https://compilenix.org/stat
 ### Nginx Build Info
 ```
 nginx version: nginx/1.23.1 (a63d0a70afea)
-built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219) 
+built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219)
 built with OpenSSL 3.0.5 5 Jul 2022
 TLS SNI support enabled
 configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.34 --add-module=/usr/src/ngx_brotli --add-module=/usr/src/njs-nginx-module-1592d46d9076/nginx --build=a63d0a70afea --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_addition_module --with-http_auth_request_module --with-http_flv_module --with-http_geoip_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.0.5 --with-pcre-jit --with-pcre=/usr/src/pcre2-10.40 --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-threads --with-zlib=/usr/src/zlib-1.2.12 --with-cc-opt='-O3 -pipe' --with-openssl-opt='-O3 -pipe' --with-zlib-opt='-O3 -pipe' --with-ld-opt=-static
 ```
-
