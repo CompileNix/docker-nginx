@@ -2,6 +2,73 @@
 
 # Changes
 
+## 1.27.4: Tue, 11 Feb 2025 15:46:41 GMT
+
+Build logs:
+- image tag `1.27.4`: [1.27.4-ecb809305e54ed15be9f620d56b19ff4e4be7db5-2025-02-11.1549.log](https://compilenix.org/static/build-logs/nginx/1.27.4-ecb809305e54ed15be9f620d56b19ff4e4be7db5-2025-02-11.1549.log)
+- image tag `1.27.4-extras`: [1.27.4-ecb809305e54ed15be9f620d56b19ff4e4be7db5-2025-02-11.1552.log](https://compilenix.org/static/build-logs/nginx/1.27.4-ecb809305e54ed15be9f620d56b19ff4e4be7db5-2025-02-11.1552.log)
+- image tag `1.27.4-slim`: [1.27.4-ecb809305e54ed15be9f620d56b19ff4e4be7db5-2025-02-11.1546.log](https://compilenix.org/static/build-logs/nginx/1.27.4-ecb809305e54ed15be9f620d56b19ff4e4be7db5-2025-02-11.1546.log)
+
+### Changes
+- Update openssl from 3.4.0 to 3.4.1
+
+#### Changes between 3.4.0 and 3.4.1 [11 Feb 2025]
+
+ * Fixed RFC7250 handshakes with unauthenticated servers don't abort as expected.
+
+   Clients using RFC7250 Raw Public Keys (RPKs) to authenticate a
+   server may fail to notice that the server was not authenticated, because
+   handshakes don't abort as expected when the SSL_VERIFY_PEER verification mode
+   is set.
+
+   ([CVE-2024-12797])
+
+   *Viktor Dukhovni*
+
+ * Fixed timing side-channel in ECDSA signature computation.
+
+   There is a timing signal of around 300 nanoseconds when the top word of
+   the inverted ECDSA nonce value is zero. This can happen with significant
+   probability only for some of the supported elliptic curves. In particular
+   the NIST P-521 curve is affected. To be able to measure this leak, the
+   attacker process must either be located in the same physical computer or
+   must have a very fast network connection with low latency.
+
+   ([CVE-2024-13176])
+
+   *Tomáš Mráz*
+
+ * Reverted the behavior change of CMS_get1_certs() and CMS_get1_crls()
+   that happened in the 3.4.0 release. These functions now return NULL
+   again if there are no certs or crls in the CMS object.
+
+   *Tomáš Mráz*
+
+### Nginx Build Info
+#### Default Image Variant
+```
+nginx version: nginx/1.27.4 (ecb809305e54ed15be9f620d56b19ff4e4be7db5)
+built with OpenSSL 3.4.1 11 Feb 2025
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.38 --add-module=/usr/src/nginx-rtmp-module-1.2.2 --add-module=/usr/src/ngx_brotli-a71f9312c2deb28875acc7bacfdd5695a111aa53 --add-module=/usr/src/njs-0.8.9/nginx --add-module=/usr/src/zstd-nginx-module-0.1.1 --build=ecb809305e54ed15be9f620d56b19ff4e4be7db5 --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_gzip_static_module --with-http_realip_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-openssl=/usr/src/openssl-3.4.1 --with-pcre-jit --with-stream --with-stream_realip_module --with-stream_ssl_module --with-threads --without-http_empty_gif_module --without-http_geo_module --without-http_grpc_module --without-http_memcached_module --without-http_mirror_module --without-http_scgi_module --without-http_ssi_module --without-http_uwsgi_module --without-mail_imap_module --without-mail_pop3_module --without-mail_smtp_module --without-stream_geo_module --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -I/usr/src/quickjs-6e2e68fd0896957f92eb6c242a2e048c1ef3cae0' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2 -L/usr/src/quickjs-6e2e68fd0896957f92eb6c242a2e048c1ef3cae0'
+```
+
+#### Extras Image Variant
+```
+nginx version: nginx/1.27.4 (ecb809305e54ed15be9f620d56b19ff4e4be7db5)
+built with OpenSSL 3.4.1 11 Feb 2025
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.38 --add-module=/usr/src/nginx-rtmp-module-1.2.2 --add-module=/usr/src/ngx_brotli-a71f9312c2deb28875acc7bacfdd5695a111aa53 --add-module=/usr/src/njs-0.8.9/nginx --add-module=/usr/src/zstd-nginx-module-0.1.1 --build=ecb809305e54ed15be9f620d56b19ff4e4be7db5 --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_dav_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_image_filter_module --with-http_perl_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-http_xslt_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.4.1 --with-pcre-jit --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-threads --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -I/usr/src/quickjs-6e2e68fd0896957f92eb6c242a2e048c1ef3cae0' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2 -L/usr/src/quickjs-6e2e68fd0896957f92eb6c242a2e048c1ef3cae0'
+```
+
+#### Slim Image Variant
+```
+nginx version: nginx/1.27.4 (ecb809305e54ed15be9f620d56b19ff4e4be7db5)
+built with OpenSSL 3.4.1 11 Feb 2025
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.38 --build=ecb809305e54ed15be9f620d56b19ff4e4be7db5 --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_gzip_static_module --with-http_realip_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-openssl=/usr/src/openssl-3.4.1 --with-pcre-jit --with-stream --with-stream_realip_module --with-stream_ssl_module --with-threads --without-http_empty_gif_module --without-http_geo_module --without-http_grpc_module --without-http_memcached_module --without-http_mirror_module --without-http_scgi_module --without-http_ssi_module --without-http_uwsgi_module --without-mail_imap_module --without-mail_pop3_module --without-mail_smtp_module --without-stream_geo_module --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2'
+```
+
 ## 1.27.4: Wed, 05 Feb 2025 21:03:42 GMT
 
 Build logs:

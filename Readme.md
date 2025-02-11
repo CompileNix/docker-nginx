@@ -657,7 +657,7 @@ If you want to change any versions used to build the container image take a look
 - [ ] Run `./tools/build-with-logs.sh ./docker/latest.Dockerfile`
 - [ ] Run `./tools/build-with-logs.sh ./docker/latest-extras.Dockerfile extras`
 - [ ] Run `./tools/build-with-logs.sh ./docker/latest-slim.Dockerfile slim`
-- [ ] Run `./tools/tests.sh`
+- [ ] Run `./tools/tests.sh 2>&1 | tee log/test_results.txt`
 - [ ] Upload build logs (printed out at the end of the `build-with-logs.sh` command)
 - [ ] Update [Supported Container Image Tags](#supported-container-image-tags)
 - [ ] Update `CHANGELOG.md`

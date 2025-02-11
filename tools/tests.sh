@@ -20,6 +20,17 @@ set -euv
 
 source .env
 
+if [ -t 1 ]; then
+  # STDOUT is attached to TTY
+  extra_docker_command_flags="-it"
+  terminal_green="\033[0;32m"
+  terminal_reset="\033[0m"
+else
+  extra_docker_command_flags=""
+  terminal_green=""
+  terminal_reset=""
+fi
+
 download_hurl="true"
 if [ -f "./tools/hurl" ]; then
   download_hurl="false"
@@ -51,10 +62,10 @@ export HTTP_PORT="$(shuf -i 32768-49152 -n 1)"
 export HTTP_STUB_PORT="$(shuf -i 32768-49152 -n 1)"
 export HTTPS_PORT="$(shuf -i 32768-49152 -n 1)"
 
-docker rm --force "nginx-test"
+docker rm --force "nginx-test" 2>/dev/null
 
 # show nginx build config to stdout
-docker run --rm -it \
+docker run --rm $extra_docker_command_flags \
   --name "nginx-test" \
   "$IMAGE_NAME:$NGINX_VERSION" nginx -T
 
@@ -94,7 +105,7 @@ set -ex
 ./tools/hurl --verbose --variable HTTPS_PORT="$HTTPS_PORT" --cacert ./config/ssl/cert.pem --compressed ./tests/https_test_compressed_static_gzip.hurl
 ./tools/hurl --verbose --variable HTTPS_PORT="$HTTPS_PORT" --cacert ./config/ssl/cert.pem --compressed ./tests/https_test_compressed_static_brotli.hurl
 
-docker rm --force "nginx-test"
+docker rm --force "nginx-test" 2>/dev/null
 
 # Testing NJS for default image variant
 docker run --rm -d \
@@ -130,7 +141,7 @@ set -ex
 ./tools/hurl --verbose --variable HTTPS_PORT="$HTTPS_PORT" --variable NJS_VERSION="$NJS_VERSION" --cacert ./config/ssl/cert.pem ./tests/https_njs_version.hurl
 ./tools/hurl --verbose --variable HTTPS_PORT="$HTTPS_PORT" --cacert ./config/ssl/cert.pem ./tests/https_healthy.hurl
 
-docker rm --force "nginx-test"
+docker rm --force "nginx-test" 2>/dev/null
 
 # Testing Perl for extras image variant
 docker run --rm -d \
@@ -154,7 +165,7 @@ set -ex
 
 ./tools/hurl --verbose --variable HTTP_PORT="$HTTP_PORT" ./tests/http_perl.hurl
 
-docker rm --force "nginx-test"
+docker rm --force "nginx-test" 2>/dev/null
 
 # Testing slim
 docker run --rm -d \
@@ -189,9 +200,9 @@ set -ex
 ./tools/hurl --verbose --variable HTTPS_PORT="$HTTPS_PORT" --cacert ./config/ssl/cert.pem ./tests/https_server_protocol_h2.hurl
 ./tools/hurl --verbose --variable HTTPS_PORT="$HTTPS_PORT" --cacert ./config/ssl/cert.pem --compressed ./tests/https_test_compressed_static_gzip.hurl
 
-docker rm --force "nginx-test"
+docker rm --force "nginx-test" 2>/dev/null
 
 set +xv
 
 echo
-echo -e "\033[1;32mTests complete 🙌🚀\033[0m"
+echo -e "${terminal_green}Tests complete 🙌🚀${terminal_reset}"
