@@ -210,6 +210,7 @@ RUN \
   echo "Apply nginx patches ..." \
   && cd /usr/src/nginx-$NGINX_VERSION \
   && echo "apply ngx_http_error_tail.patch" && cat /patches/nginx/ngx_http_error_tail.patch && git apply /patches/nginx/ngx_http_error_tail.patch \
+  && echo "apply ngx_http_special_response-dark-light-mode.patch" && cat /patches/nginx/ngx_http_special_response-dark-light-mode.patch && git apply /patches/nginx/ngx_http_special_response-dark-light-mode.patch \
   && echo "apply openssl_build_configure_no-tests.patch" && cat /patches/nginx/openssl_build_configure_no-tests.patch && git apply /patches/nginx/openssl_build_configure_no-tests.patch
 
 RUN \
