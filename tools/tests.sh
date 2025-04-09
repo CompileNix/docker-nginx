@@ -197,7 +197,9 @@ set -ex
 
 ./tools/hurl --verbose --variable HTTP_STUB_PORT="$HTTP_STUB_PORT" ./tests/http_stub.hurl
 ./tools/hurl --verbose --variable HTTP_PORT="$HTTP_PORT" ./tests/http_test.hurl
+./tools/hurl --verbose --variable HTTP_PORT="$HTTP_PORT" ./tests/http_test_error_page.hurl
 ./tools/hurl --verbose --variable HTTPS_PORT="$HTTPS_PORT" --cacert ./config/ssl/cert.pem ./tests/https_test.hurl
+./tools/hurl --verbose --variable HTTPS_PORT="$HTTPS_PORT" --cacert ./config/ssl/cert.pem ./tests/https_test_autoindex.hurl
 ./tools/hurl --verbose --variable HTTPS_PORT="$HTTPS_PORT" --cacert ./config/ssl/cert.pem --compressed ./tests/slim_https_test_compressed.hurl
 ./tools/hurl --verbose --variable HTTPS_PORT="$HTTPS_PORT" --cacert ./config/ssl/cert.pem ./tests/https_server_protocol_h2.hurl
 ./tools/hurl --verbose --variable HTTPS_PORT="$HTTPS_PORT" --cacert ./config/ssl/cert.pem --compressed ./tests/https_test_compressed_static_gzip.hurl

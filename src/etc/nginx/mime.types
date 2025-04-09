@@ -1,4 +1,4 @@
-# vim: sw=4 et filetype=nginx
+# vim: sw=2 et filetype=nginx
 
 types {
     text/html                                        html htm shtml;
@@ -11,7 +11,7 @@ types {
     application/rss+xml                              rss;
 
     text/mathml                                      mml;
-    text/plain                                       txt;
+    text/plain                                       txt c h cpp asc conf sh py ps1 log;
     text/vnd.sun.j2me.app-descriptor                 jad;
     text/vnd.wap.wml                                 wml;
     text/x-component                                 htc;
