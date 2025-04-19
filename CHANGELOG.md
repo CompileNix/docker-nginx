@@ -2,6 +2,66 @@
 
 # Changes
 
+## 1.27.5: Sat, 19 Apr 2025 16:18:38 GMT
+
+Build logs:
+- image tag `1.27.5`: [1.27.5-6ac8b69f06bc10d5503f636da888fa70095b151c-2025-04-19.1618.log](https://compilenix.org/static/build-logs/nginx/1.27.5-6ac8b69f06bc10d5503f636da888fa70095b151c-2025-04-19.1618.log)
+- image tag `1.27.5-extras`: [1.27.5-6ac8b69f06bc10d5503f636da888fa70095b151c-2025-04-19.1618.log](https://compilenix.org/static/build-logs/nginx/1.27.5-6ac8b69f06bc10d5503f636da888fa70095b151c-2025-04-19.1618.log)
+- image tag `1.27.5-slim`: [1.27.5-6ac8b69f06bc10d5503f636da888fa70095b151c-2025-04-19.1618.log](https://compilenix.org/static/build-logs/nginx/1.27.5-6ac8b69f06bc10d5503f636da888fa70095b151c-2025-04-19.1618.log)
+
+### Changes
+- Update nginx from 1.27.4 to 1.27.5
+- Update quickjs from 9d3776d0d45ca437ddb7f9079ae0367102abc90f to db3d3f09cdec7106d6e330aa1eb3fae50ed8fdc4
+
+#### Changes between nginx 1.27.4 and 1.27.5
+
+```
+Changes with nginx 1.27.5                                        16 Apr 2025
+
+    *) Feature: CUBIC congestion control in QUIC connections.
+
+    *) Change: the maximum size limit for SSL sessions cached in shared
+       memory has been raised to 8192.
+
+    *) Bugfix: in the "grpc_ssl_password_file", "proxy_ssl_password_file",
+       and "uwsgi_ssl_password_file" directives when loading SSL
+       certificates and encrypted keys from variables; the bug had appeared
+       in 1.23.1.
+
+    *) Bugfix: in the $ssl_curve and $ssl_curves variables when using
+       pluggable curves in OpenSSL.
+
+    *) Bugfix: nginx could not be built with musl libc.
+       Thanks to Piotr Sikora.
+
+    *) Performance improvements and bugfixes in HTTP/3.
+```
+
+### Nginx Build Info
+#### Default Image Variant
+```
+nginx version: nginx/1.27.5 (6ac8b69f06bc10d5503f636da888fa70095b151c)
+built with OpenSSL 3.4.1 11 Feb 2025
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.38 --add-module=/usr/src/nginx-rtmp-module-1.2.2 --add-module=/usr/src/ngx_brotli-a71f9312c2deb28875acc7bacfdd5695a111aa53 --add-module=/usr/src/njs-0.8.10/nginx --add-module=/usr/src/zstd-nginx-module-0.1.1 --build=6ac8b69f06bc10d5503f636da888fa70095b151c --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_gzip_static_module --with-http_realip_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-openssl=/usr/src/openssl-3.4.1 --with-pcre-jit --with-stream --with-stream_realip_module --with-stream_ssl_module --with-threads --without-http_empty_gif_module --without-http_geo_module --without-http_grpc_module --without-http_memcached_module --without-http_mirror_module --without-http_scgi_module --without-http_ssi_module --without-http_uwsgi_module --without-mail_imap_module --without-mail_pop3_module --without-mail_smtp_module --without-stream_geo_module --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -I/usr/src/quickjs-db3d3f09cdec7106d6e330aa1eb3fae50ed8fdc4' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2 -L/usr/src/quickjs-db3d3f09cdec7106d6e330aa1eb3fae50ed8fdc4'
+```
+
+#### Extras Image Variant
+```
+nginx version: nginx/1.27.5 (6ac8b69f06bc10d5503f636da888fa70095b151c)
+built with OpenSSL 3.4.1 11 Feb 2025
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.38 --add-module=/usr/src/nginx-rtmp-module-1.2.2 --add-module=/usr/src/ngx_brotli-a71f9312c2deb28875acc7bacfdd5695a111aa53 --add-module=/usr/src/njs-0.8.10/nginx --add-module=/usr/src/zstd-nginx-module-0.1.1 --build=6ac8b69f06bc10d5503f636da888fa70095b151c --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_dav_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_image_filter_module --with-http_perl_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-http_xslt_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.4.1 --with-pcre-jit --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-threads --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -I/usr/src/quickjs-db3d3f09cdec7106d6e330aa1eb3fae50ed8fdc4' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2 -L/usr/src/quickjs-db3d3f09cdec7106d6e330aa1eb3fae50ed8fdc4'
+```
+
+#### Slim Image Variant
+```
+nginx version: nginx/1.27.5 (6ac8b69f06bc10d5503f636da888fa70095b151c)
+built with OpenSSL 3.4.1 11 Feb 2025
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.38 --build=6ac8b69f06bc10d5503f636da888fa70095b151c --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_gzip_static_module --with-http_realip_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-openssl=/usr/src/openssl-3.4.1 --with-pcre-jit --with-stream --with-stream_realip_module --with-stream_ssl_module --with-threads --without-http_empty_gif_module --without-http_geo_module --without-http_grpc_module --without-http_memcached_module --without-http_mirror_module --without-http_scgi_module --without-http_ssi_module --without-http_uwsgi_module --without-mail_imap_module --without-mail_pop3_module --without-mail_smtp_module --without-stream_geo_module --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2'
+```
+
 ## 1.27.4: Wed, 09 Apr 2025 10:16:56 GMT
 
 Build logs:
