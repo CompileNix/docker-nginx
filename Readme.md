@@ -28,12 +28,12 @@ The primary motivations for this container image are:
 - [Git Mirror 2](https://gitlab.com/CompileNix/docker-nginx)
 
 ## Supported Container Image Tags
-- `1.27.5`, `1.27`, `1`, `latest`
-- `1.27.5-extras`, `1.27-extras`, `1-extras`, `latest-extras`
-- `1.27.5-slim`, `1.27-slim`, `1-slim`, `latest-slim`
+- `1.28.0`, `1.28`, `1`, `latest`
+- `1.28.0-extras`, `1.28-extras`, `1-extras`, `latest-extras`
+- `1.28.0-slim`, `1.28-slim`, `1-slim`, `latest-slim`
 
 ## Container Image Variants
-### Default (`1.27.5`, `1.27`, `1`, `latest`)
+### Default (`1.28.0`, `1.28`, `1`, `latest`)
 This container image has all features and modules built-in that will suit most regular use-cases, while maintaining a low image size.
 
 The following notable features are available:
@@ -69,7 +69,7 @@ The following nginx modules are **NOT** available:
 - `--without-mail_smtp_module`
 - `--without-stream_geo_module`
 
-### Extras (`1.27.5-extras`, `1.27-extras`, `1-extras`, `latest-extras`)
+### Extras (`1.28.0-extras`, `1.28-extras`, `1-extras`, `latest-extras`)
 This container image has all features and modules built-in, without the focus on low image size.
 
 The following notable features are available:
@@ -85,7 +85,7 @@ The following notable features are available:
 - `--with-mail`
 - `--with-stream_geoip_module`
 
-### Slim (`1.27.5-slim`, `1.27-slim`, `1-slim`, `latest-slim`)
+### Slim (`1.28.0-slim`, `1.28-slim`, `1-slim`, `latest-slim`)
 This container image has most features and modules built-in, with a focus on the least amount of non-upstream dependencies, modules and overall small image size.
 
 [OpenResty's headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module) is the only non-upstream module built-in.
@@ -555,7 +555,7 @@ Example: `upstream_queue_time`
   "limit_rate": "0",
   "limit_req_status": "",
   "msec": "1664306240.619",
-  "nginx_version": "1.27.5",
+  "nginx_version": "1.28.0",
   "pid": "46",
   "pipe": ".",
   "proxy_add_x_forwarded_for": "172.18.0.1",
@@ -654,24 +654,24 @@ If you want to change any versions used to build the container image take a look
   - ```sh
     cp .env.example .env
     ```
-- [ ] Run `./tools/build-with-logs.sh ./docker/latest.Dockerfile`
+- [ ] Run `./tools/build-with-logs.sh ./docker/latest.Dockerfile` (or `./tools/build-all-with-logs.sh` and skip the next two steps)
 - [ ] Run `./tools/build-with-logs.sh ./docker/latest-extras.Dockerfile extras`
 - [ ] Run `./tools/build-with-logs.sh ./docker/latest-slim.Dockerfile slim`
 - [ ] Run `./tools/tests.sh 2>&1 | tee log/test_results.txt`
-- [ ] Upload build logs (printed out at the end of the `build-with-logs.sh` command)
+- [ ] Upload build logs (printed out at the end of the `build-with-logs.sh` command or via `./log/upload-<variant>.sh`)
 - [ ] Update [Supported Container Image Tags](#supported-container-image-tags)
 - [ ] Update `CHANGELOG.md`
 - [ ] Create / Update Docker Image Tags
   - ```sh
     source .env
     docker image tag "${IMAGE_NAME}:${NGINX_VERSION}" "${IMAGE_NAME}:latest"
-    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}" "${IMAGE_NAME}:1.27"
+    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}" "${IMAGE_NAME}:1.28"
     docker image tag "${IMAGE_NAME}:${NGINX_VERSION}" "${IMAGE_NAME}:1"
     docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-extras" "${IMAGE_NAME}:latest-extras"
-    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-extras" "${IMAGE_NAME}:1.27-extras"
+    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-extras" "${IMAGE_NAME}:1.28-extras"
     docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-extras" "${IMAGE_NAME}:1-extras"
     docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-slim" "${IMAGE_NAME}:latest-slim"
-    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-slim" "${IMAGE_NAME}:1.27-slim"
+    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-slim" "${IMAGE_NAME}:1.28-slim"
     docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-slim" "${IMAGE_NAME}:1-slim"
     # inspect image tags
     docker image ls "${IMAGE_NAME}"

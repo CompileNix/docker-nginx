@@ -27,13 +27,13 @@ set -a
 source ".env"
 set +a
 
+variant=${2:-default}
 build_date_start_timestamp=$(LC_TIME="en_US.UTF-8" TZ="UTC" date +"%Y-%m-%d.%H%M")
-build_logfile="${NGINX_VERSION}-${NGINX_COMMIT}-${build_date_start_timestamp}.log"
+build_logfile="${NGINX_VERSION}-${NGINX_COMMIT}-${variant}-${build_date_start_timestamp}.log"
 
 ./tools/build.sh $* 2>&1 | tee "log/$build_logfile"
 
 echo
-echo "Upload build log command"
-echo "rsync \"log/$build_logfile\" wire:/var/www/compilenix.org/static/build-logs/nginx/"
-echo "https://compilenix.org/static/build-logs/nginx/$build_logfile"
-
+echo "# https://compilenix.org/static/build-logs/nginx/$build_logfile" > "log/upload-${variant}.sh"
+echo -e "rsync \"log/$build_logfile\" wire:/var/www/compilenix.org/static/build-logs/nginx\n" >> "log/upload-${variant}.sh"
+chmod +x "log/upload-${variant}.sh"

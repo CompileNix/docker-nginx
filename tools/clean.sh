@@ -10,4 +10,3 @@ set -u
 
 rm -rv log
 exit 0
-

@@ -90,4 +90,3 @@ echo "build started at: $build_date_start"
 echo "build ended at: $build_date_end_pretty"
 echo "build ended at: $build_date_end"
 echo "build took $(expr $build_date_end_timestamp - $build_date_start_timestamp) seconds"
-
