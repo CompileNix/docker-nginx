@@ -1,10 +1,10 @@
 ## What is this?
-A set of smol [Nginx](https://nginx.org/en/) container images, built from source (using fedora) into a `FROM scratch` container image.
+A set of smol [Nginx](https://nginx.org/en/) container images, built from source (using fedora and glibc) into a `FROM scratch` container image.
 
 The primary motivations for this container image are:
 - up-to-date libraries and build-tools
 - frequently used and popular 3rd party modules built-in
-- smaller image size
+- small image size
 - ability for custom source code [patches](./patches/)
 - multiple image variants, to balance between size and features
 
@@ -640,6 +640,7 @@ git clone https://git.compilenix.org/CompileNix/docker-nginx
 cd docker-nginx
 cp .env.example .env
 $EDITOR .env
+# ./tools/build-all-with-logs.sh
 ./tools/build-with-logs.sh ./docker/latest.Dockerfile
 ./tools/build-with-logs.sh ./docker/latest-extras.Dockerfile extras
 ./tools/build-with-logs.sh ./docker/latest-slim.Dockerfile slim
@@ -660,7 +661,7 @@ If you want to change any versions used to build the container image take a look
 - [ ] Run `./tools/tests.sh 2>&1 | tee log/test_results.txt`
 - [ ] Upload build logs (printed out at the end of the `build-with-logs.sh` command or via `./log/upload-<variant>.sh`)
 - [ ] Update [Supported Container Image Tags](#supported-container-image-tags)
-- [ ] Update `CHANGELOG.md`
+- [ ] Update `CHANGELOG.md` (use `./tools/new-changelog.sh` to generate a base template)
 - [ ] Create / Update Docker Image Tags
   - ```sh
     source .env

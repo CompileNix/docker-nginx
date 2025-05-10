@@ -54,6 +54,5 @@ else
 fi
 
 echo "exec: $@" 2>&1 | prepend
-echo
 exec "$@"
 
