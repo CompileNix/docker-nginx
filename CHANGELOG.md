@@ -2,6 +2,353 @@
 
 # Changes
 
+## 1.29.0: Fri, 27 Jun 2025 16:39:18 GMT
+
+Build logs:
+- image tag `1.29.0`: [2025-06-27.1626-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-default.log](https://compilenix.org/static/build-logs/nginx/2025-06-27.1626-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-default.log)
+- image tag `1.29.0-extras`: [2025-06-27.1631-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-extras.log](https://compilenix.org/static/build-logs/nginx/2025-06-27.1631-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-extras.log)
+- image tag `1.29.0-slim`: [2025-06-27.1623-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-slim.log](https://compilenix.org/static/build-logs/nginx/2025-06-27.1623-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-slim.log)
+
+### Changes
+
+- Update nginx from 1.28.0 to 1.29.0
+- Update OpenSSL from 3.4.1 to 3.5.0
+- Update QuickJS from [330625486f1d67b35c3720e9fc4bcc794302fd5b to a8b2d7c2b2751130000b74ac7d831fd75a0abbc3](https://github.com/bellard/quickjs/compare/330625486f1d67b35c3720e9fc4bcc794302fd5b...a8b2d7c2b2751130000b74ac7d831fd75a0abbc3)
+- Update docker base image from Fedora 41 to Fedora 42
+
+#### Changes between nginx 1.28.0 and 1.29.0
+
+```
+Changes with nginx 1.29.0                                        24 Jun 2025
+
+    *) Feature: support for response code 103 from proxy and gRPC backends;
+       the "early_hints" directive.
+
+    *) Feature: loading of secret keys from hardware tokens with OpenSSL
+       provider.
+
+    *) Feature: support for the "so_keepalive" parameter of the "listen"
+       directive on macOS.
+
+    *) Change: the logging level of SSL errors in a QUIC handshake has been
+       changed from "error" to "crit" for critical errors, and to "info" for
+       the rest; the logging level of unsupported QUIC transport parameters
+       has been lowered from "info" to "debug".
+
+    *) Change: the native nginx/Windows binary release is now built using
+       Windows SDK 10.
+
+    *) Bugfix: nginx could not be built by gcc 15 if ngx_http_v2_module or
+       ngx_http_v3_module modules were used.
+
+    *) Bugfix: nginx might not be built by gcc 14 or newer with -O3 -flto
+       optimization if ngx_http_v3_module was used.
+
+    *) Bugfixes and improvements in HTTP/3.
+```
+
+#### Changes between OpenSSL 3.4 and 3.5.0 [8 Apr 2025]
+
+ * Added server side support for QUIC
+
+   *Hugo Landau, Matt Caswell, Tomáš Mráz, Neil Horman, Sasha Nedvedicky, Andrew Dinh*
+
+ * Tolerate PKCS#8 version 2 with optional public keys. The public key data
+   is currently ignored.
+
+   *Viktor Dukhovni*
+
+ * Signature schemes without an explicit signing digest in CMS are now supported.
+   Examples of such schemes are ED25519 or ML-DSA.
+
+   *Michael Schroeder*
+
+ * The TLS Signature algorithms defaults now include all three ML-DSA variants as
+   first algorithms.
+
+   *Viktor Dukhovni*
+
+ * Added a `no-tls-deprecated-ec` configuration option.
+
+   The `no-tls-deprecated-ec` option disables support for TLS elliptic curve
+   groups deprecated in RFC8422 at compile time.  This does not affect use of
+   the associated curves outside TLS.  By default support for these groups is
+   compiled in, but, as before, they are not included in the default run-time
+   list of supported groups.
+
+   With the `enable-tls-deprecated-ec` option these TLS groups remain enabled at
+   compile time even if the default configuration is changed, provided the
+   underlying EC curves remain implemented.
+
+   *Viktor Dukhovni*
+
+ * Added new API to enable 0-RTT for 3rd party QUIC stacks.
+
+   *Cheng Zhang*
+
+ * Added support for a new callback registration `SSL_CTX_set_new_pending_conn_cb`,
+   which allows for application notification of new connection SSL object
+   creation, which occurs independently of calls to `SSL_accept_connection()`.
+   Note: QUIC objects passed through SSL callbacks should not have their state
+   mutated via calls back into the SSL api until such time as they have been
+   received via a call to `SSL_accept_connection()`.
+
+   *Neil Horman*
+
+ * Add SLH-DSA as specified in FIPS 205.
+
+   *Shane Lontis and Dr Paul Dale*
+
+ * ML-KEM as specified in FIPS 203.
+
+   Based on the original implementation in BoringSSL, ported from C++ to C,
+   refactored, and integrated into the OpenSSL default and FIPS providers.
+   Including also the X25519MLKEM768, SecP256r1MLKEM768, SecP384r1MLKEM1024
+   TLS hybrid key post-quantum/classical key agreement schemes.
+
+   *Michael Baentsch, Viktor Dukhovni, Shane Lontis and Paul Dale*
+
+ * Add ML-DSA as specified in FIPS 204.
+
+   The base code was derived from BoringSSL C++ code.
+
+   *Shane Lontis, Viktor Dukhovni and Paul Dale*
+
+ * Added new API calls to enable 3rd party QUIC stacks to use the OpenSSL TLS
+   implementation.
+
+   *Matt Caswell*
+
+ * The default DRBG implementations have been changed to prefer to fetch
+   algorithm implementations from the default provider (the provider the
+   DRBG implementation is built in) regardless of the default properties
+   set in the configuration file. The code will still fallback to find
+   an implementation, as done previously, if needed.
+
+   *Simo Sorce*
+
+ * Initial support for opaque symmetric keys objects (EVP_SKEY). These
+   replace the ad-hoc byte arrays that are pervasive throughout the library.
+
+   *Dmitry Belyavskiy and Simo Sorce*
+
+ * The default TLS group list setting is now set to:
+   `?*X25519MLKEM768 / ?*X25519:?secp256r1 / ?X448:?secp384r1:?secp521r1 / ?ffdhe2048:?ffdhe3072`
+
+   This means two key shares (X25519MLKEM768 and X25519) will be sent by
+   default by the TLS client. GOST groups and FFDHE groups larger than 3072
+   bits are no longer enabled by default.
+
+   The group names in the group list setting are now also case insensitive.
+
+   *Viktor Dukhovni*
+
+ * For TLSv1.3: Add capability for a client to send multiple key shares.
+   Extend the scope of `SSL_OP_CIPHER_SERVER_PREFERENCE` to cover
+   server-side key exchange group selection.
+
+   Extend the server-side key exchange group selection algorithm and related
+   group list syntax to support multiple group priorities, e.g. to prioritize
+   (hybrid-)KEMs.
+
+   *David Kelsey*, *Martin Schmatz*
+
+ * A new random generation API has been introduced which modifies all
+   of the L<RAND_bytes(3)> family of calls so they are routed through a
+   specific named provider instead of being resolved via the normal DRBG
+   chaining.  In a future OpenSSL release, this will obsolete RAND_METHOD.
+
+   *Dr Paul Dale*
+
+ * New inline functions were added to support loads and stores of unsigned
+   16-bit, 32-bit and 64-bit integers in either little-endian or big-endian
+   form, regardless of the host byte-order.  See the `OPENSSL_load_u16_le(3)`
+   manpage for details.
+
+   *Viktor Dukhovni*
+
+ * All the `BIO_meth_get_*()` functions allowing reuse of the internal OpenSSL
+   BIO method implementations were deprecated. The reuse is unsafe due to
+   dependency on the code of the internal methods not changing.
+
+   *Tomáš Mráz*
+
+ * Support DEFAULT keyword and '-' prefix in `SSL_CTX_set1_groups_list()`.
+   `SSL_CTX_set1_groups_list()` now supports the DEFAULT keyword which sets the
+   available groups to the default selection. The '-' prefix allows the calling
+   application to remove a group from the selection.
+
+   *Frederik Wedel-Heinen*
+
+ * Updated the default encryption cipher for the `req`, `cms`, and `smime` applications
+   from `des-ede3-cbc` to `aes-256-cbc`.
+
+   AES-256 provides a stronger 256-bit key encryption than legacy 3DES.
+
+   *Aditya*
+
+ * Enhanced PKCS#7 inner contents verification.
+   In the `PKCS7_verify()` function, the BIO *indata parameter refers to the
+   signed data if the content is detached from p7. Otherwise, indata should be
+   NULL, and then the signed data must be in p7.
+
+   The previous OpenSSL implementation only supported MIME inner content
+   [RFC 5652, section 5.2].
+
+   The added functionality now enables support for PKCS#7 inner content
+   [RFC 2315, section 7].
+
+   *Małgorzata Olszówka*
+
+ * The `-rawin` option of the `pkeyutl` command is now implied (and thus no
+   longer required) when using `-digest` or when signing or verifying with an
+   Ed25519 or Ed448 key.
+   The `-digest` and `-rawin` option may only be given with `-sign` or `verify`.
+
+   *David von Oheimb*
+
+ * `X509_PURPOSE_add()` has been modified
+   to take `sname` instead of `id` as the primary purpose identifier.
+   For its convenient use, `X509_PURPOSE_get_unused_id()` has been added.
+
+   This work was sponsored by Siemens AG.
+
+   *David von Oheimb*
+
+ * Added support for central key generation in CMP.
+
+   This work was sponsored by Siemens AG.
+
+   *Rajeev Ranjan*
+
+ * Optionally allow the FIPS provider to use the `JITTER` entropy source.
+   Note that using this option will require the resulting FIPS provider
+   to undergo entropy source validation [ESV] by the [CMVP], without this
+   the FIPS provider will not be FIPS compliant.  Enable this using the
+   configuration option `enable-fips-jitter`.
+
+   *Paul Dale*
+
+ * Extended `OPENSSL_ia32cap` support to accommodate additional `CPUID`
+   feature/capability bits in leaf `0x7` (Extended Feature Flags) as well
+   as leaf `0x24` (Converged Vector ISA).
+
+   *Dan Zimmerman, Alina Elizarova*
+
+ * Cipher pipelining support for provided ciphers with new API functions
+   EVP_CIPHER_can_pipeline(), EVP_CipherPipelineEncryptInit(),
+   EVP_CipherPipelineDecryptInit(), EVP_CipherPipelineUpdate(),
+   and EVP_CipherPipelineFinal(). Cipher pipelining support allows application to
+   submit multiple chunks of data in one cipher update call, thereby allowing the
+   provided implementation to take advantage of parallel computing. There are
+   currently no built-in ciphers that support pipelining. This new API replaces
+   the legacy pipeline API [SSL_CTX_set_max_pipelines](https://docs.openssl.org/3.3/man3/SSL_CTX_set_split_send_fragment/) used with Engines.
+
+   *Ramkumar*
+
+ * Add CMS_NO_SIGNING_TIME flag to CMS_sign(), CMS_add1_signer()
+
+   Previously there was no way to create a CMS SignedData signature without a
+   signing time attribute, because CMS_SignerInfo_sign added it unconditionally.
+   However, there is a use case (PAdES signatures [ETSI EN 319 142-1](https://www.etsi.org/deliver/etsi_en/319100_319199/31914201/01.01.01_60/en_31914201v010101p.pdf) )
+   where this attribute is not allowed, so a new flag was added to the CMS API
+   that causes this attribute to be omitted at signing time.
+
+   The new `-no_signing_time` option of the `cms` command enables this flag.
+
+   *Juhász Péter*
+
+ * Parallel dual-prime 1024/1536/2048-bit modular exponentiation for
+   AVX_IFMA capable processors (Intel Sierra Forest and its successor).
+
+   This optimization brings performance enhancement, ranging from 1.8 to 2.2
+   times, for the sign/decryption operations of rsaz-2k/3k/4k (`openssl speed rsa`)
+   on the Intel Sierra Forest.
+
+   *Zhiguo Zhou, Wangyang Guo (Intel Corp)*
+
+ * VAES/AVX-512 support for AES-XTS.
+
+   For capable processors (>= Intel Icelake), this provides a
+   vectorized implementation of AES-XTS with a throughput improvement
+   between 1.3x to 2x, depending on the block size.
+
+   *Pablo De Lara Guarch, Dan Pittman*
+
+ * Fixed EVP_DecodeUpdate() to not write padding zeros to the decoded output.
+
+   According to the documentation, for every 4 valid base64 bytes processed
+   (ignoring whitespace, carriage returns and line feeds), EVP_DecodeUpdate()
+   produces 3 bytes of binary output data (except at the end of data
+   terminated with one or two padding characters). However, the function
+   behaved like an EVP_DecodeBlock(). It produced exactly 3 output bytes for
+   every 4 input bytes. Such behaviour could cause writes to a non-allocated
+   output buffer if a user allocates its size based on the documentation and
+   knowing the padding size.
+
+   The fix makes EVP_DecodeUpdate() produce exactly as many output bytes as
+   in the initial non-encoded message.
+
+   *Valerii Krygin*
+
+ * Added support for aAissuingDistributionPoint, allowedAttributeAssignments,
+   timeSpecification, attributeDescriptor, roleSpecCertIdentifier,
+   authorityAttributeIdentifier and attributeMappings X.509v3 extensions.
+
+   *Jonathan M. Wilbur*
+
+ * Added a new CLI option `-provparam` and API functions for setting of
+   provider configuration parameters.
+
+   *Viktor Dukhovni*
+
+ * Added a new trace category for PROVIDER calls and added new tracing calls
+   in provider and algorithm fetching API functions.
+
+   *Neil Horman*
+
+ * Fixed benchmarking for AEAD ciphers in the `openssl speed` utility.
+
+   *Mohammed Alhabib*
+
+ * Added a build configuration option `enable-sslkeylog` for enabling support
+   for SSLKEYLOGFILE environment variable to log TLS connection secrets.
+
+   *Neil Horman*
+
+ * Added EVP_get_default_properties() function to retrieve the current default
+   property query string.
+
+   *Dmitry Belyavskiy*
+
+### Nginx Build Info
+#### Default Image Variant
+
+```
+nginx version: nginx/1.29.0 (235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f)
+built with OpenSSL 3.5.0 8 Apr 2025
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.38 --add-module=/usr/src/nginx-rtmp-module-1.2.2 --add-module=/usr/src/ngx_brotli-a71f9312c2deb28875acc7bacfdd5695a111aa53 --add-module=/usr/src/njs-0.9.0/nginx --add-module=/usr/src/zstd-nginx-module-0.1.1 --build=235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_gzip_static_module --with-http_realip_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-openssl=/usr/src/openssl-3.5.0 --with-pcre-jit --with-stream --with-stream_realip_module --with-stream_ssl_module --with-threads --without-http_empty_gif_module --without-http_geo_module --without-http_grpc_module --without-http_memcached_module --without-http_mirror_module --without-http_scgi_module --without-http_ssi_module --without-http_uwsgi_module --without-mail_imap_module --without-mail_pop3_module --without-mail_smtp_module --without-stream_geo_module --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -I/usr/src/quickjs-4d9a27c578d20fc22f0f1a51ff3bfaf47798f30e' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2 -L/usr/src/quickjs-4d9a27c578d20fc22f0f1a51ff3bfaf47798f30e'
+```
+
+#### Extras Image Variant
+
+```
+nginx version: nginx/1.29.0 (235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f)
+built with OpenSSL 3.5.0 8 Apr 2025
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.38 --add-module=/usr/src/nginx-rtmp-module-1.2.2 --add-module=/usr/src/ngx_brotli-a71f9312c2deb28875acc7bacfdd5695a111aa53 --add-module=/usr/src/njs-0.9.0/nginx --add-module=/usr/src/zstd-nginx-module-0.1.1 --build=235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_dav_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_image_filter_module --with-http_perl_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-http_xslt_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.5.0 --with-pcre-jit --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-threads --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -I/usr/src/quickjs-4d9a27c578d20fc22f0f1a51ff3bfaf47798f30e' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2 -L/usr/src/quickjs-4d9a27c578d20fc22f0f1a51ff3bfaf47798f30e'
+```
+
+#### Slim Image Variant
+
+```
+nginx version: nginx/1.29.0 (235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f)
+built with OpenSSL 3.5.0 8 Apr 2025
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.38 --build=235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_gzip_static_module --with-http_realip_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-openssl=/usr/src/openssl-3.5.0 --with-pcre-jit --with-stream --with-stream_realip_module --with-stream_ssl_module --with-threads --without-http_empty_gif_module --without-http_geo_module --without-http_grpc_module --without-http_memcached_module --without-http_mirror_module --without-http_scgi_module --without-http_ssi_module --without-http_uwsgi_module --without-mail_imap_module --without-mail_pop3_module --without-mail_smtp_module --without-stream_geo_module --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2'
+```
+
 ## 1.28.0: Sat, 10 May 2025 22:31:42 GMT
 
 Build logs:

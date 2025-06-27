@@ -25,7 +25,7 @@ ARG REQUIRED_TOOLS_IN_DIST_IMAGE="\
   /usr/sbin/nologin \
   "
 
-FROM fedora:41 AS base-os
+FROM fedora:42 AS base-os
 
 # tools required for source patching and building
 RUN dnf upgrade --refresh -y \
@@ -229,7 +229,7 @@ RUN \
   # openssl: https://packages.fedoraproject.org/pkgs/openssl/openssl/
   && export RPM_PACKAGE_NAME="nginx" \
   && export RPM_PACKAGE_VERSION="$NGINX_VERSION" \
-  && export RPM_PACKAGE_RELEASE="1.fc41" \
+  && export RPM_PACKAGE_RELEASE="1.fc42" \
   && export RPM_ARCH="x86_64" \
   && export CFLAGS="-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1  -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer " \
   && export CXXFLAGS="$CFLAGS" \
