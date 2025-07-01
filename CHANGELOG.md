@@ -2,6 +2,68 @@
 
 # Changes
 
+## 1.29.0: Tue, 01 Jul 2025 20:41:39 GMT
+
+Build logs:
+- image tag `1.29.0`: [2025-07-01.2029-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-default.log](https://compilenix.org/static/build-logs/nginx/2025-07-01.2029-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-default.log)
+- image tag `1.29.0-extras`: [2025-07-01.2034-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-extras.log](https://compilenix.org/static/build-logs/nginx/2025-07-01.2034-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-extras.log)
+- image tag `1.29.0-slim`: [2025-07-01.2026-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-slim.log](https://compilenix.org/static/build-logs/nginx/2025-07-01.2026-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-slim.log)
+
+### Changes
+
+- Update OpenSSL from 3.5.0 to 3.5.1
+
+#### Changes between 3.5.0 and 3.5.1 [1 Jul 2025]
+
+ * Fix x509 application adds trusted use instead of rejected use.
+
+   Issue summary: Use of -addreject option with the openssl x509 application adds
+   a trusted use instead of a rejected use for a certificate.
+
+   Impact summary: If a user intends to make a trusted certificate rejected for
+   a particular use it will be instead marked as trusted for that use.
+
+   ([CVE-2025-4575](https://openssl-library.org/news/vulnerabilities/index.html#CVE-2025-4575))
+
+   *Tomas Mraz*
+
+ * Aligned the behaviour of TLS and DTLS in the event of a no_renegotiation
+   alert being received. Older versions of OpenSSL failed with DTLS if a
+   no_renegotiation alert was received. All versions of OpenSSL do this for TLS.
+   From 3.2 a bug was exposed that meant that DTLS ignored no_rengotiation. We
+   have now restored the original behaviour and brought DTLS back into line with
+   TLS.
+
+   *Matt Caswell*
+
+### Nginx Build Info
+#### Default Image Variant
+
+```
+nginx version: nginx/1.29.0 (235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f)
+built with OpenSSL 3.5.1 1 Jul 2025
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.38 --add-module=/usr/src/nginx-rtmp-module-1.2.2 --add-module=/usr/src/ngx_brotli-a71f9312c2deb28875acc7bacfdd5695a111aa53 --add-module=/usr/src/njs-0.9.0/nginx --add-module=/usr/src/zstd-nginx-module-0.1.1 --build=235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_gzip_static_module --with-http_realip_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-openssl=/usr/src/openssl-3.5.1 --with-pcre-jit --with-stream --with-stream_realip_module --with-stream_ssl_module --with-threads --without-http_empty_gif_module --without-http_geo_module --without-http_grpc_module --without-http_memcached_module --without-http_mirror_module --without-http_scgi_module --without-http_ssi_module --without-http_uwsgi_module --without-mail_imap_module --without-mail_pop3_module --without-mail_smtp_module --without-stream_geo_module --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -I/usr/src/quickjs-4d9a27c578d20fc22f0f1a51ff3bfaf47798f30e' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2 -L/usr/src/quickjs-4d9a27c578d20fc22f0f1a51ff3bfaf47798f30e'
+```
+
+#### Extras Image Variant
+
+```
+nginx version: nginx/1.29.0 (235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f)
+built with OpenSSL 3.5.1 1 Jul 2025
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.38 --add-module=/usr/src/nginx-rtmp-module-1.2.2 --add-module=/usr/src/ngx_brotli-a71f9312c2deb28875acc7bacfdd5695a111aa53 --add-module=/usr/src/njs-0.9.0/nginx --add-module=/usr/src/zstd-nginx-module-0.1.1 --build=235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_dav_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_image_filter_module --with-http_perl_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-http_xslt_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.5.1 --with-pcre-jit --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-threads --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -I/usr/src/quickjs-4d9a27c578d20fc22f0f1a51ff3bfaf47798f30e' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2 -L/usr/src/quickjs-4d9a27c578d20fc22f0f1a51ff3bfaf47798f30e'
+```
+
+#### Slim Image Variant
+
+```
+nginx version: nginx/1.29.0 (235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f)
+built with OpenSSL 3.5.1 1 Jul 2025
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.38 --build=235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_gzip_static_module --with-http_realip_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-openssl=/usr/src/openssl-3.5.1 --with-pcre-jit --with-stream --with-stream_realip_module --with-stream_ssl_module --with-threads --without-http_empty_gif_module --without-http_geo_module --without-http_grpc_module --without-http_memcached_module --without-http_mirror_module --without-http_scgi_module --without-http_ssi_module --without-http_uwsgi_module --without-mail_imap_module --without-mail_pop3_module --without-mail_smtp_module --without-stream_geo_module --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2'
+```
+
 ## 1.29.0: Fri, 27 Jun 2025 16:39:18 GMT
 
 Build logs:
@@ -633,7 +695,7 @@ Build logs:
    handshakes don't abort as expected when the SSL_VERIFY_PEER verification mode
    is set.
 
-   ([CVE-2024-12797])
+   ([CVE-2024-12797](https://openssl-library.org/news/vulnerabilities/index.html#CVE-2024-12797))
 
    *Viktor Dukhovni*
 
@@ -646,7 +708,7 @@ Build logs:
    attacker process must either be located in the same physical computer or
    must have a very fast network connection with low latency.
 
-   ([CVE-2024-13176])
+   ([CVE-2024-13176](https://openssl-library.org/news/vulnerabilities/index.html#CVE-2024-13176))
 
    *Tomáš Mráz*
 
@@ -1484,8 +1546,8 @@ Build log: [1.22.1-af7a3fb7558f-2022-11-01.1621.log](https://compilenix.org/stat
 
 ### Changes
 - openssl update to 3.0.7
-  - X.509 Email Address 4-byte Buffer Overflow (CVE-2022-3602)
-  - X.509 Email Address Variable Length Buffer Overflow (CVE-2022-3786)
+  - X.509 Email Address 4-byte Buffer Overflow ([CVE-2022-3602](https://openssl-library.org/news/vulnerabilities/index.html#CVE-2022-3602))
+  - X.509 Email Address Variable Length Buffer Overflow ([CVE-2022-3786](https://openssl-library.org/news/vulnerabilities/index.html#CVE-2022-3786))
   - https://www.openssl.org/news/secadv/20221101.txt
 - nginx update to 1.22.1
 - nginx njs module update to 0.7.8
@@ -1505,8 +1567,8 @@ Build log: [1.23.2-aa901551a7eb-2022-11-01.1614.log](https://compilenix.org/stat
 
 ### Changes
 - openssl update to 3.0.7
-  - X.509 Email Address 4-byte Buffer Overflow (CVE-2022-3602)
-  - X.509 Email Address Variable Length Buffer Overflow (CVE-2022-3786)
+  - X.509 Email Address 4-byte Buffer Overflow ([CVE-2022-3602](https://openssl-library.org/news/vulnerabilities/index.html#CVE-2022-3602))
+  - X.509 Email Address Variable Length Buffer Overflow ([CVE-2022-3786](https://openssl-library.org/news/vulnerabilities/index.html#CVE-2022-3786))
   - https://www.openssl.org/news/secadv/20221101.txt
 - nginx update to 1.23.2
 - nginx njs module update to 0.7.8
