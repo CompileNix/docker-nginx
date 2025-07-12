@@ -2,6 +2,106 @@
 
 # Changes
 
+## 1.29.0: Sat, 12 Jul 2025 21:03:05 GMT
+
+Build logs:
+- image tag `1.29.0`: [2025-07-12.2046-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-default.log](https://compilenix.org/static/build-logs/nginx/2025-07-12.2046-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-default.log)
+- image tag `1.29.0-extras`: [2025-07-12.2051-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-extras.log](https://compilenix.org/static/build-logs/nginx/2025-07-12.2051-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-extras.log)
+- image tag `1.29.0-slim`: [2025-07-12.2043-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-slim.log](https://compilenix.org/static/build-logs/nginx/2025-07-12.2043-1.29.0-235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f-slim.log)
+
+### Changes
+
+- Update headers more nginx module from 0.38 to 0.39
+- Update nginx njs from 0.9.0 to 0.9.1
+- Update QuickJS from [4d9a27c578d20fc22f0f1a51ff3bfaf47798f30e to 1fdc768fdc8571300755cdd3e4654ce99c0255ce](https://github.com/bellard/quickjs/compare/4d9a27c578d20fc22f0f1a51ff3bfaf47798f30e...1fdc768fdc8571300755cdd3e4654ce99c0255ce)
+
+#### Changes between nginx njs 0.9.0 and 0.9.1
+
+```
+Changes with njs 0.9.1                                       10 Jul 2025
+
+    nginx modules:
+
+    *) Feature: added Fetch API for QuickJS engine.
+
+    *) Feature: added state file for a shared dictionary.
+
+    *) Bugfix: fixed handling of Content-Length header when
+       a body is provided for Fetch API.
+
+    *) Bugfix: fixed qjs engine after bellard/quickjs@458c34d2.
+
+    *) Bugfix: fixed NULL pointer dereference when processing
+       If-* headers.
+
+    Core:
+
+    *) Feature: added ECDH support for WebCrypto.
+
+    *) Improvement: reduced memory consumption by the object hash.
+       The new hash uses 42% less memory per element.
+
+    *) Improvement: reduced memory consumption for concatenation of
+       numbers and strings.
+
+    *) Improvement: reduced memory consumption of
+       String.prototype.concat() with scalar values.
+
+    *) Bugfix: fixed segfault in njs_property_query().
+       The issue was introduced in b28e50b1 (0.9.0).
+
+    *) Bugfix: fixed Function constructor template injection.
+
+    *) Bugfix: fixed GCC compilation with O3 optimization level.
+
+    *) Bugfix: fixed constant is too large for 'long' warning
+       on MIPS -mabi=n32.
+
+    *) Bugfix: fixed compilation with GCC 4.1.
+
+    *) Bugfix: fixed %TypedArray%.from() with the buffer is detached
+       by the mapper.
+
+    *) Bugfix: fixed %TypedArray%.prototype.slice() with overlapping
+       buffers.
+
+    *) Bugfix: fixed handling of detached buffers for typed arrays.
+
+    *) Bugfix: fixed frame saving for async functions with
+       closures.
+
+    *) Bugfix: fixed RegExp compilation of patterns with
+       escaped '[' characters. 
+```
+
+### Nginx Build Info
+#### Default Image Variant
+
+```
+nginx version: nginx/1.29.0 (235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f)
+built with OpenSSL 3.5.1 1 Jul 2025
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.39 --add-module=/usr/src/nginx-rtmp-module-1.2.2 --add-module=/usr/src/ngx_brotli-a71f9312c2deb28875acc7bacfdd5695a111aa53 --add-module=/usr/src/njs-0.9.1/nginx --add-module=/usr/src/zstd-nginx-module-0.1.1 --build=235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_gzip_static_module --with-http_realip_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-openssl=/usr/src/openssl-3.5.1 --with-pcre-jit --with-stream --with-stream_realip_module --with-stream_ssl_module --with-threads --without-http_empty_gif_module --without-http_geo_module --without-http_grpc_module --without-http_memcached_module --without-http_mirror_module --without-http_scgi_module --without-http_ssi_module --without-http_uwsgi_module --without-mail_imap_module --without-mail_pop3_module --without-mail_smtp_module --without-stream_geo_module --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -I/usr/src/quickjs-1fdc768fdc8571300755cdd3e4654ce99c0255ce' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2 -L/usr/src/quickjs-1fdc768fdc8571300755cdd3e4654ce99c0255ce'
+```
+
+#### Extras Image Variant
+
+```
+nginx version: nginx/1.29.0 (235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f)
+built with OpenSSL 3.5.1 1 Jul 2025
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.39 --add-module=/usr/src/nginx-rtmp-module-1.2.2 --add-module=/usr/src/ngx_brotli-a71f9312c2deb28875acc7bacfdd5695a111aa53 --add-module=/usr/src/njs-0.9.1/nginx --add-module=/usr/src/zstd-nginx-module-0.1.1 --build=235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_dav_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_image_filter_module --with-http_perl_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-http_xslt_module --with-mail --with-mail_ssl_module --with-openssl=/usr/src/openssl-3.5.1 --with-pcre-jit --with-stream --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_module --with-threads --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -I/usr/src/quickjs-1fdc768fdc8571300755cdd3e4654ce99c0255ce' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2 -L/usr/src/quickjs-1fdc768fdc8571300755cdd3e4654ce99c0255ce'
+```
+
+#### Slim Image Variant
+
+```
+nginx version: nginx/1.29.0 (235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f)
+built with OpenSSL 3.5.1 1 Jul 2025
+TLS SNI support enabled
+configure arguments: --add-module=/usr/src/headers-more-nginx-module-0.39 --build=235f409907fd60eb2d8f6ecdc0e5cb163dd6d45f --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --group=nginx --http-client-body-temp-path=/var/cache/nginx/client_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-log-path=/var/log/nginx/access.log --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --lock-path=/var/run/nginx/nginx.lock --modules-path=/usr/lib/nginx/modules --pid-path=/var/run/nginx/nginx.pid --prefix=/etc/nginx --sbin-path=/usr/bin/nginx --user=nginx --with-compat --with-debug --with-file-aio --with-http_gzip_static_module --with-http_realip_module --with-http_ssl_module --with-http_stub_status_module --with-http_v2_module --with-http_v3_module --with-openssl=/usr/src/openssl-3.5.1 --with-pcre-jit --with-stream --with-stream_realip_module --with-stream_ssl_module --with-threads --without-http_empty_gif_module --without-http_geo_module --without-http_grpc_module --without-http_memcached_module --without-http_mirror_module --without-http_scgi_module --without-http_ssi_module --without-http_uwsgi_module --without-mail_imap_module --without-mail_pop3_module --without-mail_smtp_module --without-stream_geo_module --with-cc-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer' --with-openssl-opt='-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Wno-complain-wrong-lang -Werror=format-security -Wp,-U_FORTIFY_SOURCE,-D_FORTIFY_SOURCE=3 -Wp,-D_GLIBCXX_ASSERTIONS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1 -fstack-protector-strong -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -m64 -march=x86-64 -mtune=generic -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection -mtls-dialect=gnu2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY -Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 enable-ktls' --with-ld-opt='-Wl,-z,relro -Wl,--as-needed -Wl,-z,pack-relative-relocs -Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1 -Wl,--build-id=sha1 -specs=/usr/lib/rpm/redhat/redhat-package-notes -Wl,-E -O2'
+```
+
 ## 1.29.0: Tue, 01 Jul 2025 20:41:39 GMT
 
 Build logs:

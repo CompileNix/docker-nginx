@@ -651,32 +651,33 @@ $EDITOR .env
 If you want to change any versions used to build the container image take a look into `.env`.
 
 ### Checklist
-- [ ] Update or create `.env`:
-  - ```sh
-    cp .env.example .env
-    ```
-- [ ] Run `./tools/build-with-logs.sh ./docker/latest.Dockerfile` (or `./tools/build-all-with-logs.sh` and skip the next two steps)
-- [ ] Run `./tools/build-with-logs.sh ./docker/latest-extras.Dockerfile extras`
-- [ ] Run `./tools/build-with-logs.sh ./docker/latest-slim.Dockerfile slim`
-- [ ] Run `./tools/tests.sh 2>&1 | tee log/test_results.txt`
-- [ ] Upload build logs (printed out at the end of the `build-with-logs.sh` command or via `./log/upload-<variant>.sh`)
-- [ ] Update [Supported Container Image Tags](#supported-container-image-tags)
-- [ ] Update `CHANGELOG.md` (use `./tools/new-changelog.sh` to generate a base template)
-- [ ] Create / Update Docker Image Tags
-  - ```sh
-    source .env
-    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}" "${IMAGE_NAME}:latest"
-    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}" "${IMAGE_NAME}:1.29"
-    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}" "${IMAGE_NAME}:1"
-    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-extras" "${IMAGE_NAME}:latest-extras"
-    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-extras" "${IMAGE_NAME}:1.29-extras"
-    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-extras" "${IMAGE_NAME}:1-extras"
-    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-slim" "${IMAGE_NAME}:latest-slim"
-    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-slim" "${IMAGE_NAME}:1.29-slim"
-    docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-slim" "${IMAGE_NAME}:1-slim"
-    # inspect image tags
-    docker image ls "${IMAGE_NAME}"
-    ```
-- [ ] Remove Old Docker Image Tags
-- [ ] Run `./tools/push-image-tags.sh`
-- [ ] Update Supported Container Image Tags on [hub.docker.com](https://hub.docker.com/repository/docker/compilenix/nginx/general)
+- Update or create `.env`:
+    - ```sh
+      cp .env.example .env
+      ```
+- `./tools/build-all-with-logs.sh` or
+    - Run `./tools/build-with-logs.sh ./docker/latest.Dockerfile`
+    - Run `./tools/build-with-logs.sh ./docker/latest-extras.Dockerfile extras`
+    - Run `./tools/build-with-logs.sh ./docker/latest-slim.Dockerfile slim`
+- Run `./tools/tests.sh 2>&1 | tee log/test_results.txt`
+- Upload build logs (printed out at the end of the `build-with-logs.sh` command or via `./log/upload-<variant>.sh`)
+- Update [Supported Container Image Tags](#supported-container-image-tags)
+- Update `CHANGELOG.md` (use `./tools/new-changelog.sh` to generate a base template)
+- Create / Update Docker Image Tags
+    - ```sh
+      source .env
+      docker image tag "${IMAGE_NAME}:${NGINX_VERSION}" "${IMAGE_NAME}:latest"
+      docker image tag "${IMAGE_NAME}:${NGINX_VERSION}" "${IMAGE_NAME}:1.29"
+      docker image tag "${IMAGE_NAME}:${NGINX_VERSION}" "${IMAGE_NAME}:1"
+      docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-extras" "${IMAGE_NAME}:latest-extras"
+      docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-extras" "${IMAGE_NAME}:1.29-extras"
+      docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-extras" "${IMAGE_NAME}:1-extras"
+      docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-slim" "${IMAGE_NAME}:latest-slim"
+      docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-slim" "${IMAGE_NAME}:1.29-slim"
+      docker image tag "${IMAGE_NAME}:${NGINX_VERSION}-slim" "${IMAGE_NAME}:1-slim"
+      # inspect image tags
+      docker image ls "${IMAGE_NAME}"
+      ```
+- Remove Old Docker Image Tags
+- Run `./tools/push-image-tags.sh`
+- Update Supported Container Image Tags on [hub.docker.com](https://hub.docker.com/repository/docker/compilenix/nginx/general)
