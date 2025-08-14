@@ -28,12 +28,12 @@ The primary motivations for this container image are:
 - [Git Mirror 2](https://gitlab.com/CompileNix/docker-nginx)
 
 ## Supported Container Image Tags
-- `1.29.0`, `1.29`, `1`, `latest`
-- `1.29.0-extras`, `1.29-extras`, `1-extras`, `latest-extras`
-- `1.29.0-slim`, `1.29-slim`, `1-slim`, `latest-slim`
+- `1.29.1`, `1.29`, `1`, `latest`
+- `1.29.1-extras`, `1.29-extras`, `1-extras`, `latest-extras`
+- `1.29.1-slim`, `1.29-slim`, `1-slim`, `latest-slim`
 
 ## Container Image Variants
-### Default (`1.29.0`, `1.29`, `1`, `latest`)
+### Default (`1.29.1`, `1.29`, `1`, `latest`)
 This container image has all features and modules built-in that will suit most regular use-cases, while maintaining a low image size.
 
 The following notable features are available:
@@ -69,7 +69,7 @@ The following nginx modules are **NOT** available:
 - `--without-mail_smtp_module`
 - `--without-stream_geo_module`
 
-### Extras (`1.29.0-extras`, `1.29-extras`, `1-extras`, `latest-extras`)
+### Extras (`1.29.1-extras`, `1.29-extras`, `1-extras`, `latest-extras`)
 This container image has all features and modules built-in, without the focus on low image size.
 
 The following notable features are available:
@@ -85,7 +85,7 @@ The following notable features are available:
 - `--with-mail`
 - `--with-stream_geoip_module`
 
-### Slim (`1.29.0-slim`, `1.29-slim`, `1-slim`, `latest-slim`)
+### Slim (`1.29.1-slim`, `1.29-slim`, `1-slim`, `latest-slim`)
 This container image has most features and modules built-in, with a focus on the least amount of non-upstream dependencies, modules and overall small image size.
 
 [OpenResty's headers-more-nginx-module](https://github.com/openresty/headers-more-nginx-module) is the only non-upstream module built-in.
@@ -555,7 +555,7 @@ Example: `upstream_queue_time`
   "limit_rate": "0",
   "limit_req_status": "",
   "msec": "1664306240.619",
-  "nginx_version": "1.29.0",
+  "nginx_version": "1.29.1",
   "pid": "46",
   "pipe": ".",
   "proxy_add_x_forwarded_for": "172.18.0.1",
