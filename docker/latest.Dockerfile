@@ -63,6 +63,7 @@ RUN dnf upgrade --refresh -y \
     perl-FindBin \
     perl-IPC-Cmd \
     perl-Pod-Html \
+    perl-Time-Piece \
     python3 \
     python3-pip \
     re2-devel \

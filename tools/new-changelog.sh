@@ -33,7 +33,7 @@ Build logs:
 - Update nginx njs from 0.8.10 to 0.9.0
 - Update QuickJS from [330625486f1d67b35c3720e9fc4bcc794302fd5b to a8b2d7c2b2751130000b74ac7d831fd75a0abbc3](https://github.com/bellard/quickjs/compare/330625486f1d67b35c3720e9fc4bcc794302fd5b...a8b2d7c2b2751130000b74ac7d831fd75a0abbc3)
 
-#### Changes between nginx 1.27.5 and 1.28.0
+#### Changes from nginx
 
 \`\`\`
 Changes with nginx 1.28.0                                        23 Apr 2025
