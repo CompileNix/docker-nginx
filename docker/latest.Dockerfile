@@ -25,7 +25,7 @@ ARG REQUIRED_TOOLS_IN_DIST_IMAGE="\
   /usr/sbin/nologin \
   "
 
-FROM fedora:42 AS base-os
+FROM fedora:43 AS base-os
 
 # tools required for source patching and building
 RUN dnf upgrade --refresh -y \

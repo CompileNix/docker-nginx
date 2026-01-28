@@ -18,10 +18,14 @@ set -eu
 
 source .env
 
-while read -r line; do
-  read -r image tag <<< $line
-  echo "docker image push ${image}:${tag}"
-  docker image push "${image}:${tag}"
-done <<< $(docker image ls "$IMAGE_NAME" | grep -vE '<none>|IMAGE ID' | awk '{ print $1,$2 }' | sort --version-sort)
+# Filter out images with <none> tag
+docker image ls "$IMAGE_NAME" --format json | \
+  jq -r 'select(.Tag != "<none>" and .ID != null) |
+      "\(.Repository):\(.Tag)"' | \
+  sort --version-sort | \
+  while read -r line; do
+    echo "docker image push ${line}"
+    docker image push "${line}"
+done
 
 echo "images were published to: https://hub.docker.com/r/$IMAGE_NAME/tags"
