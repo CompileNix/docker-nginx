@@ -659,7 +659,7 @@ If you want to change any versions used to build the container image take a look
     - Run `./tools/build-with-logs.sh ./docker/latest.Dockerfile`
     - Run `./tools/build-with-logs.sh ./docker/latest-extras.Dockerfile extras`
     - Run `./tools/build-with-logs.sh ./docker/latest-slim.Dockerfile slim`
-- Run `./tools/tests.sh 2>&1 | tee log/test_results.txt`
+- Run `./tools/tests.sh |& tee log/test_results.txt`
 - Create / Update Docker Image Tags
     - ```sh
       source .env
