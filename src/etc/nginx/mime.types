@@ -11,7 +11,7 @@ types {
     application/rss+xml                              rss;
 
     text/mathml                                      mml;
-    text/plain                                       txt c h cpp asc conf sh py ps1 log;
+    text/plain                                       txt c h cpp asc conf sh py ps1 log md;
     text/vnd.sun.j2me.app-descriptor                 jad;
     text/vnd.wap.wml                                 wml;
     text/x-component                                 htc;
